@@ -1,5 +1,9 @@
 package jp.ken.jdbc.domain.repository;
 
-public class MemberRepository {
+import jp.ken.jdbc.domain.entity.MemberEntity;
+
+public interface MemberRepository {
+
+    MemberEntity findByEmail(String email);
 
 }
