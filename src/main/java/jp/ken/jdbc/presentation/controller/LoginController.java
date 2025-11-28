@@ -26,7 +26,7 @@ public class LoginController {
 
     @GetMapping("/login")
     public String loginPage(@ModelAttribute("loginForm") LoginForm form, Model model) {
-        return "login/login";
+        return "login";
     }
 
     @PostMapping("/login")
@@ -36,13 +36,13 @@ public class LoginController {
             Model model) {
 
         if (result.hasErrors()) {
-            return "login/login";
+            return "login";
         }
 
         MemberEntity user = memberService.login(form);
         if (user == null) {
             model.addAttribute("errorMessage", "メールアドレスまたはパスワードが違います");
-            return "login/login";
+            return "login";
         }
 
         // ログイン成功 → セッションにユーザを保存
