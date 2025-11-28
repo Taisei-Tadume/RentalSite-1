@@ -9,7 +9,7 @@
 </head>
 <body>
 <div id="wrapper">
-<header th:insert="~{header :: header_area}"></header>
+<div th:replace="header :: siteHeader"></div>
 <main>
     <div class="d-flex justify-content-center">
         <div class="register-container w-75 p-4 mt-5 border rounded shadow bg-white">
@@ -50,7 +50,7 @@
         </div>
     </div>
 </main>
-<footer th:insert="~{footer :: footer_area}"></footer>
+<div th:replace="footer :: siteFooter"></div>
 </div>
 </body>
 </html>
