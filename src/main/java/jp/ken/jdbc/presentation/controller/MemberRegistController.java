@@ -9,16 +9,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import jakarta.validation.Valid;
 import jp.ken.jdbc.presentation.form.MemberForm;
+import jp.ken.jdbc.presentation.form.MemberRegistForm;
 
 @Controller
 public class MemberRegistController {
 
     // --- GET: 新規会員登録フォーム表示 ---
     @GetMapping("/regist")
+
     public String registForm(Model model) {
         MemberForm memberForm = new MemberForm();
         model.addAttribute("memberForm", memberForm);
         return "newmemberregistration";
+    public String regist(Model model) {
+    	MemberRegistForm memberregistForm = new MemberRegistForm();
+    	model.addAttribute("memberregistForm", memberregistForm);
+    	return "newmemberregistration"; 
     }
 
     // --- POST: 新規会員登録処理 ---
