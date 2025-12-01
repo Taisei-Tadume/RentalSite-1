@@ -76,19 +76,22 @@
 
 		</main>
 
-		<div th:replace="footer :: siteFooter"></div>
+		<div th:replace="~{footer :: siteFooter}"></div>
+
 	</div>
 	<script>
-		// ページ遷移せ		ず数量変更・削除を実行
-		function sendCartAction(ur			oodsId) {
-							l, {
-				method:				
-				header					ontent-Type': 'application/x-www-form-urlencoded'
-							bo				dsId=' + goodsId
+		// ページ遷移せず数量変更・削除を実行
+		function sendCartAction(url, goodsId) {
+			fetch(url, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				},
+				body: 'goodsId=' + goodsId
 			})
-							n((				 {
-					// セッシ					るため再描画のみ
-					location.					;
+				.then(() => {
+					// セッション内容を反映するため再描画のみ
+					location.reload();
 				});
 		}
 	</script>
