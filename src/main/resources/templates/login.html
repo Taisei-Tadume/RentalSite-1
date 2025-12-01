@@ -38,14 +38,14 @@
 								<div class="text-danger" th:errors="*{password}"></div>
 							</div>
 
-							<button type="submit" class="btn btn-primary w-100">ログイン</button>
+							<div class="text-center mt-3">
+								<button type="submit" class="btn btn-primary px-4">ログイン</button>
+							</div>
+
 						</form>
 
 						<div class="text-center mt-3">
-							新規登録は
-							<a th:href="@{/member/regist}" class="text-decoration-none">こちら</a>
-							<br><br>
-							<a th:href="@{/Top}">TOPへ戻る</a>
+							<a th:href="@{/top}" class="btn btn-outline-secondary px-4 ms-2">TOPへ戻る</a>
 						</div>
 
 					</div>
