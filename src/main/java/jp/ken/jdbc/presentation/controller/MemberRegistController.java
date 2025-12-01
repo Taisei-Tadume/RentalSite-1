@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class MemberRegistController {
 
-    @GetMapping("/member/regist")
+    @GetMapping("/regist")
     public String regist() {
         return "newmemberregistration";
     }
