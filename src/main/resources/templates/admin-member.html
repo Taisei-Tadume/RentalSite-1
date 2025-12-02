@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>会員管理</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+
+<body class="p-4">
+
+    <h1 class="mb-4">会員管理</h1>
+
+    <!-- ▼ 検索フォーム -->
+    <form method="get" action="#" class="mb-4 w-50">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="会員ID or 氏名で検索">
+            <button class="btn btn-primary">検索</button>
+        </div>
+    </form>
+
+    <!-- ▼ 検索結果（ダミー表示） -->
+    <div class="card p-3 mb-4">
+
+        <h4 class="mb-3">会員情報</h4>
+
+        <div class="row mb-2">
+            <label class="col-sm-3 fw-bold">会員ID：</label>
+            <div class="col-sm-9">1002</div>
+        </div>
+
+        <div class="row mb-2">
+            <label class="col-sm-3 fw-bold">氏名：</label>
+            <div class="col-sm-9">山田 太郎</div>
+        </div>
+
+        <div class="row mb-2">
+            <label class="col-sm-3 fw-bold">レンタル状況：</label>
+            <div class="col-sm-9">長期レンタル（残り5日）</div>
+        </div>
+
+        <div class="row mb-2">
+            <label class="col-sm-3 fw-bold">最終返却日：</label>
+            <div class="col-sm-9">2025-11-30</div>
+        </div>
+
+        <div class="row mb-2">
+            <label class="col-sm-3 fw-bold">未返却タイトル数：</label>
+            <div class="col-sm-9">2</div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-3 fw-bold">進捗ステータス：</label>
+            <div class="col-sm-9">
+                <select class="form-select w-50">
+                    <option selected>未連絡</option>
+                    <option>1回目連絡済</option>
+                    <option>2回目連絡済</option>
+                    <option>強制停止検討中</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- ▼ ボタン群 -->
+        <div class="d-flex gap-3 mt-3">
+            <a href="/admin" class="btn btn-secondary">従業員トップへ戻る</a>
+            <button class="btn btn-primary">進捗対象を検索</button>
+            <button class="btn btn-success">ステータス更新</button>
+        </div>
+    </div>
+
+    <!-- ▼ 一覧 表示（ダミー） -->
+    <h4 class="mt-4">一覧</h4>
+    <table class="table table-bordered mt-2">
+        <thead class="table-light">
+            <tr>
+                <th>会員ID</th>
+                <th>氏名</th>
+                <th>レンタル状況</th>
+                <th>未返却タイトル数</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1002</td>
+                <td>山田 太郎</td>
+                <td>1タイトル返却予定</td>
+                <td>2</td>
+            </tr>
+            <tr>
+                <td>1010</td>
+                <td>佐藤 花子</td>
+                <td>返却遅延</td>
+                <td>3</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>
