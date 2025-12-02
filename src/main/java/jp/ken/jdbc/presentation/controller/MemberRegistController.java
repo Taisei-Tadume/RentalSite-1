@@ -21,6 +21,7 @@ public class MemberRegistController {
         MemberForm memberForm = new MemberForm();
         model.addAttribute("memberForm", memberForm);
         return "newmemberregistration";
+    }
     public String regist(Model model) {
     	MemberRegistForm memberregistForm = new MemberRegistForm();
     	model.addAttribute("memberregistForm", memberregistForm);
