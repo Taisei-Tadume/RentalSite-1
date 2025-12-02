@@ -12,7 +12,7 @@ public class MemberRegistController {
     // --- GET: 新規会員登録フォーム表示 ---
     @GetMapping("/regist")
   public String registForm(Model model) {
-        MemberForm memberForm = new MemberForm();
+        MemberRegistForm memberForm = new MemberRegistForm();
         model.addAttribute("memberForm", memberForm);
         return "newmemberregistration";
     }
