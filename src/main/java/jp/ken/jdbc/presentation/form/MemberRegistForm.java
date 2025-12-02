@@ -97,4 +97,5 @@ public class MemberRegistForm {
     public void setAddress(String address) {
         this.address = address;
     }
+    
 }
