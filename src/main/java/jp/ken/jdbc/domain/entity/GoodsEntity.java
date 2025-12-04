@@ -2,60 +2,82 @@ package jp.ken.jdbc.domain.entity;
 
 public class GoodsEntity {
 
-	/** 商品ID */
-	private int goodsId;
+    /** 商品ID */
+    private int goodsId;
 
-	/** 商品名（タイトル） */
-	private String title;
+    /** 商品名 */
+    private String goodsName;
 
-	/** JANコード */
-	private String janCode;
+    /** カテゴリID */
+    private int categoryId;
 
-	/** 画像パス */
-	private String imagePath;
+    /** ジャンルID */
+    private int genreId;
 
-	/** ジャンルID */
-	private String genreId;
+    /** 在庫数量 */
+    private int quantity;
 
-	// Getter / Setter
+    /** JANコード */
+    private String janCode;
 
-	public int getGoodsId() {
-		return goodsId;
-	}
+    /** 画像URL */
+    private String imageUrl;
 
-	public void setGoodsId(int goodsId) {
-		this.goodsId = goodsId;
-	}
+    // Getter / Setter
 
-	public String getTitle() {
-		return title;
-	}
+    public int getGoodsId() {
+        return goodsId;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public void setGoodsId(int goodsId) {
+        this.goodsId = goodsId;
+    }
 
-	public String getJanCode() {
-		return janCode;
-	}
+    public String getGoodsName() {
+        return goodsName;
+    }
 
-	public void setJanCode(String janCode) {
-		this.janCode = janCode;
-	}
+    public void setGoodsName(String goodsName) {
+        this.goodsName = goodsName;
+    }
 
-	public String getImagePath() {
-		return imagePath;
-	}
+    public int getCategoryId() {
+        return categoryId;
+    }
 
-	public void setImagePath(String imagePath) {
-		this.imagePath = imagePath;
-	}
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
 
-	public String getGenreId() {
-		return genreId;
-	}
+    public int getGenreId() {
+        return genreId;
+    }
 
-	public void setGenreId(String genreId) {
-		this.genreId = genreId;
-	}
+    public void setGenreId(int genreId) {
+        this.genreId = genreId;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getJanCode() {
+        return janCode;
+    }
+
+    public void setJanCode(String janCode) {
+        this.janCode = janCode;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }
