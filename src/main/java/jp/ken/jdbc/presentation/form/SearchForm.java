@@ -8,7 +8,7 @@ public class SearchForm {
     // カテゴリやその他検索条件を追加する場合はここにフィールドを追加可能
     private String category;
     
-    private String genre;
+    private int genreId;
 
     // getter / setter
     public String getKeyword() {
@@ -27,11 +27,11 @@ public class SearchForm {
         this.category = category;
     }
     
-    public String getGenre() {
-        return genre;
+    public int getGenreId() {
+        return genreId;
     }
 
-    public void setGenre(String genre) {
-        this.genre = genre;
+    public void setGenreId(int genre) {
+        this.genreId = genre;
     }
 }

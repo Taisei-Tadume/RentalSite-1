@@ -14,30 +14,28 @@ public class GoodsService {
 
 	@Autowired
 	private GoodsRepository goodsRepository;
-	
-	 public List<GoodsEntity> searchGoods(String genreId, int page, int pageSize) {
 
-	        int offset = page * pageSize;
+	public List<GoodsEntity> searchGoods(int genreId, int page, int pageSize) {
 
-	        if (genreId == null || genreId.isEmpty()) {
-	            
-	            return goodsRepository.findAll(offset, pageSize);
-	        } else {
-	           
-	            return goodsRepository.findByGenre(genreId, offset, pageSize);
-	        }
-	    }
-	 
-	 public long countGoodsByGenre(String genreId) {
+		int offset = page * pageSize;
 
-	        if (genreId == null || genreId.isEmpty()) {
-	            return goodsRepository.countAll(); 
-	        } else {
-	            return goodsRepository.countByGenre(genreId);
-	        }
-	    }
-	 
-	 public List<GenreEntity> getAllGenres() {
-	        return goodsRepository.findGenres();
-	    }
+		if (genreId == 0) {
+			return goodsRepository.findAll(offset, pageSize);
+		} else {
+			return goodsRepository.findByGenre(genreId, offset, pageSize);
+		}
+	}
+
+	public long countGoodsByGenre(int genreId) {
+
+		if (genreId == 0) {
+			return goodsRepository.countAll();
+		} else {
+			return goodsRepository.countByGenre(genreId);
+		}
+	}
+
+	public List<GenreEntity> getAllGenres() {
+		return goodsRepository.findGenres();
+	}
 }

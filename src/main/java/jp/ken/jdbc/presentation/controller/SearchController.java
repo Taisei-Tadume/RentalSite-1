@@ -38,15 +38,17 @@ public class SearchController {
     	
     	int pageSize = 8;
     	
-    	List<GoodsEntity> resultList = goodsService.searchGoods(searchForm.getGenre(), page, pageSize);
+    	int genreId = searchForm.getGenreId();
     	
-    	long totalItems = goodsService.countGoodsByGenre(searchForm.getGenre());
+    	List<GoodsEntity> resultList = goodsService.searchGoods(genreId, page, pageSize);
+    	
+    	long totalItems = goodsService.countGoodsByGenre(genreId);
         int totalPages = (int) Math.ceil((double) totalItems / pageSize);
         
         model.addAttribute("resultList", resultList);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
-        model.addAttribute("selectedGenre", searchForm.getGenre());
+        model.addAttribute("selectedGenre", genreId);
         
         return "searchresult";
     }
