@@ -1,0 +1,79 @@
+テーブルの新規作成
+
+1.USERS_TABLEの作成
+
+CREATE TABLE USERS_TABLE (
+  user_id BIGINT NOT NULL AUTO_INCREMENT,
+  user_name VARCHAR(255) NOT NULL,
+  user_name_kana VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  phone_number VARCHAR(20) NOT NULL,
+  address VARCHAR(255) NOT NULL,
+  address_kana VARCHAR(255) NOT NULL,
+  login_id VARCHAR(255) NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  authority_id BIGINT NOT NULL,
+  PRIMARY KEY (user_id),
+  UNIQUE KEY uq_user_id (user_id),
+  UNIQUE KEY uq_email (email),
+  UNIQUE KEY uq_login_id (login_id)
+);
+
+2.USERS_AUTHORITY_TABLEの作成
+
+CREATE TABLE USERS_AUTHORITY_TABLE (
+  authority_id BIGINT NOT NULL,
+  authority_name VARCHAR(100) NOT NULL,
+  authority_flag BOOLEAN NOT NULL,
+  PRIMARY KEY (authority_id),
+  UNIQUE KEY uq_authority_name (authority_name)
+);
+
+3.GOODS_TABLEの作成
+
+CREATE TABLE GOODS_TABLE (
+  goods_id BIGINT NOT NULL,
+  goods_name VARCHAR(255) NOT NULL,
+  category_id BIGINT NOT NULL,
+  goods_rental_flag BOOLEAN NOT NULL,
+  goods_rental_user_id BIGINT NOT NULL,
+  PRIMARY KEY (goods_id),
+  UNIQUE KEY uq_goods_id (goods_id)
+);
+
+4.GOODS_CATEGORY_TABLEの作成
+
+CREATE TABLE GOODS_CATEGORY_TABLE (
+  category_id BIGINT NOT NULL,
+  category_name VARCHAR(255) NOT NULL,
+  PRIMARY KEY (category_id),
+  UNIQUE KEY uq_category_id (category_id),
+  UNIQUE KEY uq_category_name (category_name)
+);
+
+5.PRICES_TABLEの作成
+
+CREATE TABLE PRICES_TABLE (
+  price_id BIGINT NOT NULL,
+  price INT NOT NULL,
+  plan_name VARCHAR(100) NOT NULL,
+  start_date DATE,
+  end_date DATE,
+  PRIMARY KEY (price_id),
+  UNIQUE KEY uq_price_id (price_id),
+  UNIQUE KEY uq_plan_name (plan_name)
+);
+
+6.外部キーの設定(authority_id)
+
+ALTER TABLE USERS_TABLE
+ADD CONSTRAINT fk_users_authority
+FOREIGN KEY (authority_id)
+REFERENCES USERS_AUTHORITY_TABLE(authority_id);
+
+7.外部キーの設定(category_id)
+
+ALTER TABLE GOODS_TABLE
+ADD CONSTRAINT fk_goods_category
+FOREIGN KEY (category_id)
+REFERENCES GOODS_CATEGORY_TABLE(category_id);
