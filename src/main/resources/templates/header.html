@@ -6,5 +6,10 @@
             <a th:href="@{/login}" class="me-3">ログイン</a>
             <a th:href="@{/cart}">カート</a>
         </div>
+        <!-- 従業員ログイン中だけ表示 -->
+<div class="text-center mt-4" th:if="${isEmployee}">
+    <a href="/admin" class="btn btn-warning">従業員管理画面トップへ</a>
+</div>
+
     </header>
 </div>
