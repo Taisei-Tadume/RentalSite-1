@@ -2,81 +2,113 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ja">
 
 <head>
-	<meta charset="UTF-8">
-	<title>商品検索結果</title>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link href="/css/custom.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>商品検索結果</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/custom.css" rel="stylesheet">
 </head>
 
 <body>
-	<div id="wrapper">
-		<div th:replace="~{header :: siteHeader}"></div>
+<div id="wrapper">
 
+    <!-- ヘッダー -->
+    <div th:replace="~{header :: siteHeader}"></div>
 
-		<main class="container my-5">
-			<!-- ソート（ジャンル別）フォーム -->
-			<div class="custom-sort-form mb-4">
-				<h2>検索結果</h2>
-				<form th:action="@{/search}" method="get">
-					<select class="form-select" name="genre">
-						<option value="">全てのジャンル</option>
-						<option th:each="g : ${genres}" th:value="${g.genreId}" th:text="${g.genreName}"></option>
-					</select>
-					<button type="submit" class="btn btn-primary">ソート</button>
-				</form>
-			</div>
+    <main class="container my-5">
 
-			<!-- エラーメッセージ（ヒットしない場合） -->
-			<div th:if="${#lists.isEmpty(resultList)}" class="alert alert-warning text-center">
-				検索条件に一致する商品が見つかりませんでした。
-			</div>
+        <!-- ソート（ジャンル別）フォーム -->
+        <div class="custom-sort-form mb-4">
+            <h2>検索結果</h2>
 
-			<!-- 商品一覧 -->
-			<div class="row row-cols-1 row-cols-md-3 g-4" th:if="${!#lists.isEmpty(resultList)}">
-				<div class="col" th:each="item : ${resultList}">
-					<div class="card h-100 shadow-sm">
-						<a th:href="@{/detail/{id}(id=${item.goodsId})}">
-							<img th:src="${item.imagePath}" class="card-img-top" alt="商品画像">
-						</a>
-						<div class="card-body">
-							<h5 class="card-title" th:text="${item.title}"></h5>
-							<a th:href="@{/detail/{id}(id=${item.goodsId})}"
-								class="btn btn-outline-primary mt-2">詳細を見る</a>
-							<p class="card-text mt-2">JANコード: <span th:text="${item.janCode}"></span></p>
-						</div>
-					</div>
-				</div>
-			</div>
+            <form th:action="@{/search}" th:object="${searchForm}" method="get">
 
-			<!-- ページネーション -->
-			<nav th:if="${totalPages > 1}" class="mt-4">
-				<ul class="pagination justify-content-center">
-					<li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-						<a class="page-link"
-							th:href="@{/search(page=${currentPage - 1}, genre=${selectedGenre})}">前へ</a>
-					</li>
+                <!-- キーワード保持 -->
+                <input type="hidden" th:field="*{keyword}" />
 
-					<li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages-1)}"
-						th:classappend="${i == currentPage} ? 'active'">
-						<a class="page-link" th:text="${i + 1}"
-							th:href="@{/search(page=${i}, genre=${selectedGenre})}"></a>
-					</li>
+                <select class="form-select" th:field="*{genre}">
+                    <option value="">全てのジャンル</option>
+                    <option th:each="g : ${genres}"
+                            th:value="${g.genreId}"
+                            th:text="${g.genreName}">
+                    </option>
+                </select>
 
-					<li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
-						<a class="page-link"
-							th:href="@{/search(page=${currentPage + 1}, genre=${selectedGenre})}">次へ</a>
-					</li>
-				</ul>
-			</nav>
+                <button type="submit" class="btn btn-primary mt-2">ソート</button>
+            </form>
+        </div>
 
-		</main>
+        <!-- エラーメッセージ -->
+        <div th:if="${#lists.isEmpty(resultList)}" class="alert alert-warning text-center">
+            見つかりませんでした。
+        </div>
 
-		<div th:replace="~{footer :: siteFooter}"></div>
+        <!-- 商品一覧 -->
+        <div class="row row-cols-1 row-cols-md-3 g-4" th:if="${!#lists.isEmpty(resultList)}">
+            <div class="col" th:each="item : ${resultList}">
+                <div class="card h-100 shadow-sm">
 
+                    <a th:href="@{/detail/{id}(id=${item.goodsId})}">
+                        <img th:src="${item.imagePath}"
+                             class="card-img-top"
+                             alt="商品画像">
+                    </a>
 
-	</div>
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${item.title}"></h5>
 
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+                        <a th:href="@{/detail/{id}(id=${item.goodsId})}"
+                           class="btn btn-outline-primary mt-2">詳細を見る</a>
+
+                        <p class="card-text mt-2">
+                            JANコード:
+                            <span th:text="${item.janCode}"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ページネーション -->
+        <nav th:if="${totalPages > 1}" class="mt-4">
+            <ul class="pagination justify-content-center">
+
+                <!-- 前へ -->
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/search(page=${currentPage - 1}, genre=${searchForm.genre}, keyword=${searchForm.keyword})}">
+                        前へ
+                    </a>
+                </li>
+
+                <!-- ページ番号 -->
+                <li class="page-item"
+                    th:each="i : ${#numbers.sequence(0, totalPages-1)}"
+                    th:classappend="${i == currentPage} ? 'active'">
+                    <a class="page-link"
+                       th:text="${i + 1}"
+                       th:href="@{/search(page=${i}, genre=${searchForm.genre}, keyword=${searchForm.keyword})}">
+                    </a>
+                </li>
+
+                <!-- 次へ -->
+                <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/search(page=${currentPage + 1}, genre=${searchForm.genre}, keyword=${searchForm.keyword})}">
+                        次へ
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+
+    </main>
+
+    <!-- フッター -->
+    <div th:replace="~{footer :: siteFooter}"></div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
-
 </html>
