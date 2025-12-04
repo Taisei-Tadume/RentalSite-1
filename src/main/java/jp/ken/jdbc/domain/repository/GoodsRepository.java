@@ -14,23 +14,25 @@ import jp.ken.jdbc.domain.entity.GoodsEntity;
 @Repository
 public class GoodsRepository {
 
-	@Autowired
-	private JdbcTemplate jdbc;
-	
-	public List<GoodsEntity> findAll(int offset, int limit){
-		String sql = """
-	            SELECT goods_id, title, jan_code, image_path, genre_id
-	            FROM goods
-	            ORDER BY goods_id
-	            LIMIT ? OFFSET ?
-	        """;
-		
-		return jdbc.query(sql, this::mapGoods, limit, offset);	
-	}
-	
-	public List<GoodsEntity> findByGenre(String genreId, int offset, int limit) {
+    @Autowired
+    private JdbcTemplate jdbc;
+
+    /** 商品一覧（ページング対応） */
+    public List<GoodsEntity> findAll(int offset, int limit) {
         String sql = """
-            SELECT goods_id, title, jan_code, image_path, genre_id
+            SELECT goods_id, goods_name, category_id, genre_id, quantity, jan_code, image_url
+            FROM goods
+            ORDER BY goods_id
+            LIMIT ? OFFSET ?
+        """;
+
+        return jdbc.query(sql, this::mapGoods, limit, offset);
+    }
+
+    /** ジャンルで検索（ページング対応） */
+    public List<GoodsEntity> findByGenre(int genreId, int offset, int limit) {
+        String sql = """
+            SELECT goods_id, goods_name, category_id, genre_id, quantity, jan_code, image_url
             FROM goods
             WHERE genre_id = ?
             ORDER BY goods_id
@@ -39,18 +41,21 @@ public class GoodsRepository {
 
         return jdbc.query(sql, this::mapGoods, genreId, limit, offset);
     }
-	
-	public long countAll() {
+
+    /** 件数取得（全件） */
+    public long countAll() {
         String sql = "SELECT COUNT(*) FROM goods";
         return jdbc.queryForObject(sql, Long.class);
     }
-	
-	public long countByGenre(String genreId) {
+
+    /** 件数取得（ジャンル別） */
+    public long countByGenre(int genreId) {
         String sql = "SELECT COUNT(*) FROM goods WHERE genre_id = ?";
         return jdbc.queryForObject(sql, Long.class, genreId);
     }
-	
-	public List<GenreEntity> findGenres() {
+
+    /** ジャンル一覧の取得 */
+    public List<GenreEntity> findGenres() {
         String sql = """
             SELECT genre_id, genre_name
             FROM genre
@@ -59,20 +64,26 @@ public class GoodsRepository {
 
         return jdbc.query(sql, this::mapGenre);
     }
-	
-	private GoodsEntity mapGoods(ResultSet rs, int rowNum) throws SQLException {
+
+    /** 商品マッピング処理（DB → Entity） */
+    private GoodsEntity mapGoods(ResultSet rs, int rowNum) throws SQLException {
         GoodsEntity goods = new GoodsEntity();
+
         goods.setGoodsId(rs.getInt("goods_id"));
-        goods.setTitle(rs.getString("title"));
+        goods.setGoodsName(rs.getString("goods_name"));
+        goods.setCategoryId(rs.getInt("category_id"));
+        goods.setGenreId(rs.getInt("genre_id"));
+        goods.setQuantity(rs.getInt("quantity"));
         goods.setJanCode(rs.getString("jan_code"));
-        goods.setImagePath(rs.getString("image_path"));
-        goods.setGenreId(rs.getString("genre_id"));
+        goods.setImageUrl(rs.getString("image_url"));
+
         return goods;
     }
-	
-	private GenreEntity mapGenre(ResultSet rs, int rowNum) throws SQLException {
+
+    /** ジャンルマッピング処理 */
+    private GenreEntity mapGenre(ResultSet rs, int rowNum) throws SQLException {
         GenreEntity genre = new GenreEntity();
-        genre.setGenreId(rs.getString("genre_id"));
+        genre.setGenreId(rs.getInt("genre_id"));
         genre.setGenreName(rs.getString("genre_name"));
         return genre;
     }

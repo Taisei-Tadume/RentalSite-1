@@ -3,18 +3,18 @@ package jp.ken.jdbc.domain.entity;
 public class GenreEntity {
 
 	/** ジャンルID */
-    private String genreId;
+    private int genreId;
 
     /** ジャンル名 */
     private String genreName;
 
     // Getter / Setter
 
-    public String getGenreId() {
+    public int getGenreId() {
         return genreId;
     }
 
-    public void setGenreId(String genreId) {
+    public void setGenreId(int genreId) {
         this.genreId = genreId;
     }
 
