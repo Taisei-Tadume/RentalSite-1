@@ -9,16 +9,13 @@ CREATE DATABASE rental;
 CREATE TABLE USERS_TABLE (
   user_id BIGINT NOT NULL AUTO_INCREMENT,
   user_name VARCHAR(255) NOT NULL,
-  user_name_kana VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL,
   phone_number VARCHAR(20) NOT NULL,
   address VARCHAR(255) NOT NULL,
-  address_kana VARCHAR(255) NOT NULL,
-  login_id VARCHAR(255) NOT NULL,
+  login_id VARCHAR(255),
   password_hash VARCHAR(255) NOT NULL,
   authority_id BIGINT NOT NULL,
   PRIMARY KEY (user_id),
-  UNIQUE KEY uq_user_id (user_id),
   UNIQUE KEY uq_email (email),
   UNIQUE KEY uq_login_id (login_id)
 );
@@ -28,7 +25,6 @@ CREATE TABLE USERS_TABLE (
 CREATE TABLE USERS_AUTHORITY_TABLE (
   authority_id BIGINT NOT NULL,
   authority_name VARCHAR(100) NOT NULL,
-  authority_flag BOOLEAN NOT NULL,
   PRIMARY KEY (authority_id),
   UNIQUE KEY uq_authority_name (authority_name)
 );
@@ -140,3 +136,9 @@ INSERT INTO goods_table
 (14, 'LiSA - 紅蓮華', 14, 2, 5, '4914234567803', '/picture/CD/CD.png'),
 (15, 'ハリーポッターと賢者の石', 7, 1, 5, '4915234567804', '/picture/DVD/DVD.png');
 
+13.初期設定(権限登録)
+
+INSERT INTO USERS_AUTHORITY_TABLE (authority_id, authority_name)
+VALUES
+  (1, '一般ユーザー'),
+  (2, '管理者');
