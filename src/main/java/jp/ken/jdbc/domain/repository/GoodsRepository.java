@@ -65,6 +65,50 @@ public class GoodsRepository {
         return jdbc.query(sql, this::mapGenre);
     }
 
+    /**
+     * 🔍 キーワード検索（50音順ソート + ジャンル任意 + ページング）
+     * keyword → 部分一致
+     * genreId → null の場合は全ジャンル
+     */
+    public List<GoodsEntity> searchByKeyword(String keyword, Integer genreId, int offset, int limit) {
+
+        String sql = """
+            SELECT goods_id, goods_name, category_id, genre_id, quantity, jan_code, image_url
+            FROM goods
+            WHERE goods_name LIKE ?
+            """;
+
+        // ジャンルが指定されてる場合のみ WHERE に追加
+        if (genreId != null) {
+            sql += " AND genre_id = ? ";
+        }
+
+        sql += """
+            ORDER BY goods_name COLLATE utf8mb4_unicode_ci
+            LIMIT ? OFFSET ?
+            """;
+
+        // パラメータを可変にして実行
+        if (genreId != null) {
+            return jdbc.query(
+                sql,
+                this::mapGoods,
+                "%" + keyword + "%", // LIKE
+                genreId,
+                limit,
+                offset
+            );
+        } else {
+            return jdbc.query(
+                sql,
+                this::mapGoods,
+                "%" + keyword + "%", // LIKE
+                limit,
+                offset
+            );
+        }
+    }
+
     /** 商品マッピング処理（DB → Entity） */
     private GoodsEntity mapGoods(ResultSet rs, int rowNum) throws SQLException {
         GoodsEntity goods = new GoodsEntity();
@@ -80,6 +124,17 @@ public class GoodsRepository {
         return goods;
     }
 
+    public GoodsEntity findById(long goodsId) {
+        String sql = """
+            SELECT goods_id, goods_name, category_id, genre_id, quantity, jan_code, image_url
+            FROM goods_table
+            WHERE goods_id = ?
+            """;
+
+        return jdbc.queryForObject(sql, this::mapGoods, goodsId);
+    }
+
+    
     /** ジャンルマッピング処理 */
     private GenreEntity mapGenre(ResultSet rs, int rowNum) throws SQLException {
         GenreEntity genre = new GenreEntity();

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${goods.goodsName}">商品詳細</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+<div id="wrapper">
+
+    <!-- ヘッダー -->
+    <div th:replace="~{header :: siteHeader}"></div>
+
+    <main class="container my-5">
+
+        <div class="row">
+
+            <!-- 商品画像 -->
+            <div class="col-md-5 text-center">
+                <img th:src="${goods.imageUrl}" class="img-fluid rounded border shadow-sm">
+            </div>
+
+            <!-- 商品情報 -->
+            <div class="col-md-7">
+
+                <h2 th:text="${goods.goodsName}" class="mb-3"></h2>
+
+                <p class="text-muted">
+                    JANコード：
+                    <span th:text="${goods.janCode}"></span>
+                </p>
+
+                <div class="mt-4">
+                    <h5>商品説明</h5>
+                    <p class="border p-3 rounded bg-light">
+                        ※説明文はまだ登録されていません。
+                    </p>
+                </div>
+
+                <!-- カート追加 or 追加済み -->
+                <div class="mt-4">
+
+                    <!-- 未追加 -->
+                    <form th:if="${!isInCart}" th:action="@{/cart/add}" method="post">
+                        <input type="hidden" name="goodsId" th:value="${goods.goodsId}">
+                        <button class="btn btn-success btn-lg w-100">カートに追加</button>
+                    </form>
+
+                    <!-- 追加済み -->
+                    <button th:if="${isInCart}" class="btn btn-secondary btn-lg w-100" disabled>
+                        カートに追加済み
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
+
+        <a href="/search" class="btn btn-secondary mt-4">検索結果に戻る</a>
+
+    </main>
+
+    <!-- トースト通知 -->
+    <div id="toast"
+         th:if="${added}"
+         class="position-fixed top-0 end-0 p-3"
+         style="z-index:9999;">
+        <div class="toast text-white bg-success show">
+            <div class="toast-body">
+                ✓ カートに追加しました！
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // トースト自動フェードアウト
+    window.addEventListener("DOMContentLoaded", () => {
+        const toast = document.getElementById("toast");
+        if (toast) {
+            setTimeout(() => {
+                toast.style.opacity = "0";
+                toast.style.transition = "opacity .8s";
+                setTimeout(() => toast.remove(), 800);
+            }, 2500);
+        }
+    });
+</script>
+
+</body>
+</html>
