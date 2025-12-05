@@ -1,25 +1,19 @@
 package jp.ken.jdbc.domain.dto;
 
+import jp.ken.jdbc.domain.entity.GoodsEntity;
+
 public class CartItem {
+    private GoodsEntity goods;
+    private int quantity;
 
-	    private Long goodsId;
-	    private String goodsName;
-	    private int quantity;
+    public CartItem(GoodsEntity goods) {
+        this.goods = goods;
+        this.quantity = 1;
+    }
 
-	    // コンストラクタ
-	    public CartItem(Long goodsId, String goodsName, int quantity) {
-	        this.goodsId = goodsId;
-	        this.goodsName = goodsName;
-	        this.quantity = quantity;
-	    }
+    public GoodsEntity getGoods() { return goods; }
+    public int getQuantity() { return quantity; }
 
-	    // getter / setter
-	    public Long getGoodsId() { return goodsId; }
-	    public void setGoodsId(Long goodsId) { this.goodsId = goodsId; }
-
-	    public String getGoodsName() { return goodsName; }
-	    public void setGoodsName(String goodsName) { this.goodsName = goodsName; }
-
-	    public int getQuantity() { return quantity; }
-	    public void setQuantity(int quantity) { this.quantity = quantity; }
-	}
+    public void increase() { quantity++; }
+    public void decrease() { if (quantity > 1) quantity--; }
+}

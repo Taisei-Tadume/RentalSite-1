@@ -54,6 +54,13 @@
 
 							<a th:href="@{/detail/{id}(id=${item.goodsId})}"
 								class="btn btn-outline-primary mt-2">詳細を見る</a>
+								
+							<form th:action="@{/cart/add}" method="post" class="mt-2">
+						        <input type="hidden" name="goodsId" th:value="${item.goodsId}">
+						        <button type="submit" class="btn btn-success w-100">
+						            カートに追加
+						        </button>
+						    </form>
 
 							<p class="card-text mt-2">
 								JANコード:
