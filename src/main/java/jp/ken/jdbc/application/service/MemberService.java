@@ -1,31 +1,39 @@
 package jp.ken.jdbc.application.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import jp.ken.jdbc.domain.entity.MemberEntity;
 import jp.ken.jdbc.domain.repository.MemberRepository;
-import jp.ken.jdbc.presentation.form.LoginForm;
 
 @Service
 public class MemberService {
 
-    private final MemberRepository memberRepository;
+	private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    // ▼ ログイン処理
-    public MemberEntity login(LoginForm form) {
+    public void register(MemberEntity member) {
 
-        MemberEntity user = memberRepository.findByEmail(form.getEmail());
+        // パスワードハッシュ化
+        member.setPasswordHash(passwordEncoder.encode(member.getPasswordHash()));
 
-        // 該当ユーザなし
-        if (user == null) return null;
+        // 権限設定（1 = 一般ユーザー）
+        member.setAuthorityId(1);
 
-        // パスワード一致判定
-        if (!user.getPassword().equals(form.getPassword())) return null;
+        // DB に保存
+        memberRepository.save(member);
+    }
 
-        return user;
+    public boolean emailExists(String email) {
+        return memberRepository.existsByEmail(email);
+    }
+
+    public boolean loginIdExists(String loginId) {
+        return memberRepository.existsByLoginId(loginId);
     }
 }
