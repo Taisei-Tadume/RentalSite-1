@@ -119,3 +119,24 @@ INSERT INTO GOODS_CATEGORY_TABLE (category_id, category_name) VALUES
 (12, 'ジャズ'),
 (13, 'ロック'),
 (14, 'アニメソング');
+
+12.初期設定(商品登録)　　※最後にやってね
+
+INSERT INTO goods_table 
+(goods_id, goods_name, category_id, genre_id, quantity, jan_code, image_url) VALUES
+(1, 'アバター', 1, 1, 5, '4901234567890', '/picture/DVD/DVD.png'),
+(2, 'インセプション', 3, 1, 5, '4902234567891', '/picture/DVD/DVD.png'),
+(3, '君の名は。', 8, 1, 5, '4903234567892', '/picture/DVD/DVD.png'),
+(4, 'タイタニック', 5, 1, 5, '4904234567893', '/picture/DVD/DVD.png'),
+(5, 'アベンジャーズ／エンドゲーム', 1, 3, 5, '4905234567894', '/picture/Bluray/Bluray.png'),
+(6, 'スター・ウォーズ／最後のジェダイ', 2, 3, 5, '4906234567895', '/picture/Bluray/Bluray.png'),
+(7, 'スパイダーマン：スパイダーバース', 7, 3, 5, '4907234567896', '/picture/Bluray/Bluray.png'),
+(8, 'となりのトトロ', 8, 3, 5, '4908234567897', '/picture/Bluray/Bluray.png'),
+(9,  'YOASOBI - 夜に駆ける', 9, 2, 5, '4909234567898', '/picture/CD/CD.png'),
+(10, 'BTS - Dynamite', 10, 2, 5, '4910234567899', '/picture/CD/CD.png'),
+(11, '久石譲 - Works I', 11, 2, 5, '4911234567800', '/picture/CD/CD.png'),
+(12, 'Bill Evans - Waltz for Debby', 12, 2, 5, '4912234567801', '/picture/CD/CD.png'),
+(13, 'Queen - Greatest Hits', 13, 2, 5, '4913234567802', '/picture/CD/CD.png'),
+(14, 'LiSA - 紅蓮華', 14, 2, 5, '4914234567803', '/picture/CD/CD.png'),
+(15, 'ハリーポッターと賢者の石', 7, 1, 5, '4915234567804', '/picture/DVD/DVD.png');
+
