@@ -2,19 +2,22 @@ package jp.ken.jdbc.domain.entity;
 
 public class MemberEntity {
 
-    private int userId;
-    private String userName;
-    private String zipcode;
-    private String address;
-    private String phone;
-    private String email;
-    private String password;
-    private int adminFlag;
+    private Long userId;          // user_id
+    private String userName;      // user_name
+    private String email;         // email
+    private String phoneNumber;   // phone_number
+    private String zipcode;       // zipcode
+    private String address;       // address
+    private String loginId;       // login_id
+    private String passwordHash;  // password_hash
+    private Long authorityId;     // authority_id
 
-    public int getUserId() {
+    // --- Getter / Setter ---
+
+    public Long getUserId() {
         return userId;
     }
-    public void setUserId(int userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
@@ -23,6 +26,20 @@ public class MemberEntity {
     }
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public String getZipcode() {
@@ -39,31 +56,24 @@ public class MemberEntity {
         this.address = address;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getLoginId() {
+        return loginId;
     }
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
+    public void setLoginId(String loginId) {
+        this.loginId = loginId;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPasswordHash() {
+        return passwordHash;
     }
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
-    public int getAdminFlag() {
-        return adminFlag;
+    public Long getAuthorityId() {
+        return authorityId;
     }
-    public void setAdminFlag(int adminFlag) {
-        this.adminFlag = adminFlag;
+    public void setAuthorityId(Long authorityId) {
+        this.authorityId = authorityId;
     }
 }
