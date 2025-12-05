@@ -96,9 +96,26 @@ ALTER TABLE GOODS_TABLE
 ADD CONSTRAINT fk_goods_genre
 FOREIGN KEY (genre_id) REFERENCES goods_genre_table(genre_id);
 
-10.初期設定
+10.初期設定(ジャンルの設定)
 
 INSERT INTO GOODS_GENRE_TABLE (genre_name) VALUES ('DVD');
 INSERT INTO GOODS_GENRE_TABLE (genre_name) VALUES ('CD');
 INSERT INTO GOODS_GENRE_TABLE (genre_name)VALUES ('Blu-ray');
 
+11.初期設定(カテゴリーの設定)
+
+INSERT INTO GOODS_CATEGORY_TABLE (category_id, category_name) VALUES
+(1, 'アクション'),
+(2, 'SF'),
+(3, 'サスペンス・ミステリー'),
+(4, 'コメディ'),
+(5, 'ラブロマンス'),
+(6, 'ホラー'),
+(7, 'ファンタジー'),
+(8, 'アニメ'),
+(9, 'J-POP'),
+(10, 'K-POP'),
+(11, 'クラシック'),
+(12, 'ジャズ'),
+(13, 'ロック'),
+(14, 'アニメソング');
