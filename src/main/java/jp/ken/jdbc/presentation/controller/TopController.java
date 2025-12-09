@@ -9,18 +9,23 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class TopController {
 
-	@GetMapping("/top")
-	public String topPage(Model model, HttpSession session) {
+    // ★ "/" にアクセスされたら /top にリダイレクト
+    @GetMapping("/")
+    public String rootRedirect() {
+        return "redirect:/top";
+    }
 
-	    // ★ セッションから role を取得（例： "admin" or "user"）
-	    String role = (String) session.getAttribute("role");
+    @GetMapping("/top")
+    public String topPage(Model model, HttpSession session) {
 
-	    // 管理者かどうかのフラグ
-	    boolean isAdmin = "admin".equals(role);
+        // ★ セッションから role を取得（例："admin" or "user"）
+        String role = (String) session.getAttribute("role");
 
-	    model.addAttribute("isAdmin", isAdmin);
+        // 管理者かどうかのフラグ
+        boolean isAdmin = "admin".equals(role);
 
-	    return "top";
-	}
+        model.addAttribute("isAdmin", isAdmin);
 
+        return "top";
+    }
 }

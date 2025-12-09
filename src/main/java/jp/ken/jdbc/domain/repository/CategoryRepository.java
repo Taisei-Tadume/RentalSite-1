@@ -3,9 +3,11 @@ package jp.ken.jdbc.domain.repository;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import jp.ken.jdbc.domain.entity.CategoryEntity;
 
+@Repository
 public class CategoryRepository {
 
     private final JdbcTemplate jdbcTemplate;

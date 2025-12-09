@@ -8,31 +8,32 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import jakarta.validation.Valid;
 import jp.ken.jdbc.application.service.MemberService;
-import jp.ken.jdbc.domain.entity.MemberEntity;
 import jp.ken.jdbc.presentation.form.MemberRegistForm;
 
 @Controller
 public class MemberRegistController {
 
-	private final MemberService memberService;
+    private final MemberService memberService;
 
     public MemberRegistController(MemberService memberService) {
         this.memberService = memberService;
     }
 
-    // --- GET: 新規会員登録フォーム表示 ---
+    // --- GET: 新規会員登録フォーム ---
     @GetMapping("/regist")
     public String registForm(Model model) {
-        MemberRegistForm memberForm = new MemberRegistForm();
-        model.addAttribute("memberForm", memberForm);
+        model.addAttribute("memberForm", new MemberRegistForm());
         return "newmemberregistration";
     }
 
-    // --- POST: フォーム送信（会員登録処理） ---
+    // --- POST: 会員登録 ---
     @PostMapping("/regist")
-    public String registSubmit(@Valid MemberRegistForm memberForm, BindingResult result, Model model) {
+    public String registSubmit(
+            @Valid MemberRegistForm memberForm,
+            BindingResult result,
+            Model model) {
 
-        // パスワード確認チェック
+        // パスワード一致チェック
         if (!memberForm.getPassword().equals(memberForm.getPasswordConfirm())) {
             result.rejectValue("passwordConfirm", "error.passwordConfirm", "パスワードが一致しません");
         }
@@ -42,22 +43,16 @@ public class MemberRegistController {
             result.rejectValue("email", "error.email", "このメールアドレスは既に登録されています");
         }
 
+        // エラーがあれば画面に戻す
         if (result.hasErrors()) {
             model.addAttribute("memberForm", memberForm);
             return "newmemberregistration";
         }
 
-        // Form → Entity 変換
-        MemberEntity member = new MemberEntity();
-        member.setUserName(memberForm.getUserName());
-        member.setEmail(memberForm.getEmail());
-        member.setPhoneNumber(memberForm.getPhoneNumber());
-        member.setAddress(memberForm.getAddress());
-        member.setPasswordHash(memberForm.getPassword()); // パスワードは Service 内でハッシュ化される
+        // ▼★ ここ重要：Service に Form を渡すだけ
+        memberService.register(memberForm);
 
-        // 登録処理
-        memberService.register(member);
-
-        return "success"; // 登録完了画面
+        // 登録成功ページ
+        return "success";
     }
 }

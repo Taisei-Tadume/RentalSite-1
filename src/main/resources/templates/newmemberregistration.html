@@ -49,12 +49,16 @@
 
 						<!-- パスワード（確認） -->
 						<div class="mb-3">
-							<label for="confirmPassword" class="form-label">パスワード（確認）</label>
-							<input id="confirmPassword" type="password" class="form-control"
-								th:field="*{confirmPassword}" placeholder="再度入力してください" required>
-							<div class="text-danger small" th:if="${#fields.hasErrors('confirmPassword')}"
-								th:errors="*{confirmPassword}"></div>
+						    <label for="confirmPassword" class="form-label">パスワード（確認）</label>
+						    <input id="confirmPassword" type="password" class="form-control"
+						           th:field="*{passwordConfirm}" placeholder="再度入力してください" required>
+						
+						    <div class="text-danger small" 
+						         th:if="${#fields.hasErrors('passwordConfirm')}"
+						         th:errors="*{passwordConfirm}">
+						    </div>
 						</div>
+
 
 						<!-- 電話番号 -->
 						<div class="mb-3">

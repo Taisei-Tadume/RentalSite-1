@@ -5,11 +5,12 @@ import org.springframework.stereotype.Service;
 
 import jp.ken.jdbc.domain.entity.MemberEntity;
 import jp.ken.jdbc.domain.repository.MemberRepository;
+import jp.ken.jdbc.presentation.form.MemberRegistForm;
 
 @Service
 public class MemberService {
 
-	private final MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
     public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
@@ -17,15 +18,24 @@ public class MemberService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void register(MemberEntity member) {
+    // ★★ これが登録処理の完成形 ★★
+    public void register(MemberRegistForm form) {
+
+        MemberEntity member = new MemberEntity();
+
+        member.setLoginId(form.getLoginId());
+        member.setUserName(form.getUserName());
+        member.setEmail(form.getEmail());
+        member.setPhoneNumber(form.getPhoneNumber());
+        member.setAddress(form.getAddress());
 
         // パスワードハッシュ化
-        member.setPasswordHash(passwordEncoder.encode(member.getPasswordHash()));
+        member.setPasswordHash(passwordEncoder.encode(form.getPassword()));
 
-        // 権限設定（1 = 一般ユーザー）
+        // 権限ID（1 = 一般ユーザー）
         member.setAuthorityId(1);
 
-        // DB に保存
+        // DBへ保存
         memberRepository.save(member);
     }
 
