@@ -2,12 +2,16 @@ package jp.ken.jdbc.presentation.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpSession;
 import jp.ken.jdbc.application.service.CartService;
+
+
 
 @Controller
 @RequestMapping("/cart")
@@ -23,28 +27,37 @@ public class CartController {
 
         cartService.addToCart(goodsId, session);
 
-        // detail?added=1 に戻る（トースト表示）
-        return "redirect:/detail/" + goodsId + "?added=1";
+        // ★ 検索画面へ戻す（追加済み表示は Session で判断）
+        return "redirect:/search";
     }
 
-    // 増加
-    @PostMapping("/increase")
-    public String increase(@RequestParam("goodsId") long goodsId, HttpSession session) {
-        cartService.increase(goodsId, session);
-        return "redirect:/cart";
-    }
-
-    // 減少
-    @PostMapping("/decrease")
-    public String decrease(@RequestParam("goodsId") long goodsId, HttpSession session) {
-        cartService.decrease(goodsId, session);
-        return "redirect:/cart";
-    }
-
-    // 削除
+    // 削除（必要なら）
     @PostMapping("/remove")
     public String remove(@RequestParam("goodsId") long goodsId, HttpSession session) {
         cartService.remove(goodsId, session);
         return "redirect:/cart";
     }
+
+    // カートクリア
+    @PostMapping("/clear")
+    public String clear(HttpSession session) {
+        cartService.clearCart(session);
+        return "redirect:/cart";
+    }
+    
+ // カート画面表示
+
+    @GetMapping("")
+    public String showCartPage(HttpSession session, Model model) {
+
+        // セッションのカート情報を取得
+        var cart = session.getAttribute("cart");
+
+        model.addAttribute("cart", cart);
+        model.addAttribute("errorMessage", "カートに商品が入っていません。");
+
+        return "cart"; // ← cart.html を返す
+    }
+
+
 }
