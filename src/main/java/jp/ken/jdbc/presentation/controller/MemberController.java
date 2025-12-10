@@ -27,22 +27,28 @@ public class MemberController {
         return "newmemberregistration";
     }
 
-    // ★ 新規登録処理
+    // ★ 新規登録処理（完全版）
     @PostMapping("/regist")
     public String regist(
             @Validated @ModelAttribute("memberForm") MemberRegistForm form,
             BindingResult bindingResult,
             Model model) {
 
-        // エラーがあれば画面に戻す
+        // 入力エラー
         if (bindingResult.hasErrors()) {
             return "newmemberregistration";
         }
 
-        // DB へ保存
+        // ★ メールアドレス重複チェック
+        if (memberService.emailExists(form.getEmail())) {
+            model.addAttribute("errorMessage", "このメールアドレスはすでに登録されています");
+            return "newmemberregistration";
+        }
+
+        // DBへ保存
         memberService.register(form);
 
-        // 登録完了後トップへ
+        // 完了後トップへ
         return "redirect:/top";
     }
 }
