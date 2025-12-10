@@ -20,6 +20,7 @@ public class MemberRepository {
     	String sql = "INSERT INTO users (user_name, email, phone_number, address, login_id, password_hash, authority_id) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
+
         String sql = """
             INSERT INTO USERS_TABLE 
             (user_name, email, phone_number, address, postal_code, password_hash, authority_id)
@@ -36,6 +37,7 @@ public class MemberRepository {
                 member.getPasswordHash(), // ← ★パスワードハッシュ
                 member.getAuthorityId()   // ← ★権限
         );
+
                 member.getPostalCode(),
                 member.getPasswordHash(),
                 member.getAuthorityId());
@@ -55,7 +57,6 @@ public class MemberRepository {
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, email);
         return count != null && count > 0;
     }
-
 
     public boolean existsByLoginId(String loginId) {
         String sql = "SELECT COUNT(*) FROM users WHERE login_id = ?";
