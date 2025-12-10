@@ -8,7 +8,7 @@ import jp.ken.jdbc.domain.entity.MemberEntity;
 @Repository
 public class MemberRepository {
 
-	private final JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public MemberRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -17,24 +17,25 @@ public class MemberRepository {
     // 新規会員登録
     public void save(MemberEntity member) {
         String sql = "INSERT INTO users (user_name, email, phone_number, address, login_id, password_hash, authority_id) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
         jdbcTemplate.update(sql,
                 member.getUserName(),
                 member.getEmail(),
                 member.getPhoneNumber(),
                 member.getAddress(),
-                member.getPasswordHash(),
-                member.getAuthorityId());
+                member.getLoginId(),      // ← ★追加（ログインID）
+                member.getPasswordHash(), // ← ★パスワードハッシュ
+                member.getAuthorityId()   // ← ★権限
+        );
     }
 
-    // メールアドレス重複チェック
     public boolean existsByEmail(String email) {
         String sql = "SELECT COUNT(*) FROM users WHERE email = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, email);
         return count != null && count > 0;
     }
 
-    // ログインID重複チェック
     public boolean existsByLoginId(String loginId) {
         String sql = "SELECT COUNT(*) FROM users WHERE login_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, loginId);
