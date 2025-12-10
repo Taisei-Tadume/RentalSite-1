@@ -20,15 +20,15 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    // 新規登録画面へ
-    @GetMapping("/newmember")
+    //  TODO  会員情報画面へ遷移するように
+    @GetMapping("/member")
     public String showForm(Model model) {
         model.addAttribute("memberForm", new MemberRegistForm());
         return "newmemberregistration";
     }
 
-    // ★ 新規登録処理（完全版）
-    @PostMapping("/regist")
+    // TODO  会員情報を更新したい場合の処理
+    @PostMapping("/member")
     public String regist(
             @Validated @ModelAttribute("memberForm") MemberRegistForm form,
             BindingResult bindingResult,

@@ -27,7 +27,7 @@ public class MemberRegistController {
     }
 
     // --- POST: 会員登録 ---
-    @PostMapping("/regist2")
+    @PostMapping("/regist")
     public String registSubmit(
             @Valid MemberRegistForm memberForm,
             BindingResult result,
@@ -53,6 +53,6 @@ public class MemberRegistController {
         memberService.register(memberForm);
 
         // 登録成功ページ
-        return "success";
+        return "planselection";
     }
 }
