@@ -52,7 +52,7 @@ public class MemberRegistController {
         // ▼★ ここ重要：Service に Form を渡すだけ
         memberService.register(memberForm);
 
-        // 登録成功ページ
-        return "success";
+        // プラン選択画面に遷移
+        return "planselection";
     }
 }

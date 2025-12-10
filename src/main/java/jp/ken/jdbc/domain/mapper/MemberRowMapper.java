@@ -19,6 +19,10 @@ public class MemberRowMapper implements RowMapper<MemberEntity> {
 		member.setAddress(rs.getString("address"));
 		member.setPasswordHash(rs.getString("password_hash"));
 		member.setAuthorityId(rs.getInt("authority_id"));
+		member.setPostalCode(rs.getString("postal_code"));
+		member.setPlanId(rs.getInt("plan_id"));
+		member.setPlanStartDate(rs.getDate("plan_start_date").toLocalDate());
+		member.setPlanEndDate(rs.getDate("plan_end_date").toLocalDate());
 		return member;
 	}
 }
