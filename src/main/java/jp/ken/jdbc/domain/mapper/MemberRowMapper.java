@@ -13,14 +13,15 @@ public class MemberRowMapper implements RowMapper<MemberEntity> {
     public MemberEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
         MemberEntity member = new MemberEntity();
 
-        member.setUserId(rs.getLong("user_id"));           
+        member.setUserId(rs.getInt("user_id"));
         member.setUserName(rs.getString("user_name"));
         member.setEmail(rs.getString("email"));
         member.setPhoneNumber(rs.getString("phone_number"));
         member.setAddress(rs.getString("address"));
-        member.setPostalCode(rs.getString("postal_code"));  
+        member.setPostalCode(rs.getString("postal_code"));
         member.setPasswordHash(rs.getString("password_hash"));
-        member.setAuthorityId(rs.getLong("authority_id"));  
+        member.setAuthorityId(rs.getInt("authority_id"));
+        member.setPlanId(rs.getInt("plan_id"));
 
         return member;
     }
