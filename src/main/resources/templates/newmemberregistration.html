@@ -17,14 +17,19 @@
 
 					<h2 class="text-center mb-4">新規会員登録</h2>
 
+					<!-- ★ メール重複などの共通エラーメッセージ -->
+					<div class="alert alert-danger text-center" th:if="${errorMessage}">
+    					<span th:text="${errorMessage}"></span>
+					</div>
+
 					<!-- ★★★ Form ★★★ -->
 					<form th:action="@{/regist}" th:object="${memberForm}" method="post">
 
-						<!-- ユーザー名 -->
+						<!-- 氏名 -->
 						<div class="mb-3">
-							<label for="userName" class="form-label">ユーザー名</label>
+							<label for="userName" class="form-label">氏名</label>
 							<input id="userName" type="text" class="form-control" th:field="*{userName}"
-								placeholder="山田 太郎" required>
+								placeholder="山田太郎" required>
 							<div class="text-danger small" th:if="${#fields.hasErrors('userName')}"
 								th:errors="*{userName}"></div>
 						</div>
@@ -58,7 +63,6 @@
 						         th:errors="*{passwordConfirm}">
 						    </div>
 						</div>
-
 
 						<!-- 電話番号 -->
 						<div class="mb-3">
