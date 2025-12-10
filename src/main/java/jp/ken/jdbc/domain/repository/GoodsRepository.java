@@ -21,7 +21,7 @@ public class GoodsRepository {
     public List<GoodsEntity> findAll(int offset, int limit) {
         String sql = """
             SELECT goods_id, goods_name, category_id, genre_id, quantity, jan_code, image_url
-            FROM goods
+            FROM GOODS_TABLE
             ORDER BY goods_id
             LIMIT ? OFFSET ?
         """;
@@ -33,7 +33,7 @@ public class GoodsRepository {
     public List<GoodsEntity> findByGenre(int genreId, int offset, int limit) {
         String sql = """
             SELECT goods_id, goods_name, category_id, genre_id, quantity, jan_code, image_url
-            FROM goods
+            FROM GOODS_TABLE
             WHERE genre_id = ?
             ORDER BY goods_id
             LIMIT ? OFFSET ?
@@ -44,13 +44,13 @@ public class GoodsRepository {
 
     /** 件数取得（全件） */
     public long countAll() {
-        String sql = "SELECT COUNT(*) FROM goods";
+        String sql = "SELECT COUNT(*) FROM GOODS_TABLE";
         return jdbc.queryForObject(sql, Long.class);
     }
 
     /** 件数取得（ジャンル別） */
     public long countByGenre(int genreId) {
-        String sql = "SELECT COUNT(*) FROM goods WHERE genre_id = ?";
+        String sql = "SELECT COUNT(*) FROM GOODS_TABLE WHERE genre_id = ?";
         return jdbc.queryForObject(sql, Long.class, genreId);
     }
 
@@ -58,7 +58,7 @@ public class GoodsRepository {
     public List<GenreEntity> findGenres() {
         String sql = """
             SELECT genre_id, genre_name
-            FROM genre
+            FROM GOODS_GENRE_TABLE
             ORDER BY genre_id
         """;
 
@@ -74,7 +74,7 @@ public class GoodsRepository {
 
         String sql = """
             SELECT goods_id, goods_name, category_id, genre_id, quantity, jan_code, image_url
-            FROM goods
+            FROM DOODS_TABLE
             WHERE goods_name LIKE ?
             """;
 
@@ -127,7 +127,7 @@ public class GoodsRepository {
     public GoodsEntity findById(long goodsId) {
         String sql = """
             SELECT goods_id, goods_name, category_id, genre_id, quantity, jan_code, image_url
-            FROM goods_table
+            FROM GOODS_TABLE
             WHERE goods_id = ?
             """;
 
