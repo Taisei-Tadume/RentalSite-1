@@ -19,6 +19,8 @@ public class LoginController {
     private final MemberService memberService;
     private final HttpSession session;
 
+    private static final String LOGIN_USER = "loginUser";
+
     public LoginController(MemberService memberService, HttpSession session) {
         this.memberService = memberService;
         this.session = session;
@@ -39,14 +41,21 @@ public class LoginController {
             return "login";
         }
 
-        MemberEntity user = memberService.login(form);
+        MemberEntity user;
+        try {
+            user = memberService.login(form);
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "login";
+        }
+
         if (user == null) {
             model.addAttribute("errorMessage", "メールアドレスまたはパスワードが違います");
             return "login";
         }
 
         // ログイン成功 → セッションにユーザを保存
-        session.setAttribute("loginUser", user);
+        session.setAttribute(LOGIN_USER, user);
 
         return "redirect:/";
     }
