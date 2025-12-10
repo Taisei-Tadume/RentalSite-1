@@ -18,4 +18,6 @@ public class MemberEntity {
     private String passwordHash;
 
     private Integer authorityId;
+    
+    private String postlCode;
 }

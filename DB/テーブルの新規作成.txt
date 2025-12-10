@@ -12,12 +12,11 @@ CREATE TABLE USERS_TABLE (
   email VARCHAR(255) NOT NULL,
   phone_number VARCHAR(20) NOT NULL,
   address VARCHAR(255) NOT NULL,
-  login_id VARCHAR(255),
+  postal_code VARCHAR(10) NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   authority_id BIGINT NOT NULL,
   PRIMARY KEY (user_id),
-  UNIQUE KEY uq_email (email),
-  UNIQUE KEY uq_login_id (login_id)
+  UNIQUE KEY uq_email (email)
 );
 
 2.USERS_AUTHORITY_TABLEの作成
