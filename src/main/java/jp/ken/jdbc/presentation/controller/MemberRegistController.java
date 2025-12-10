@@ -27,7 +27,7 @@ public class MemberRegistController {
     }
 
     // --- POST: 会員登録 ---
-    @PostMapping("/regist")
+    @PostMapping("/regist2")
     public String registSubmit(
             @Valid MemberRegistForm memberForm,
             BindingResult result,
