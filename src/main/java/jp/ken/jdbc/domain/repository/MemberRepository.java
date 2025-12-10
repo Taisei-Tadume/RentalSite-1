@@ -17,17 +17,20 @@ public class MemberRepository {
 
     // 新規会員登録
     public void save(MemberEntity member) {
+
         String sql = """
             INSERT INTO USERS_TABLE 
             (user_name, email, phone_number, address, postal_code, password_hash, authority_id)
             VALUES (?, ?, ?, ?, ?, ?, ?)
             """;
 
+
         jdbcTemplate.update(sql,
                 member.getUserName(),
                 member.getEmail(),
                 member.getPhoneNumber(),
                 member.getAddress(),
+
                 member.getPostalCode(),
                 member.getPasswordHash(),
                 member.getAuthorityId());
@@ -42,11 +45,9 @@ public class MemberRepository {
                 .orElse(null);
     }
 
-    // メールアドレス重複チェック
     public boolean existsByEmail(String email) {
         String sql = "SELECT COUNT(*) FROM USERS_TABLE WHERE email = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, email);
         return count != null && count > 0;
     }
-
 }
