@@ -37,14 +37,19 @@ public class MemberService {
         String encodedPassword = passwordEncoder.encode(form.getPassword());
 
         MemberEntity member = new MemberEntity();
-        member.setUserId(null);
+        
         member.setUserName(trim(form.getUserName()));
         member.setEmail(trim(form.getEmail()));
         member.setPhoneNumber(trim(form.getPhoneNumber()));
         member.setAddress(trim(form.getAddress()));
         member.setPostalCode(trim(form.getPostalCode()));
         member.setPasswordHash(encodedPassword);
-        member.setAuthorityId(1L); // 一般ユーザー
+        
+        //権限登録(1 = 一般ユーザー)
+        member.setAuthorityId(1);
+        
+        //プラン登録(1 = お試しプラン)
+        member.setPlanId(1);
 
         memberRepository.save(member);
     }
