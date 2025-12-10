@@ -12,11 +12,18 @@ CREATE TABLE USERS_TABLE (
   email VARCHAR(255) NOT NULL,
   phone_number VARCHAR(20) NOT NULL,
   address VARCHAR(255) NOT NULL,
-  postal_code VARCHAR(10) NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   authority_id BIGINT NOT NULL,
+  postal_code VARCHAR(10) NOT NULL,
+  plan_id BIGINT NOT NULL,
+  plan_start_date DATE NOT NULL DEFAULT (CURRENT_DATE),
+  plan_end_date DATE NOT NULL DEFAULT (LAST_DAY(CURRENT_DATE)),
   PRIMARY KEY (user_id),
   UNIQUE KEY uq_email (email)
+  CONSTRAINT fk_plan_id FOREIGN KEY (plan_id)
+    REFERENCES PLANS_TABLE (plan_id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT
 );
 
 2.USERS_AUTHORITY_TABLEの作成
@@ -50,17 +57,16 @@ CREATE TABLE GOODS_CATEGORY_TABLE (
   UNIQUE KEY uq_category_name (category_name)
 );
 
-5.PRICES_TABLEの作成
+5.PLANS_TABLEの作成
 
-CREATE TABLE PRICES_TABLE (
-  price_id BIGINT NOT NULL,
-  price INT NOT NULL,
+CREATE TABLE PLANS_TABLE (
+  plan_id BIGINT NOT NULL AUTO_INCREMENT,
   plan_name VARCHAR(100) NOT NULL,
-  start_date DATE,
-  end_date DATE,
-  PRIMARY KEY (price_id),
-  UNIQUE KEY uq_price_id (price_id),
-  UNIQUE KEY uq_plan_name (plan_name)
+  plan_price DECIMAL(10,2) NULL,
+  rental_limit INT,
+  PRIMARY KEY (plan_id),
+  UNIQUE KEY uq_plan_name (plan_name),
+  CHECK (rental_limit > 0)
 );
 
 6.外部キーの設定(authority_id)
@@ -141,3 +147,12 @@ INSERT INTO USERS_AUTHORITY_TABLE (authority_id, authority_name)
 VALUES
   (1, '一般ユーザー'),
   (2, '管理者');
+
+14.初期設定(プラン情報登録)
+
+INSERT INTO plans_table (plan_name, plan_price, rental_limit)
+VALUES
+  ('お試しプラン', 324, 2),
+  ('Bronzeプラン', 1080, 6),
+  ('Silverプラン', 2160, 12),
+  ('Goldプラン', 5400, NULL);
