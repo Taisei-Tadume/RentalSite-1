@@ -31,7 +31,8 @@ public class MemberController {
     @PostMapping("/regist")
     public String regist(
             @Validated @ModelAttribute("memberForm") MemberRegistForm form,
-            BindingResult bindingResult) {
+            BindingResult bindingResult,
+            Model model) {
 
         // エラーがあれば画面に戻す
         if (bindingResult.hasErrors()) {
