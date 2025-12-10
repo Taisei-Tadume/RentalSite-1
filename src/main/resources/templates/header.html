@@ -5,11 +5,33 @@
             <a th:href="@{/regist}" class="me-3">新規会員登録</a>
             <a th:href="@{/login}" class="me-3">ログイン</a>
             <a th:href="@{/cart}" class="me-3">カート</a>
-        </div>
-        <!-- 従業員ログイン中だけ表示 -->
-<div class="text-center mt-4" th:if="${isEmployee}">
-    <a href="/admin" class="btn btn-warning">従業員管理画面トップへ</a>
-</div>
+      
+        <div class="container d-flex justify-content-end align-items-center">
 
+            <!-- TOPリンク -->
+            <a th:href="@{/top}" class="me-3">TOP</a>
+
+            <!-- 非ログイン時 -->
+            <span th:if="${session.loginUser == null}">
+                <a th:href="@{/newmember}" class="me-3">新規会員登録</a>
+                <a th:href="@{/login}" class="me-3">ログイン</a>
+            </span>
+
+            <!-- ログイン済み -->
+            <span th:if="${session.loginUser != null}" class="me-3">
+                ログイン中: <strong th:text="${session.loginUser.userName}"></strong>
+            </span>
+
+            <!-- ログアウトボタン -->
+            <a th:href="@{/logout}" th:if="${session.loginUser != null}" class="me-3">ログアウト</a>
+
+            <!-- カートは常に表示 -->
+            <a th:href="@{/cart}">カート</a>
+        </div>
+
+        <!-- 従業員ログイン中だけ表示 -->
+        <div class="text-center mt-4" th:if="${session.loginUser != null and session.loginUser.authorityId == 2}">
+            <a th:href="@{/admin}" class="btn btn-warning">従業員管理画面トップへ</a>
+        </div>
     </header>
 </div>

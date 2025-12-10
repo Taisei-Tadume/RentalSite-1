@@ -22,13 +22,12 @@ public class MemberRegistForm {
     private String address;
 
     @NotBlank(message = "パスワードを入力してください")
-    @Size(min = 8, message = "パスワードは8文字以上で入力してください")
+    @Size(min = 8, max = 16, message = "パスワードは8〜16文字で入力してください")
     private String password;
 
     @NotBlank(message = "パスワード（確認用）を入力してください")
     private String passwordConfirm;
 
-    // ★ これを追加！
     @NotBlank(message = "郵便番号を入力してください")
     private String postalCode;
 }
