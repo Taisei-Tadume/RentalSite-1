@@ -23,11 +23,11 @@ public class MemberService {
 
         MemberEntity member = new MemberEntity();
 
-        member.setLoginId(form.getLoginId());
         member.setUserName(form.getUserName());
         member.setEmail(form.getEmail());
         member.setPhoneNumber(form.getPhoneNumber());
         member.setAddress(form.getAddress());
+        member.setPostlCode(form.getPostalCode());
 
         // パスワードハッシュ化
         member.setPasswordHash(passwordEncoder.encode(form.getPassword()));

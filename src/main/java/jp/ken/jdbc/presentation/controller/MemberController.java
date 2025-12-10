@@ -40,7 +40,7 @@ public class MemberController {
         }
 
         // DB へ保存
-        memberService.regist(form);
+        memberService.register(form);
 
         // 登録完了後トップへ
         return "redirect:/top";
