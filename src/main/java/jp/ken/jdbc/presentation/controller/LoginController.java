@@ -79,10 +79,4 @@ public class LoginController {
         model.addAttribute("errorMessage", "不正な権限が設定されています");
         return "login";
     }
-
-    @GetMapping("/logout")
-    public String logout() {
-        session.invalidate();
-        return "redirect:/login";
-    }
 }
