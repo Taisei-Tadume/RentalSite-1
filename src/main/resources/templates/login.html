@@ -21,6 +21,11 @@
 					<div class="card-body">
 						<h2 class="card-title text-center mb-4">ログイン</h2>
 
+
+						<!-- ログアウト時のメッセージ -->
+						<div th:if="${param.logout}" class="alert alert-info">
+							ログアウトしました。
+						</div>
 						<!-- ▼ エラーメッセージ表示 -->
 
 						<form th:action="@{/login}" th:object="${loginForm}" method="POST">

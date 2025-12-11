@@ -20,6 +20,6 @@ public class LogoutController {
 		//セッション破棄
 		session.invalidate();
 		
-		return "redirect:/login";
+		return "redirect:/login?logout";
 	}
 }
