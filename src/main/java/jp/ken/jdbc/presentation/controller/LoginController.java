@@ -72,7 +72,7 @@ public class LoginController {
 
         // 2 = 管理者 → 管理者トップへ
         if (authority == 2) {
-            return "admin-top";
+            return "redirect:/admin";
         }
 
         // その他の数値 → 権限エラー扱い
