@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>在庫管理（従業員用）</title>
+</head>
+<body>
+
+<h1>在庫管理（従業員用）</h1>
+
+<!-- ▼ 一覧と在庫編集 -->
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>商品名</th>
+        <th>カテゴリID</th>
+        <th>ジャンルID</th>
+        <th>在庫</th>
+        <th>更新</th>
+    </tr>
+
+    <tr th:each="g : ${goodsList}">
+        <form th:action="@{/admin/goods/update}" method="post">
+            <td th:text="${g.goodsId}"></td>
+
+            <td><input name="goodsName" th:value="${g.goodsName}"></td>
+            <td><input type="number" th:field="*{categoryId}" class="form-control"></td>
+            <td><input type="number" name="genreId" th:value="${g.genreId}"></td>
+            <td><input type="number" name="quantity" th:value="${g.quantity}"></td>
+
+            <td>
+                <input type="hidden" name="goodsId" th:value="${g.goodsId}">
+                <button type="submit">更新</button>
+            </td>
+        </form>
+    </tr>
+</table>
+
+<hr>
+
+<!-- ▼ 新規登録フォーム -->
+<h2>新規商品登録</h2>
+
+<form th:action="@{/admin/goods/save}" method="post">
+    商品名: <input name="goodsName"><br>
+    カテゴリID: <input type="number" name="categoryId"><br>
+    ジャンルID: <input type="number" name="genreId"><br>
+    在庫: <input type="number" name="quantity"><br>
+    JANコード: <input name="janCode"><br>
+    画像URL: <input name="imageUrl"><br>
+    <button type="submit">登録</button>
+</form>
+
+</body>
+</html>
