@@ -1,108 +1,106 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>在庫管理</title>
-    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" 
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
+
 <body>
+
+<!-- ヘッダー -->
+<div th:replace="header2 :: header"></div>
 
 <div class="container mt-4">
 
-    <h1>在庫管理</h1>
-    <h2>商品追加</h2>
+    <h2>在庫管理</h2>
 
+    <!-- 商品追加フォーム -->
     <form th:action="@{/admin/add}" th:object="${form}" method="post" class="mb-4">
 
         <div class="mb-2">
             <label>商品名</label>
-            <input type="text" th:field="*{goodsName}" class="form-control">
-            <p class="text-danger" th:errors="*{goodsName}"></p>
+            <input type="text" th:field="*{goodsName}" class="form-control" style="max-width: 300px;">
         </div>
 
         <div class="mb-2">
             <label>カテゴリ</label>
-            <select th:field="*{categoryId}" class="form-control">
-                <option th:value="0">-- カテゴリを選択 --</option>
+            <select th:field="*{categoryId}" class="form-control" style="max-width: 300px;">
+                <option value="">-- 選択してください --</option>
                 <option th:each="c : ${categoryList}"
                         th:value="${c.category_id}"
-                        th:text="${c.category_name}">
-                </option>
+                        th:text="${c.category_name}"></option>
             </select>
-            <p class="text-danger" th:errors="*{categoryId}"></p>
         </div>
 
         <div class="mb-2">
             <label>ジャンルID</label>
-            <input type="number" th:field="*{genreId}" class="form-control">
-            <p class="text-danger" th:errors="*{genreId}"></p>
+            <input type="number" th:field="*{genreId}" class="form-control" style="max-width: 120px;">
         </div>
 
         <div class="mb-2">
             <label>在庫数</label>
-            <input type="number" th:field="*{quantity}" class="form-control">
-            <p class="text-danger" th:errors="*{quantity}"></p>
+            <input type="number" th:field="*{quantity}" class="form-control" style="max-width: 120px;">
         </div>
 
         <div class="mb-2">
             <label>JANコード</label>
-            <input type="text" th:field="*{janCode}" class="form-control">
-            <p class="text-danger" th:errors="*{janCode}"></p>
+            <input type="text" th:field="*{janCode}" class="form-control" style="max-width: 200px;">
         </div>
 
         <div class="mb-2">
             <label>画像URL（任意）</label>
-            <input type="text" th:field="*{imageUrl}" class="form-control">
+            <input type="text" th:field="*{imageUrl}" class="form-control" style="max-width: 300px;">
         </div>
 
         <button class="btn btn-primary mt-2">登録</button>
     </form>
 
+    <hr>
 
-    <h2>商品一覧</h2>
+    <!-- 商品一覧 -->
+    <h3>商品一覧</h3>
 
-    <table class="table table-bordered">
+    <table class="table table-bordered mt-3">
         <thead>
-        <tr>
-            <th>ID</th>
-            <th>商品名</th>
-            <th>在庫</th>
-            <th>更新</th>
-            <th>不良品</th>
-        </tr>
+            <tr>
+                <th>ID</th>
+                <th>商品名</th>
+                <th>在庫</th>
+                <th>更新</th>
+                <th>不良品</th>
+            </tr>
         </thead>
+
         <tbody>
-        <tr th:each="g : ${goodsList}">
-            <td th:text="${g.goodsId}"></td>
-            <td th:text="${g.goodsName}"></td>
-            <td th:text="${g.quantity}"></td>
+            <tr th:each="g : ${goodsList}">
+                <td th:text="${g.goodsId}"></td>
+                <td th:text="${g.goodsName}"></td>
+                <td th:text="${g.quantity}"></td>
 
-            <!-- 在庫更新 -->
-            <td>
-    <form th:action="@{/admin/update}" method="post" class="d-flex align-items-center">
-        <input type="hidden" name="goodsId" th:value="${g.goodsId}">
-        
-        <!-- 横幅を固定（200px → 好みで調整してOK） -->
-        <input type="number" name="quantity" class="form-control me-2"
-               style="width: 120px;">
+                <!-- 在庫更新 -->
+                <td>
+                    <form th:action="@{/admin/update}" method="post" class="d-flex">
+                        <input type="number" name="qty" class="form-control me-2"
+                               style="max-width: 120px;">
+                        <input type="hidden" name="id" th:value="${g.goodsId}">
+                        <button class="btn btn-success">更新</button>
+                    </form>
+                </td>
 
-        <button class="btn btn-success" style="white-space: nowrap;">更新</button>
-    </form>
-</td>
-
-
-            <!-- 不良品 -->
-            <td>
-                <form th:action="@{/admin/broken}" method="post">
-                    <input type="hidden" name="goodsId" th:value="${g.goodsId}">
-                    <button class="btn btn-danger">-1</button>
-                </form>
-            </td>
-        </tr>
+                <!-- 不良品 -->
+                <td>
+                    <form th:action="@{/admin/bad}" method="post">
+                        <input type="hidden" name="id" th:value="${g.goodsId}">
+                        <button class="btn btn-danger">-1</button>
+                    </form>
+                </td>
+            </tr>
         </tbody>
     </table>
 
 </div>
-
 </body>
 </html>

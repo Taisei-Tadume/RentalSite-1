@@ -7,28 +7,28 @@ import lombok.Data;
 @Data
 public class GoodsEntity {
 
-    /** 商品ID（Long に変更：null 初期値に対応） */
-    private Long goodsId;
+    /** 商品ID（null 許容のため Integer） */
+    private Integer goodsId;
 
     /** 商品名 */
     @NotBlank(message = "商品名を入力してください")
     private String goodsName;
 
-    /** カテゴリID（Long に変更） */
+    /** カテゴリID（int に変更） */
     @NotNull(message = "カテゴリを入力してください")
-    private Long categoryId;
+    private Integer categoryId;
 
-    /** ジャンルID（Long に変更） */
+    /** ジャンルID（int に変更） */
     @NotNull(message = "ジャンルを入力してください")
-    private Long genreId;
+    private Integer genreId;
 
-    /** 在庫数（Integer に変更） */
+    /** 在庫数 */
     @NotNull(message = "在庫数を入力してください")
     private Integer quantity;
 
     /** JANコード */
     private String janCode;
 
-    /** 画像URL */
+    /** 商品画像URL */
     private String imageUrl;
 }
