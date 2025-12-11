@@ -74,7 +74,7 @@ public class GoodsRepository {
 
         String sql = """
             SELECT goods_id, goods_name, category_id, genre_id, quantity, jan_code, image_url
-            FROM DOODS_TABLE
+            FROM GOODS_TABLE
             WHERE goods_name LIKE ?
             """;
 
