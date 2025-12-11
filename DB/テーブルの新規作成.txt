@@ -148,6 +148,16 @@ VALUES
   (1, '一般ユーザー'),
   (2, '管理者');
 
+※データベースに入れる値を日本語->英語に変えました
+
+UPDATE USERS_AUTHORITY_TABLE
+SET authority_name = 'USER'
+WHERE authority_name = '一般ユーザー';
+
+UPDATE USERS_AUTHORITY_TABLE
+SET authority_name = 'ADMIN'
+WHERE authority_name = '管理者';
+
 14.初期設定(プラン情報登録)
 
 INSERT INTO plans_table (plan_name, plan_price, rental_limit)
