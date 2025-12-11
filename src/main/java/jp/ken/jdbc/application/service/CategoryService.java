@@ -16,7 +16,17 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
+    /**
+     * 全カテゴリ取得
+     */
     public List<CategoryEntity> getAllCategories() {
         return categoryRepository.findAll();
+    }
+
+    /**
+     * カテゴリIDから取得（存在しない場合は null を返す）
+     */
+    public CategoryEntity getCategoryById(Long categoryId) {
+        return categoryRepository.findById(categoryId);
     }
 }

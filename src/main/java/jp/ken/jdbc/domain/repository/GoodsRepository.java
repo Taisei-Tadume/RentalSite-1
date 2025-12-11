@@ -21,7 +21,7 @@ public class GoodsRepository {
     public List<GoodsEntity> findAll(int offset, int limit) {
         String sql = """
             SELECT goods_id, goods_name, category_id, genre_id, quantity, jan_code, image_url
-            FROM goods
+            FROM GOODS_TABLE
             ORDER BY goods_id
             LIMIT ? OFFSET ?
         """;
@@ -33,7 +33,7 @@ public class GoodsRepository {
     public List<GoodsEntity> findByGenre(int genreId, int offset, int limit) {
         String sql = """
             SELECT goods_id, goods_name, category_id, genre_id, quantity, jan_code, image_url
-            FROM goods
+            FROM GOODS_TABLE
             WHERE genre_id = ?
             ORDER BY goods_id
             LIMIT ? OFFSET ?
@@ -44,13 +44,13 @@ public class GoodsRepository {
 
     /** 件数取得（全件） */
     public long countAll() {
-        String sql = "SELECT COUNT(*) FROM goods";
+        String sql = "SELECT COUNT(*) FROM GOODS_TABLE";
         return jdbc.queryForObject(sql, Long.class);
     }
 
     /** 件数取得（ジャンル別） */
     public long countByGenre(int genreId) {
-        String sql = "SELECT COUNT(*) FROM goods WHERE genre_id = ?";
+        String sql = "SELECT COUNT(*) FROM GOODS_TABLE WHERE genre_id = ?";
         return jdbc.queryForObject(sql, Long.class, genreId);
     }
 
@@ -58,58 +58,59 @@ public class GoodsRepository {
     public List<GenreEntity> findGenres() {
         String sql = """
             SELECT genre_id, genre_name
-            FROM genre
+            FROM GOODS_GENRE_TABLE
             ORDER BY genre_id
         """;
 
         return jdbc.query(sql, this::mapGenre);
     }
 
-    /**
-     * 🔍 キーワード検索（50音順ソート + ジャンル任意 + ページング）
-     * keyword → 部分一致
-     * genreId → null の場合は全ジャンル
-     */
-    public List<GoodsEntity> searchByKeyword(String keyword, Integer genreId, int offset, int limit) {
+    /** キーワード検索 */
+    public List<GoodsEntity> searchByKeyword(
+            String keyword, Integer genreId, int offset, int limit) {
 
         String sql = """
             SELECT goods_id, goods_name, category_id, genre_id, quantity, jan_code, image_url
-            FROM goods
+            FROM GOODS_TABLE
             WHERE goods_name LIKE ?
             """;
 
-        // ジャンルが指定されてる場合のみ WHERE に追加
         if (genreId != null) {
             sql += " AND genre_id = ? ";
         }
 
         sql += """
-            ORDER BY goods_name COLLATE utf8mb4_unicode_ci
+            ORDER BY goods_name
             LIMIT ? OFFSET ?
             """;
 
-        // パラメータを可変にして実行
         if (genreId != null) {
             return jdbc.query(
                 sql,
                 this::mapGoods,
-                "%" + keyword + "%", // LIKE
-                genreId,
-                limit,
-                offset
+                "%" + keyword + "%", genreId, limit, offset
             );
         } else {
             return jdbc.query(
                 sql,
                 this::mapGoods,
-                "%" + keyword + "%", // LIKE
-                limit,
-                offset
+                "%" + keyword + "%", limit, offset
             );
         }
     }
 
-    /** 商品マッピング処理（DB → Entity） */
+    /** 商品ID で検索 */
+    public GoodsEntity findById(long goodsId) {
+        String sql = """
+            SELECT goods_id, goods_name, category_id, genre_id, quantity, jan_code, image_url
+            FROM GOODS_TABLE
+            WHERE goods_id = ?
+            """;
+
+        return jdbc.queryForObject(sql, this::mapGoods, goodsId);
+    }
+
+    /** 商品マッピング */
     private GoodsEntity mapGoods(ResultSet rs, int rowNum) throws SQLException {
         GoodsEntity goods = new GoodsEntity();
 
@@ -124,18 +125,7 @@ public class GoodsRepository {
         return goods;
     }
 
-    public GoodsEntity findById(long goodsId) {
-        String sql = """
-            SELECT goods_id, goods_name, category_id, genre_id, quantity, jan_code, image_url
-            FROM goods_table
-            WHERE goods_id = ?
-            """;
-
-        return jdbc.queryForObject(sql, this::mapGoods, goodsId);
-    }
-
-    
-    /** ジャンルマッピング処理 */
+    /** ジャンルマッピング */
     private GenreEntity mapGenre(ResultSet rs, int rowNum) throws SQLException {
         GenreEntity genre = new GenreEntity();
         genre.setGenreId(rs.getInt("genre_id"));
