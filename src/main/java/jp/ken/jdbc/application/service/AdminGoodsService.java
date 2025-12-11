@@ -15,28 +15,23 @@ public class AdminGoodsService {
     @Autowired
     private AdminGoodsRepository repo;
 
-    /** 商品一覧 */
     public List<GoodsEntity> findAll() {
         return repo.findAll();
     }
 
-    /** カテゴリ一覧 */
-    public List<Map<String, Object>> getCategoryList() {
-        return repo.findAllCategories();
-    }
-
-    /** 新規追加 */
     public void insertGoods(GoodsEntity g) {
         repo.insertGoods(g);
     }
 
-    /** 在庫更新 */
-    public void updateStock(int goodsId, int quantity) {
-        repo.updateStock(goodsId, quantity);
+    public void updateStock(Long id, Integer qty) {
+        repo.updateStock(id, qty);
     }
 
-    /** 不良品 */
-    public void decreaseStock(int goodsId) {
-        repo.decreaseStock(goodsId);
+    public void decreaseStock(Long id) {
+        repo.decreaseStock(id);
+    }
+
+    public List<Map<String, Object>> findAllCategories() {
+        return repo.findAllCategories();
     }
 }

@@ -1,5 +1,8 @@
 package jp.ken.jdbc.presentation.controller;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -7,7 +10,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.validation.Valid;
@@ -15,31 +17,35 @@ import jp.ken.jdbc.application.service.AdminGoodsService;
 import jp.ken.jdbc.domain.entity.GoodsEntity;
 
 @Controller
-@RequestMapping("/admin")
 public class AdminGoodsController {
 
     @Autowired
     private AdminGoodsService service;
 
-    @GetMapping("/stock")
+    /** 在庫画面 */
+    @GetMapping("/admin/stock")
     public String stockPage(Model model) {
 
-        model.addAttribute("form", new GoodsEntity());
         model.addAttribute("goodsList", service.findAll());
-        model.addAttribute("categoryList", service.getCategoryList());
+        model.addAttribute("form", new GoodsEntity());
+
+        // カテゴリリスト
+        List<Map<String, Object>> categories = service.findAllCategories();
+        model.addAttribute("categoryList", categories);
 
         return "admin-stock";
     }
 
-    @PostMapping("/add")
-    public String add(
+    /** 商品追加 */
+    @PostMapping("/admin/add")
+    public String addGoods(
             @Valid @ModelAttribute("form") GoodsEntity form,
-            BindingResult result,
+            BindingResult binding,
             Model model) {
 
-        if (result.hasErrors()) {
+        if (binding.hasErrors()) {
             model.addAttribute("goodsList", service.findAll());
-            model.addAttribute("categoryList", service.getCategoryList());
+            model.addAttribute("categoryList", service.findAllCategories());
             return "admin-stock";
         }
 
@@ -47,18 +53,19 @@ public class AdminGoodsController {
         return "redirect:/admin/stock";
     }
 
-    @PostMapping("/update")
-    public String update(
-            @RequestParam int goodsId,
-            @RequestParam int quantity) {
+    /** 在庫更新 */
+    @PostMapping("/admin/update")
+    public String updateStock(@RequestParam Long id, @RequestParam Integer qty) {
 
-        service.updateStock(goodsId, quantity);
+        service.updateStock(id, qty);
         return "redirect:/admin/stock";
     }
 
-    @PostMapping("/broken")
-    public String broken(@RequestParam int goodsId) {
-        service.decreaseStock(goodsId);
+    /** 不良品処理 */
+    @PostMapping("/admin/bad")
+    public String badItem(@RequestParam Long id) {
+
+        service.decreaseStock(id);
         return "redirect:/admin/stock";
     }
 }
