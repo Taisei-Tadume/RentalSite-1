@@ -3,11 +3,11 @@ package jp.ken.jdbc.presentation.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import jakarta.validation.Valid;
 import jp.ken.jdbc.application.service.MemberService;
 import jp.ken.jdbc.presentation.form.MemberRegistForm;
 
@@ -30,7 +30,7 @@ public class MemberRegistController {
     // --- POST: 会員登録 ---
     @PostMapping("/regist")
     public String registSubmit(
-            @ModelAttribute("memberForm") @Valid MemberRegistForm memberForm,
+            @ModelAttribute("memberForm") @Validated MemberRegistForm memberForm,
             BindingResult bindingResult,
             Model model) {
 

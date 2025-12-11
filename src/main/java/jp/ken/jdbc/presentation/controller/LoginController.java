@@ -57,7 +57,27 @@ public class LoginController {
         // ログイン成功 → セッションにユーザを保存
         session.setAttribute(LOGIN_USER, user);
 
-        return "redirect:/";
+        // authority_id によって遷移先を変更
+        Integer authority = user.getAuthorityId(); // ← フィールド名に合わせて変更
+
+        if (authority == null) {
+            model.addAttribute("errorMessage", "ユーザー権限が設定されていません");
+            return "login";
+        }
+
+        // 1 = 一般ユーザー → 通常トップページへ
+        if (authority == 1) {
+            return "redirect:/";
+        }
+
+        // 2 = 管理者 → 管理者トップへ
+        if (authority == 2) {
+            return "admin-top";
+        }
+
+        // その他の数値 → 権限エラー扱い
+        model.addAttribute("errorMessage", "不正な権限が設定されています");
+        return "login";
     }
 
     @GetMapping("/logout")
