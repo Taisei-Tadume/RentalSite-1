@@ -13,12 +13,13 @@ public class GoodsRowMapper implements RowMapper<GoodsEntity> {
 
     @Override
     public GoodsEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
         GoodsEntity g = new GoodsEntity();
 
-        g.setGoodsId(rs.getInt("goods_id"));
+        g.setGoodsId(rs.getLong("goods_id"));
         g.setGoodsName(rs.getString("goods_name"));
-        g.setCategoryId(rs.getInt("category_id"));
-        g.setGenreId(rs.getInt("genre_id"));
+        g.setCategoryId(rs.getLong("category_id"));
+        g.setGenreId(rs.getLong("genre_id"));
         g.setQuantity(rs.getInt("quantity"));
         g.setJanCode(rs.getString("jan_code"));
         g.setImageUrl(rs.getString("image_url"));

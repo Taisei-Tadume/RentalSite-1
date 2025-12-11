@@ -3,21 +3,17 @@ package jp.ken.jdbc.domain.entity;
 public class CategoryEntity {
 
     /** カテゴリID */
-    private int categoryId;
+    private long categoryId;
 
     /** カテゴリ名 */
     private String categoryName;
 
-    /** 削除フラグ（0:有効 / 1:削除） */
-    private boolean deleteFlag;
-
-    // ====== Getter / Setter ======
-
-    public int getCategoryId() {
+    // Getter / Setter
+    public long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(int categoryId) {
+    public void setCategoryId(long categoryId) {
         this.categoryId = categoryId;
     }
 
@@ -28,13 +24,4 @@ public class CategoryEntity {
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
     }
-
-    public boolean isDeleteFlag() {
-        return deleteFlag;
-    }
-
-    public void setDeleteFlag(boolean deleteFlag) {
-        this.deleteFlag = deleteFlag;
-    }
-
 }
