@@ -1,11 +1,6 @@
 <div th:fragment="siteHeader">
     <header class="bg-light py-3 mb-4 border-bottom">
         <div class="container d-flex justify-content-end">
-			<a th:href="@{/top}" class="me-3">TOP</a>
-            <a th:href="@{/regist}" class="me-3">新規会員登録</a>
-            <a th:href="@{/login}" class="me-3">ログイン</a>
-            <a th:href="@{/cart}" class="me-3">カート</a>
-      
         <div class="container d-flex justify-content-end align-items-center">
 
             <!-- TOPリンク -->
@@ -13,7 +8,7 @@
 
             <!-- 非ログイン時 -->
             <span th:if="${session.loginUser == null}">
-                <a th:href="@{/newmember}" class="me-3">新規会員登録</a>
+ 			<a th:href="@{/regist}" class="me-3">新規会員登録</a>
                 <a th:href="@{/login}" class="me-3">ログイン</a>
             </span>
 

@@ -126,6 +126,7 @@ public class GoodsRepository {
     }
 
     /** ジャンルマッピング */
+
     private GenreEntity mapGenre(ResultSet rs, int rowNum) throws SQLException {
         GenreEntity genre = new GenreEntity();
         genre.setGenreId(rs.getInt("genre_id"));

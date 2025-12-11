@@ -3,10 +3,11 @@ package jp.ken.jdbc.presentation.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import jakarta.validation.Valid;
 import jp.ken.jdbc.application.service.MemberService;
 import jp.ken.jdbc.presentation.form.MemberRegistForm;
 
@@ -29,30 +30,31 @@ public class MemberRegistController {
     // --- POST: 会員登録 ---
     @PostMapping("/regist")
     public String registSubmit(
-            @Valid MemberRegistForm memberForm,
-            BindingResult result,
+            @ModelAttribute("memberForm") @Validated MemberRegistForm memberForm,
+            BindingResult bindingResult,
             Model model) {
 
-        // パスワード一致チェック
-        if (!memberForm.getPassword().equals(memberForm.getPasswordConfirm())) {
-            result.rejectValue("passwordConfirm", "error.passwordConfirm", "パスワードが一致しません");
-        }
-
-        // メールアドレス重複チェック
-        if (memberService.emailExists(memberForm.getEmail())) {
-            result.rejectValue("email", "error.email", "このメールアドレスは既に登録されています");
-        }
-
-        // エラーがあれば画面に戻す
-        if (result.hasErrors()) {
-            model.addAttribute("memberForm", memberForm);
+        // ▼バリデーションエラーがある時点で画面に戻す
+        if (bindingResult.hasErrors()) {
             return "newmemberregistration";
         }
 
-        // ▼★ ここ重要：Service に Form を渡すだけ
+        // ▼パスワード一致チェック
+        if (!memberForm.getPassword().equals(memberForm.getPasswordConfirm())) {
+            bindingResult.rejectValue("passwordConfirm", "error.passwordConfirm", "パスワードが一致しません");
+            return "newmemberregistration";
+        }
+
+        // ▼メール重複チェック
+        if (memberService.emailExists(memberForm.getEmail())) {
+            bindingResult.rejectValue("email", "error.email", "このメールアドレスは既に登録されています");
+            return "newmemberregistration";
+        }
+
+        // ▼登録処理
         memberService.register(memberForm);
 
-        // 登録成功ページ
+        // ▼プラン選択画面に遷移
         return "planselection";
     }
 }

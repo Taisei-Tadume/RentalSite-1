@@ -19,7 +19,7 @@ CREATE TABLE USERS_TABLE (
   plan_start_date DATE NOT NULL DEFAULT (CURRENT_DATE),
   plan_end_date DATE NOT NULL DEFAULT (LAST_DAY(CURRENT_DATE)),
   PRIMARY KEY (user_id),
-  UNIQUE KEY uq_email (email)
+  UNIQUE KEY uq_email (email),
   CONSTRAINT fk_plan_id FOREIGN KEY (plan_id)
     REFERENCES PLANS_TABLE (plan_id)
     ON UPDATE CASCADE
@@ -38,13 +38,13 @@ CREATE TABLE USERS_AUTHORITY_TABLE (
 3.GOODS_TABLEの作成
 
 CREATE TABLE GOODS_TABLE (
-    goods_id            BIGINT AUTO_INCREMENT PRIMARY KEY,
-    goods_name          VARCHAR(255) NOT NULL,
-    category_id         BIGINT NOT NULL,
-    genre_id            BIGINT       NOT NULL,
-    quantity            INT NOT NULL DEFAULT 0,
-    jan_code             VARCHAR(13) NOT NULL UNIQUE,
-　 image_url           VARCHAR(255) NOT NULL
+    goods_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    goods_name VARCHAR(255) NOT NULL,
+    category_id BIGINT NOT NULL,
+    genre_id BIGINT　NOT NULL,
+    quantity INT NOT NULL DEFAULT 0,
+    jan_code VARCHAR(13) NOT NULL UNIQUE,
+　 image_url VARCHAR(255) NOT NULL
 );
 
 4.GOODS_CATEGORY_TABLEの作成
