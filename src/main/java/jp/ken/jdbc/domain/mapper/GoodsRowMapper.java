@@ -14,10 +14,10 @@ public class GoodsRowMapper implements RowMapper<GoodsEntity> {
 
         GoodsEntity goods = new GoodsEntity();
 
-        goods.setGoodsId(rs.getInt("goods_id"));
+        goods.setGoodsId(rs.getLong("goods_id"));
         goods.setGoodsName(rs.getString("goods_name"));
-        goods.setCategoryId(rs.getInt("category_id"));
-        goods.setGenreId(rs.getInt("genre_id"));
+        goods.setCategoryId(rs.getLong("category_id"));
+        goods.setGenreId(rs.getLong("genre_id"));
         goods.setQuantity(rs.getInt("quantity"));
         goods.setJanCode(rs.getString("jan_code"));
         goods.setImageUrl(rs.getString("image_url"));

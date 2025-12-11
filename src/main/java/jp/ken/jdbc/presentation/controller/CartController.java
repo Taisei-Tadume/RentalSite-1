@@ -31,7 +31,7 @@ public class CartController {
         return "redirect:/search";
     }
 
-    // 削除（必要なら）
+    // 削除
     @PostMapping("/remove")
     public String remove(@RequestParam("goodsId") long goodsId, HttpSession session) {
         cartService.remove(goodsId, session);
@@ -56,7 +56,7 @@ public class CartController {
         model.addAttribute("cart", cart);
         model.addAttribute("errorMessage", "カートに商品が入っていません。");
 
-        return "cart"; // ← cart.html を返す
+        return "cart";
     }
 
 

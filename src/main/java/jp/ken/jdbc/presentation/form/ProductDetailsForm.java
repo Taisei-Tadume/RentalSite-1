@@ -1,27 +1,26 @@
 package jp.ken.jdbc.presentation.form;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class ProductDetailsForm {
 
-	 // ======== 商品管理用 ========
-    @NotBlank(message = "商品IDは必須です。")
-    private String productId; // システム内部管理用、表示はしない
+    // 商品ID（システム管理用、表示はしない）
+    @NotNull(message = "商品IDは必須です。")
+    private Long goodsId;
 
-    // ======== 注文情報 ========
+    // 注文数量
     @NotNull(message = "注文数量を入力してください。")
     @Min(value = 1, message = "注文数量は1以上で入力してください。")
-    private Integer orderQuantity; // 初期値1、在庫上限はコントローラー側でチェック
+    private Integer orderQuantity;
 
-    // ======== getter / setter ========
-    public String getProductId() {
-        return productId;
+    // ===== Getter / Setter =====
+    public Long getGoodsId() {
+        return goodsId;
     }
 
-    public void setProductId(String productId) {
-        this.productId = productId;
+    public void setGoodsId(Long goodsId) {
+        this.goodsId = goodsId;
     }
 
     public Integer getOrderQuantity() {

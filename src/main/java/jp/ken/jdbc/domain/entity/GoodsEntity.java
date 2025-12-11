@@ -3,16 +3,16 @@ package jp.ken.jdbc.domain.entity;
 public class GoodsEntity {
 
     /** 商品ID */
-    private int goodsId;
+    private long goodsId;
 
     /** 商品名 */
     private String goodsName;
 
     /** カテゴリID */
-    private int categoryId;
+    private long categoryId;
 
     /** ジャンルID */
-    private int genreId;
+    private long genreId;
 
     /** 在庫数量 */
     private int quantity;
@@ -24,12 +24,11 @@ public class GoodsEntity {
     private String imageUrl;
 
     // Getter / Setter
-
-    public int getGoodsId() {
+    public long getGoodsId() {
         return goodsId;
     }
 
-    public void setGoodsId(int goodsId) {
+    public void setGoodsId(long goodsId) {
         this.goodsId = goodsId;
     }
 
@@ -41,19 +40,19 @@ public class GoodsEntity {
         this.goodsName = goodsName;
     }
 
-    public int getCategoryId() {
+    public long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(int categoryId) {
+    public void setCategoryId(long categoryId) {
         this.categoryId = categoryId;
     }
 
-    public int getGenreId() {
+    public long getGenreId() {
         return genreId;
     }
 
-    public void setGenreId(int genreId) {
+    public void setGenreId(long genreId) {
         this.genreId = genreId;
     }
 

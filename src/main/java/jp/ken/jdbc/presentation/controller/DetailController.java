@@ -33,9 +33,8 @@ public class DetailController {
 
         // カート判定
         List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
-        boolean isInCart = (cart != null) &&
-                cart.stream().anyMatch(i -> i.getGoods().getGoodsId() == goodsId);
-
+        boolean isInCart = cart != null && cart.stream()
+                .anyMatch(i -> i.getGoods().getGoodsId() == goodsId);
         model.addAttribute("isInCart", isInCart);
 
         // トースト表示フラグ

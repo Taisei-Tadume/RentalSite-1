@@ -31,18 +31,22 @@ public class SearchController {
             HttpSession session,
             Model model) {
 
+    	page = Math.max(page, 0);
+    	
         int pageSize = 9;
 
+        // 商品リスト取得
         List<GoodsEntity> resultList = goodsService.searchGoods(genreId, page, pageSize);
         long totalCount = goodsService.countGoodsByGenre(genreId);
 
+        // モデルに登録
         model.addAttribute("resultList", resultList);
         model.addAttribute("genres", goodsService.getAllGenres());
         model.addAttribute("totalPages", (int) Math.ceil((double) totalCount / pageSize));
         model.addAttribute("currentPage", page);
         model.addAttribute("searchForm", searchForm);
 
-        // ★ 追加済み判定のためにカート中アイテムを渡す（重要）
+        // 追加済み判定のためカート情報も渡す
         model.addAttribute("cartItems", cartService.getCart(session));
 
         return "searchResult";

@@ -2,15 +2,16 @@ package jp.ken.jdbc.presentation.form;
 
 public class SearchForm {
 
-	 // 検索キーワード（任意）
+    // 検索キーワード（任意）
     private String keyword;
 
-    // カテゴリやその他検索条件を追加する場合はここにフィールドを追加可能
-    private String category;
-    
-    private int genreId;
+    // カテゴリID（未選択時は null）
+    private Long categoryId;
 
-    // getter / setter
+    // ジャンルID（未選択時は null）
+    private Long genreId;
+
+    // ===== Getter / Setter =====
     public String getKeyword() {
         return keyword;
     }
@@ -19,19 +20,19 @@ public class SearchForm {
         this.keyword = keyword;
     }
 
-    public String getCategory() {
-        return category;
+    public Long getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
-    
-    public int getGenreId() {
+
+    public Long getGenreId() {
         return genreId;
     }
 
-    public void setGenreId(int genre) {
-        this.genreId = genre;
+    public void setGenreId(Long genreId) {
+        this.genreId = genreId;
     }
 }
