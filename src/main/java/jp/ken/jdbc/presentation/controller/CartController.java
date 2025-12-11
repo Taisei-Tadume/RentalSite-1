@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.servlet.http.HttpSession;
 import jp.ken.jdbc.application.service.CartService;
@@ -30,6 +31,22 @@ public class CartController {
         // ★ 検索画面へ戻す（追加済み表示は Session で判断）
         return "redirect:/search";
     }
+    
+    // 数を増やす
+    @PostMapping("/increase")
+    @ResponseBody
+    public void increase(@RequestParam long goodsId, HttpSession session) {
+        cartService.increase(goodsId, session);
+    }
+
+
+    //数を減らす
+    @PostMapping("/decrease")
+    @ResponseBody
+    public void decrease(@RequestParam long goodsId, HttpSession session) {
+        cartService.decrease(goodsId, session);
+    }
+
 
     // 削除
     @PostMapping("/remove")
