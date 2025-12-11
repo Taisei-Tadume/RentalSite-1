@@ -42,6 +42,40 @@
                 </div>
             </div>
         </div>
+        
+        <!-- ✅ ページネーション -->
+        <nav th:if="${totalPages > 1}" class="mt-4">
+            <ul class="pagination justify-content-center">
+
+                <!-- 前へ -->
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/search(genre=${searchForm.genreId}, page=${currentPage - 1})}">
+                        前へ
+                    </a>
+                </li>
+
+                <!-- ページ番号 -->
+                <li class="page-item"
+                    th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:classappend="${i == currentPage} ? 'active'">
+                    <a class="page-link"
+                       th:href="@{/search(genre=${searchForm.genreId}, page=${i})}"
+                       th:text="${i + 1}">
+                    </a>
+                </li>
+
+                <!-- 次へ -->
+                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/search(genre=${searchForm.genreId}, page=${currentPage + 1})}">
+                        次へ
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+
 
     </main>
 

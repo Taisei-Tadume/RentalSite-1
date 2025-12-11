@@ -30,43 +30,59 @@ public class CartService {
         return cart;
     }
 
-    // 商品追加
-    public void addToCart(long goodsId, HttpSession session)
-{
+    // 商品追加（在庫チェック付き）
+    public void addToCart(long goodsId, HttpSession session) {
 
-    	GoodsEntity goods = goodsRepository.findById(goodsId);
-    	List<CartItem> cart = getCart(session);
+        GoodsEntity goods = goodsRepository.findById(goodsId);
+        List<CartItem> cart = getCart(session);
 
-
-        // すでに存在するなら数量+1
         for (CartItem item : cart) {
             if (item.getGoods().getGoodsId() == goodsId) {
+
+                // ★ 在庫チェック（goods.quantity が在庫数）
+                if (item.getQuantity() >= goods.getQuantity()) {
+                    return; // 在庫以上は増やさない
+                }
+
                 item.increase();
                 return;
             }
         }
 
-        // 新規追加
+        // 新規追加（数量1は必ず在庫以下）
         cart.add(new CartItem(goods));
         session.setAttribute(CART_SESSION_KEY, cart);
     }
 
-    // 数量増加
+    // 数量増加（在庫チェック付き）
     public void increase(long goodsId, HttpSession session) {
         List<CartItem> cart = getCart(session);
+
+        // DB から最新の在庫を取得
+        GoodsEntity goods = goodsRepository.findById(goodsId);
+
         cart.stream()
-                .filter(i -> i.getGoods().getGoodsId() == goodsId)
-                .findFirst()
-                .ifPresent(CartItem::increase);
+            .filter(i -> i.getGoods().getGoodsId() == goodsId)
+            .findFirst()
+            .ifPresent(item -> {
+
+                int current = item.getQuantity();
+                int stock = goods.getQuantity(); // ★ 在庫フィールド名は quantity
+
+                if (current < stock) {
+                    item.increase();
+                }
+            });
     }
 
-    // 数量減少
+    // 数量減少（0未満にならないように CartItem 側で制御）
     public void decrease(long goodsId, HttpSession session) {
         List<CartItem> cart = getCart(session);
+
         cart.stream()
-                .filter(i -> i.getGoods().getGoodsId() == goodsId)
-                .findFirst()
-                .ifPresent(CartItem::decrease);
+            .filter(i -> i.getGoods().getGoodsId() == goodsId)
+            .findFirst()
+            .ifPresent(CartItem::decrease);
     }
 
     // 削除
