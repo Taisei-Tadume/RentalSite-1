@@ -14,13 +14,19 @@ public class GoodsEntity {
     @NotBlank(message = "商品名を入力してください")
     private String goodsName;
 
-    /** カテゴリID（int に変更） */
+    /** カテゴリID */
     @NotNull(message = "カテゴリを入力してください")
     private Integer categoryId;
 
-    /** ジャンルID（int に変更） */
+    /** カテゴリ名（JOIN で取得） */
+    private String categoryName;
+
+    /** ジャンルID */
     @NotNull(message = "ジャンルを入力してください")
     private Integer genreId;
+
+    /** ジャンル名（JOIN で取得） */
+    private String genreName;
 
     /** 在庫数 */
     @NotNull(message = "在庫数を入力してください")

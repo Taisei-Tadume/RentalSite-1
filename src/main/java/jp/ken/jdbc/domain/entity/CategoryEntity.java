@@ -3,17 +3,17 @@ package jp.ken.jdbc.domain.entity;
 public class CategoryEntity {
 
     /** カテゴリID */
-    private long categoryId;
+    private int categoryId;
 
     /** カテゴリ名 */
     private String categoryName;
 
     // Getter / Setter
-    public long getCategoryId() {
+    public int getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(long categoryId) {
+    public void setCategoryId(int categoryId) {
         this.categoryId = categoryId;
     }
 

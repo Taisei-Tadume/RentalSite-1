@@ -22,15 +22,10 @@ public class GoodsService {
     // 全ジャンルを表す定数
     private static final int ALL_GENRES = 0;
 
-    /**
-     * 商品検索（ジャンル別 + ページング）
-     * @param genreId ジャンルID（0で全ジャンル）
-     * @param page ページ番号（1始まりを想定）
-     * @param pageSize 1ページあたり件数
-     * @return 商品リスト
-     */
+    // ============================
+    // ジャンル別＋ページング検索
+    // ============================
     public List<GoodsEntity> searchGoods(int genreId, int page, int pageSize) {
-
         int offset = Math.max(page, 0) * pageSize;
 
         if (genreId == ALL_GENRES) {
@@ -40,11 +35,6 @@ public class GoodsService {
         }
     }
 
-    /**
-     * 商品件数取得（ジャンル別）
-     * @param genreId ジャンルID（0で全ジャンル）
-     * @return 件数
-     */
     public long countGoodsByGenre(int genreId) {
         if (genreId == ALL_GENRES) {
             return goodsRepository.countAll();
@@ -53,16 +43,37 @@ public class GoodsService {
         }
     }
 
-    /**
-     * 全ジャンル取得
-     */
+    // ============================
+    // キーワード検索（部分一致）対応
+    // ============================
+    public List<GoodsEntity> searchByKeyword(String keyword, Integer genreId, int page, int pageSize) {
+        int offset = Math.max(page, 0) * pageSize;
+
+        if (genreId == null || genreId == ALL_GENRES) {
+            return goodsRepository.findByKeyword(keyword, offset, pageSize);
+        } else {
+            return goodsRepository.findByKeywordAndGenre(keyword, genreId, offset, pageSize);
+        }
+    }
+
+    public long countByKeyword(String keyword, Integer genreId) {
+        if (genreId == null || genreId == ALL_GENRES) {
+            return goodsRepository.countByKeyword(keyword);
+        } else {
+            return goodsRepository.countByKeywordAndGenre(keyword, genreId);
+        }
+    }
+
+    // ============================
+    // 全ジャンル取得
+    // ============================
     public List<GenreEntity> getAllGenres() {
         return goodsRepository.findGenres();
     }
 
-    /**
-     * 商品IDから取得（存在しない場合は null を返す）
-     */
+    // ============================
+    // 商品ID検索（存在しない場合は null）
+    // ============================
     public GoodsEntity findById(long goodsId) {
         try {
             return goodsRepository.findById(goodsId);
