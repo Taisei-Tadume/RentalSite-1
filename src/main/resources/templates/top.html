@@ -5,10 +5,116 @@
 	<meta charset="UTF-8">
 	<title>レンタルサイト｜トップページ</title>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+	<head>
+    <meta charset="UTF-8">
+    <title>レンタルサイト｜トップページ</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+
+
+    <style>
+/* 背景テキストレイヤー（クリック不可、安全配置） */
+.bg-flow-wrapper {
+    position: fixed;
+    inset: 0; /* 全画面だが pointer-events: none で安全 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none; /* ← これが超重要、絶対にクリック阻害しない */
+    z-index: 0; /* 最背面（body より奥） */
+}
+
+/* 流れる巨大文字 */
+.bg-flow-text {
+    font-size: 18vw;
+    font-weight: 800;
+    white-space: nowrap;
+    color: rgba(0, 0, 0, 0.03);
+    animation: bgScrollCenter 40s linear infinite;
+}
+
+/* 左方向へ流し続ける */
+@keyframes bgScrollCenter {
+    0%   { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+}
+
+/* すべての通常コンテンツは前面へ */
+body > * {
+    position: relative;
+    z-index: 10;
+}
+/* ★ ボタンの共通デザインを a.btn-gradient に統一 */
+a.btn-gradient {
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 0.5;
+  position: relative;
+  display: inline-block;
+  padding: 0.7rem 1rem;
+  cursor: pointer;
+  transition: all 1s;
+  text-align: center;
+  vertical-align: middle;
+  
+  text-decoration: none;
+  letter-spacing: 0.1em;
+
+  color: #fff;
+  border-radius: 0.5rem;
+
+  background-image: linear-gradient(90deg, rgb(182, 108, 255) 40%, rgb(255, 174, 215) 100%);
+}
+
+/* ホバー時の演出 */
+a.btn-gradient:hover {
+  opacity: 0.85;
+}
+
+/* ★ overlay のせいで変に光ってたので削除 */
+a.btn-gradient:after {
+  content: none;
+}
+
+/* span を前に出すための指定（必要な場合のみ） */
+a.btn-gradient span {
+  position: relative;
+  z-index: 1;
+}	
+		
+        /* 背景画像エリア */
+        body {
+            position: relative;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('/picture/kuukan39.png');
+            background-size: cover;
+            background-position: center;
+            filter: blur(3.8px);    /* ブラーの強さ */
+            opacity: 0.6;         /* 画像の薄さ（背景感出す） */
+            z-index: -1;          /* 一番後ろに */
+        }
+    </style>
+</head>
+
+
 </head>
 
 <body>
 	<div id="wrapper" class="container-fluid p-0">
+		<div class="bg-flow-wrapper">
+    <div class="bg-flow-text">RENTAL SITE RENTAL SITE RENTAL SITE</div>
+</div>
+
 
 		<!-- 共通ヘッダー -->
 		<div th:replace="~{header :: siteHeader}"></div>
