@@ -1,40 +1,80 @@
 package jp.ken.jdbc.domain.entity;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-
-@Data
 public class GoodsEntity {
 
-    /** 商品ID（null 許容のため Integer） */
     private Integer goodsId;
-
-    /** 商品名 */
-    @NotBlank(message = "商品名を入力してください")
     private String goodsName;
-
-    /** カテゴリID */
-    @NotNull(message = "カテゴリを入力してください")
     private Integer categoryId;
-
-    /** カテゴリ名（JOIN で取得） */
-    private String categoryName;
-
-    /** ジャンルID */
-    @NotNull(message = "ジャンルを入力してください")
     private Integer genreId;
+    private Integer quantity;
+    private String janCode;
+    private String imageUrl;
 
-    /** ジャンル名（JOIN で取得） */
+    // 追加情報（JOIN で取得）
+    private String categoryName;
     private String genreName;
 
-    /** 在庫数 */
-    @NotNull(message = "在庫数を入力してください")
-    private Integer quantity;
+    // getter / setter
+    public Integer getGoodsId() {
+        return goodsId;
+    }
+    public void setGoodsId(Integer goodsId) {
+        this.goodsId = goodsId;
+    }
 
-    /** JANコード */
-    private String janCode;
+    public String getGoodsName() {
+        return goodsName;
+    }
+    public void setGoodsName(String goodsName) {
+        this.goodsName = goodsName;
+    }
 
-    /** 商品画像URL */
-    private String imageUrl;
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public Integer getGenreId() {
+        return genreId;
+    }
+    public void setGenreId(Integer genreId) {
+        this.genreId = genreId;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getJanCode() {
+        return janCode;
+    }
+    public void setJanCode(String janCode) {
+        this.janCode = janCode;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public String getGenreName() {
+        return genreName;
+    }
+    public void setGenreName(String genreName) {
+        this.genreName = genreName;
+    }
 }

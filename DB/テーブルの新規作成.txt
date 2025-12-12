@@ -145,8 +145,8 @@ INSERT INTO goods_table
 
 INSERT INTO USERS_AUTHORITY_TABLE (authority_id, authority_name)
 VALUES
-  (1, '一般ユーザー'),
-  (2, '管理者');
+  (1, 'ROLE_USER'),
+  (2, 'ROLE_ADMIN');
 
 ※データベースに入れる値を日本語->英語に変えました
 

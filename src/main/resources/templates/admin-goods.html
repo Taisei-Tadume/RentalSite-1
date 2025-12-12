@@ -13,7 +13,7 @@
         <th>ID</th>
         <th>商品名</th>
         <th>カテゴリID</th>
-        <th>ジャンルID</th>
+        <th>ジャンル</th>
         <th>在庫</th>
         <th>更新</th>
     </tr>
@@ -23,8 +23,29 @@
             <td th:text="${g.goodsId}"></td>
 
             <td><input name="goodsName" th:value="${g.goodsName}"></td>
-            <td><input type="number" th:field="*{categoryId}" class="form-control"></td>
-            <td><input type="number" name="genreId" th:value="${g.genreId}"></td>
+
+            <!-- カテゴリ（既存） -->
+            <td>
+                <select name="categoryId" th:field="*{categoryId}">
+                    <option th:each="c : ${categoryList}"
+                            th:value="${c.categoryId}"
+                            th:text="${c.categoryName}"
+                            th:selected="${c.categoryId == g.categoryId}">
+                    </option>
+                </select>
+            </td>
+
+            <!-- ▼ 新しく追加したジャンルプルダウン -->
+            <td>
+                <select name="genreId">
+                    <option th:each="gen : ${genreList}"
+                            th:value="${gen.genreId}"
+                            th:text="${gen.genreName}"
+                            th:selected="${gen.genreId == g.genreId}">
+                    </option>
+                </select>
+            </td>
+
             <td><input type="number" name="quantity" th:value="${g.quantity}"></td>
 
             <td>
@@ -37,16 +58,34 @@
 
 <hr>
 
-<!-- ▼ 新規登録フォーム -->
+<!-- ▼ 新規商品登録フォーム -->
 <h2>新規商品登録</h2>
 
 <form th:action="@{/admin/goods/save}" method="post">
     商品名: <input name="goodsName"><br>
-    カテゴリID: <input type="number" name="categoryId"><br>
-    ジャンルID: <input type="number" name="genreId"><br>
+
+    カテゴリ:
+    <select name="categoryId">
+        <option th:each="c : ${categoryList}"
+                th:value="${c.categoryId}"
+                th:text="${c.categoryName}">
+        </option>
+    </select>
+    <br>
+
+    ジャンル:
+    <select name="genreId">
+        <option th:each="gen : ${genreList}"
+                th:value="${gen.genreId}"
+                th:text="${gen.genreName}">
+        </option>
+    </select>
+    <br>
+
     在庫: <input type="number" name="quantity"><br>
     JANコード: <input name="janCode"><br>
     画像URL: <input name="imageUrl"><br>
+
     <button type="submit">登録</button>
 </form>
 

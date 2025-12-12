@@ -35,6 +35,15 @@ public class MemberRepository {
                 member.getAuthorityId(),
                 member.getPlanId());
     }
+    
+ // ✅ user_name でユーザー取得（LoginSuccessHandler が使用）
+ 	public MemberEntity findByUserName(String userName) {
+ 		String sql = "SELECT * FROM USERS_TABLE WHERE user_name = ?";
+ 		return jdbcTemplate.query(sql, new MemberRowMapper(), userName)
+ 				.stream()
+ 				.findFirst()
+ 				.orElse(null);
+ 	}
 
     // メールアドレス取得（ログイン用）
     public MemberEntity findByEmail(String email) {
