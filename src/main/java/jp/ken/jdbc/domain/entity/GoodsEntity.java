@@ -15,9 +15,17 @@ public class GoodsEntity {
     @NotNull(message = "カテゴリを入力してください")
     private Integer categoryId;
 
+    /** カテゴリ名（JOIN で取得） */
+    private String categoryName;
+
+    /** ジャンルID */
     @NotNull(message = "ジャンルを入力してください")
     private Integer genreId;
 
+    /** ジャンル名（JOIN で取得） */
+    private String genreName;
+
+    /** 在庫数 */
     @NotNull(message = "在庫数を入力してください")
     private Integer quantity;
 

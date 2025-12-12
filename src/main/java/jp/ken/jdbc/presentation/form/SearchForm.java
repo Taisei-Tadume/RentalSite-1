@@ -6,10 +6,10 @@ public class SearchForm {
     private String keyword;
 
     // カテゴリID（未選択時は null）
-    private Long categoryId;
+    private Integer categoryId;
 
     // ジャンルID（未選択時は null）
-    private Long genreId;
+    private Integer genreId;
 
     // ===== Getter / Setter =====
     public String getKeyword() {
@@ -20,19 +20,19 @@ public class SearchForm {
         this.keyword = keyword;
     }
 
-    public Long getCategoryId() {
+    public Integer getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(Long categoryId) {
+    public void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
     }
 
-    public Long getGenreId() {
+    public Integer getGenreId() {
         return genreId;
     }
 
-    public void setGenreId(Long genreId) {
+    public void setGenreId(Integer genreId) {
         this.genreId = genreId;
     }
 }

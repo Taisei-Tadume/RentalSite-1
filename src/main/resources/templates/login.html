@@ -26,8 +26,13 @@
 						<div th:if="${param.logout}" class="alert alert-info">
 							ログアウトしました。
 						</div>
-						<!-- ▼ エラーメッセージ表示 -->
 
+						<!-- ログイン失敗時のエラーメッセージ -->
+						<div th:if="${param.error}" class="alert alert-danger">
+							メールアドレスまたはパスワードが違います。
+						</div>
+
+						<!-- ▼ エラーメッセージ表示 -->
 						<form th:action="@{/login}" th:object="${loginForm}" method="POST">
 							<div class="mb-3">
 								<label class="form-label">メールアドレス</label>
