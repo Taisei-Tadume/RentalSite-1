@@ -1,32 +1,46 @@
 <div th:fragment="siteHeader">
     <header class="bg-light py-3 mb-4 border-bottom">
-        <div class="container d-flex justify-content-end">
-        <div class="container d-flex justify-content-end align-items-center">
+        <div class="container d-flex justify-content-between align-items-center">
 
-            <!-- TOPリンク -->
-            <a th:href="@{/top}" class="me-3">TOP</a>
+            <!-- ロゴ（TOPへリンク） -->
+            <a th:href="@{/top}" class="d-flex align-items-center">
+                <img th:src="@{/picture/Logo.png}" alt="Logo" 
+                     style="height:40px; width:auto; margin-right:20px;">
+            </a>
 
-            <!-- 非ログイン時 -->
-            <span th:if="${session.loginUser == null}">
- 			<a th:href="@{/regist}" class="me-3">新規会員登録</a>
-                <a th:href="@{/login}" class="me-3">ログイン</a>
-            </span>
+            <!-- 右側メニュー -->
+            <div class="d-flex align-items-center">
 
-            <!-- ログイン済み -->
-            <span th:if="${session.loginUser != null}" class="me-3">
-                ログイン中: <strong th:text="${session.loginUser.userName}"></strong>
-            </span>
+                <!-- ログイン表示 -->
+                <span th:if="${session.loginUser != null}" 
+                      class="me-3" style="font-size: 1rem; white-space: nowrap;">
+                    ログイン中: <strong th:text="${session.loginUser.userName}"></strong>
+                </span>
 
-            <!-- ログアウトボタン -->
-            <a th:href="@{/logout}" th:if="${session.loginUser != null}" class="me-3">ログアウト</a>
+                <!-- 非ログイン時 -->
+                <span th:if="${session.loginUser == null}" class="d-flex align-items-center">
+                    <a th:href="@{/regist}" class="btn-gradient me-3"><span>新規会員登録</span></a>
+                    <a th:href="@{/login}" class="btn-gradient me-3"><span>ログイン</span></a>
+                </span>
 
-            <!-- カートは常に表示 -->
-            <a th:href="@{/cart}">カート</a>
-        </div>
+                <!-- 管理画面ボタン（ログイン者が従業員の場合のみ） -->
+                <a th:if="${session.loginUser != null and session.loginUser.authorityId == 2}"
+                   th:href="@{/admin}" class="btn-gradient me-3" style="font-size: 1rem; white-space: nowrap;">
+                    <span>従業員管理</span>
+                </a>
 
-        <!-- 従業員ログイン中だけ表示 -->
-        <div class="text-center mt-4" th:if="${session.loginUser != null and session.loginUser.authorityId == 2}">
-            <a th:href="@{/admin}" class="btn btn-warning">従業員管理画面トップへ</a>
+                <!-- ログアウト -->
+                <a th:href="@{/logout}" 
+                   th:if="${session.loginUser != null}" 
+                   class="btn-gradient me-3" style="font-size: 1rem;">
+                    <span>ログアウト</span>
+                </a>
+
+                <!-- カート -->
+                <a th:href="@{/cart}" class="btn-gradient" style="font-size: 1rem;">
+                    <span>カート</span>
+                </a>
+            </div>
         </div>
     </header>
 </div>
