@@ -1,136 +1,91 @@
 package jp.ken.jdbc.domain.repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import jp.ken.jdbc.domain.entity.GenreEntity;
 import jp.ken.jdbc.domain.entity.GoodsEntity;
+import jp.ken.jdbc.domain.mapper.GoodsRowMapper;
 
 @Repository
 public class GoodsRepository {
 
-    @Autowired
-    private JdbcTemplate jdbc;
+    private final JdbcTemplate jdbcTemplate;
+    private final GoodsRowMapper rowMapper;
 
-    /** 商品一覧（ページング対応） */
-    public List<GoodsEntity> findAll(int offset, int limit) {
-        String sql = """
-            SELECT goods_id, goods_name, category_id, genre_id, quantity, jan_code, image_url
-            FROM GOODS_TABLE
-            ORDER BY goods_id
-            LIMIT ? OFFSET ?
-        """;
-
-        return jdbc.query(sql, this::mapGoods, limit, offset);
+    public GoodsRepository(JdbcTemplate jdbcTemplate, GoodsRowMapper rowMapper) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.rowMapper = rowMapper;
     }
 
-    /** ジャンルで検索（ページング対応） */
-    public List<GoodsEntity> findByGenre(int genreId, int offset, int limit) {
-        String sql = """
-            SELECT goods_id, goods_name, category_id, genre_id, quantity, jan_code, image_url
-            FROM GOODS_TABLE
-            WHERE genre_id = ?
-            ORDER BY goods_id
-            LIMIT ? OFFSET ?
-        """;
-
-        return jdbc.query(sql, this::mapGoods, genreId, limit, offset);
+    /* 全件取得 */
+    public List<GoodsEntity> findAll() {
+        String sql = "SELECT * FROM goods_table ORDER BY goods_id";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
-    /** 件数取得（全件） */
-    public long countAll() {
-        String sql = "SELECT COUNT(*) FROM GOODS_TABLE";
-        return jdbc.queryForObject(sql, Long.class);
+    /* カテゴリ一覧取得 */
+    public List<java.util.Map<String, Object>> findAllCategories() {
+        return jdbcTemplate.queryForList("SELECT category_id, category_name FROM goods_category_table ORDER BY category_id");
     }
 
-    /** 件数取得（ジャンル別） */
-    public long countByGenre(int genreId) {
-        String sql = "SELECT COUNT(*) FROM GOODS_TABLE WHERE genre_id = ?";
-        return jdbc.queryForObject(sql, Long.class, genreId);
-    }
+    /* 絞り込み検索 */
+    public List<GoodsEntity> search(String keyword, Integer categoryId, Integer genreId) {
 
-    /** ジャンル一覧の取得 */
-    public List<GenreEntity> findGenres() {
-        String sql = """
-            SELECT genre_id, genre_name
-            FROM GOODS_GENRE_TABLE
-            ORDER BY genre_id
-        """;
+        StringBuilder sql = new StringBuilder(
+            "SELECT * FROM goods_table WHERE 1=1"
+        );
 
-        return jdbc.query(sql, this::mapGenre);
-    }
+        List<Object> params = new ArrayList<>();
 
-    /** キーワード検索 */
-    public List<GoodsEntity> searchByKeyword(
-            String keyword, Integer genreId, int offset, int limit) {
-
-        String sql = """
-            SELECT goods_id, goods_name, category_id, genre_id, quantity, jan_code, image_url
-            FROM GOODS_TABLE
-            WHERE goods_name LIKE ?
-            """;
-
-        if (genreId != null) {
-            sql += " AND genre_id = ? ";
+        if (keyword != null && !keyword.isEmpty()) {
+            sql.append(" AND goods_name LIKE ?");
+            params.add("%" + keyword + "%");
         }
 
-        sql += """
-            ORDER BY goods_name
-            LIMIT ? OFFSET ?
-            """;
+        if (categoryId != null) {
+            sql.append(" AND category_id = ?");
+            params.add(categoryId);
+        }
 
         if (genreId != null) {
-            return jdbc.query(
-                sql,
-                this::mapGoods,
-                "%" + keyword + "%", genreId, limit, offset
-            );
-        } else {
-            return jdbc.query(
-                sql,
-                this::mapGoods,
-                "%" + keyword + "%", limit, offset
-            );
+            sql.append(" AND genre_id = ?");
+            params.add(genreId);
         }
+
+        sql.append(" ORDER BY goods_id");
+
+        return jdbcTemplate.query(sql.toString(), rowMapper, params.toArray());
     }
 
-    /** 商品ID で検索 */
-    public GoodsEntity findById(long goodsId) {
-        String sql = """
-            SELECT goods_id, goods_name, category_id, genre_id, quantity, jan_code, image_url
-            FROM GOODS_TABLE
-            WHERE goods_id = ?
-            """;
-
-        return jdbc.queryForObject(sql, this::mapGoods, goodsId);
+    /* 商品追加 */
+    public void insert(GoodsEntity entity) {
+        jdbcTemplate.update("""
+            INSERT INTO goods_table
+            (goods_name, category_id, genre_id, quantity, jan_code, image_url)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        entity.getGoodsName(),
+        entity.getCategoryId(),
+        entity.getGenreId(),
+        entity.getQuantity(),
+        entity.getJanCode(),
+        entity.getImageUrl());
     }
 
-    /** 商品マッピング */
-    private GoodsEntity mapGoods(ResultSet rs, int rowNum) throws SQLException {
-        GoodsEntity goods = new GoodsEntity();
-
-        goods.setGoodsId(rs.getInt("goods_id"));
-        goods.setGoodsName(rs.getString("goods_name"));
-        goods.setCategoryId(rs.getInt("category_id"));
-        goods.setGenreId(rs.getInt("genre_id"));
-        goods.setQuantity(rs.getInt("quantity"));
-        goods.setJanCode(rs.getString("jan_code"));
-        goods.setImageUrl(rs.getString("image_url"));
-
-        return goods;
+    /* 在庫更新 */
+    public void updateStock(Long id, Integer qty) {
+        jdbcTemplate.update(
+            "UPDATE goods_table SET quantity = ? WHERE goods_id = ?",
+            qty, id);
     }
 
-    /** ジャンルマッピング */
-
-    private GenreEntity mapGenre(ResultSet rs, int rowNum) throws SQLException {
-        GenreEntity genre = new GenreEntity();
-        genre.setGenreId(rs.getInt("genre_id"));
-        genre.setGenreName(rs.getString("genre_name"));
-        return genre;
+    /* 不良品処理（-1） */
+    public void decreaseStock(Long id) {
+        jdbcTemplate.update(
+            "UPDATE goods_table SET quantity = quantity - 1 WHERE goods_id = ?",
+            id);
     }
 }

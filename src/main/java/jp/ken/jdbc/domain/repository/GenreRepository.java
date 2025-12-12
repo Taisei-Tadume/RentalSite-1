@@ -19,17 +19,13 @@ public class GenreRepository {
         this.genreRowMapper = genreRowMapper;
     }
 
-    /**
-     * ジャンル一覧取得
-     */
+    /** 全件取得 */
     public List<GenreEntity> findAll() {
         String sql = "SELECT genre_id, genre_name FROM goods_genre_table ORDER BY genre_id";
         return jdbcTemplate.query(sql, genreRowMapper);
     }
 
-    /**
-     * ジャンルIDから取得
-     */
+    /** ID で検索 */
     public GenreEntity findById(Long genreId) {
         String sql = "SELECT genre_id, genre_name FROM goods_genre_table WHERE genre_id = ?";
         var list = jdbcTemplate.query(sql, genreRowMapper, genreId);

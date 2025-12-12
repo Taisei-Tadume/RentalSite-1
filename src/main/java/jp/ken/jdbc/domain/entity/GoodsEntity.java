@@ -7,28 +7,26 @@ import lombok.Data;
 @Data
 public class GoodsEntity {
 
-    /** 商品ID（null 許容のため Integer） */
     private Integer goodsId;
 
-    /** 商品名 */
     @NotBlank(message = "商品名を入力してください")
     private String goodsName;
 
-    /** カテゴリID（int に変更） */
     @NotNull(message = "カテゴリを入力してください")
     private Integer categoryId;
 
-    /** ジャンルID（int に変更） */
     @NotNull(message = "ジャンルを入力してください")
     private Integer genreId;
 
-    /** 在庫数 */
     @NotNull(message = "在庫数を入力してください")
     private Integer quantity;
 
-    /** JANコード */
+    @NotBlank(message = "JANコードを入力してください")
     private String janCode;
 
-    /** 商品画像URL */
     private String imageUrl;
+
+    /** JOIN で取得する表示用 */
+    private String categoryName;
+    private String genreName;
 }

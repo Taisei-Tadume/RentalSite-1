@@ -1,106 +1,196 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
     <title>在庫管理</title>
-    <link rel="stylesheet" 
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+
+        .content-wrapper {
+            margin-top: 20px; /* ← ヘッダーとの隙間を必ず確保 */
+        }
+
+        /* 横並びレイアウト */
+        .flex-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        /* 左右フォームの幅 */
+        .box {
+            width: 40%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: #fff;
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+        }
+
+        table, th, td {
+            border: 1px solid #999;
+        }
+
+        th, td {
+            padding: 8px;
+        }
+
+        .error {
+            color: red;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 
 <body>
 
-<!-- ヘッダー -->
-<div th:replace="header2 :: header"></div>
+<!-- ▼ 共通ヘッダー -->
+<div th:replace="header2 :: header2"></div>
 
-<div class="container mt-4">
+<div class="content-wrapper">
 
-    <h2>在庫管理</h2>
+    <!-- ▼ エラー表示（バリデーション） -->
+    <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
 
-    <!-- 商品追加フォーム -->
-    <form th:action="@{/admin/add}" th:object="${form}" method="post" class="mb-4">
 
-        <div class="mb-2">
-            <label>商品名</label>
-            <input type="text" th:field="*{goodsName}" class="form-control" style="max-width: 300px;">
+    <!-- ▼ 左右フォームのラッパー（横並び） -->
+    <div class="flex-wrap">
+
+        <!-- ▼ 商品追加フォーム（左） -->
+        <div class="box">
+            <h2>商品追加</h2>
+
+            <form action="/admin/add" method="post" th:object="${form}">
+                <p>商品名：<input type="text" th:field="*{goodsName}" required></p>
+
+                <p>カテゴリ：
+                    <select th:field="*{categoryId}" required>
+                        <option value="">選択してください</option>
+                        <option th:each="c : ${categoryList}"
+                                th:value="${c.id}"
+                                th:text="${c.name}"></option>
+                    </select>
+                </p>
+
+                <p>ジャンル：
+                    <select th:field="*{genreId}" required>
+                        <option value="">選択してください</option>
+                        <option th:each="g : ${genreList}"
+                                th:value="${g.genreId}"
+                                th:text="${g.genreName}"></option>
+                    </select>
+                </p>
+
+                <p>在庫数：<input type="number" th:field="*{quantity}" min="0" required></p>
+
+                <p>JANコード：<input type="text" th:field="*{janCode}" required></p>
+
+                <p>画像URL：<input type="text" th:field="*{imageUrl}"></p>
+
+                <button type="submit">追加</button>
+            </form>
         </div>
 
-        <div class="mb-2">
-            <label>カテゴリ</label>
-            <select th:field="*{categoryId}" class="form-control" style="max-width: 300px;">
-                <option value="">-- 選択してください --</option>
-                <option th:each="c : ${categoryList}"
-                        th:value="${c.category_id}"
-                        th:text="${c.category_name}"></option>
-            </select>
+
+        <!-- ▼ 商品検索フォーム（右） -->
+        <div class="box">
+            <h2>商品検索</h2>
+
+            <form action="/admin/stock/search" method="get">
+                <p>商品ID：<input type="number" name="goodsId"></p>
+                <p>商品名：<input type="text" name="goodsName"></p>
+
+                <p>カテゴリ：
+                    <select name="categoryId">
+                        <option value="">指定なし</option>
+                        <option th:each="c : ${categoryList}"
+                                th:value="${c.id}"
+                                th:text="${c.name}"></option>
+                    </select>
+                </p>
+
+                <p>ジャンル：
+                    <select name="genreId">
+                        <option value="">指定なし</option>
+                        <option th:each="g : ${genreList}"
+                                th:value="${g.genreId}"
+                                th:text="${g.genreName}"></option>
+                    </select>
+                </p>
+
+                <button type="submit">検索</button>
+            </form>
         </div>
 
-        <div class="mb-2">
-            <label>ジャンルID</label>
-            <input type="number" th:field="*{genreId}" class="form-control" style="max-width: 120px;">
-        </div>
+    </div>
 
-        <div class="mb-2">
-            <label>在庫数</label>
-            <input type="number" th:field="*{quantity}" class="form-control" style="max-width: 120px;">
-        </div>
 
-        <div class="mb-2">
-            <label>JANコード</label>
-            <input type="text" th:field="*{janCode}" class="form-control" style="max-width: 200px;">
-        </div>
+    <!-- ▼ 検索結果（検索した時だけ表示） -->
+    <div th:if="${result != null}">
+        <h2>検索結果</h2>
 
-        <div class="mb-2">
-            <label>画像URL（任意）</label>
-            <input type="text" th:field="*{imageUrl}" class="form-control" style="max-width: 300px;">
-        </div>
-
-        <button class="btn btn-primary mt-2">登録</button>
-    </form>
-
-    <hr>
-
-    <!-- 商品一覧 -->
-    <h3>商品一覧</h3>
-
-    <table class="table table-bordered mt-3">
-        <thead>
+        <table>
+            <thead>
             <tr>
                 <th>ID</th>
                 <th>商品名</th>
+                <th>カテゴリ</th>
+                <th>ジャンル</th>
                 <th>在庫</th>
+                <th>JAN</th>
+                <th>画像</th>
                 <th>更新</th>
                 <th>不良品</th>
             </tr>
-        </thead>
+            </thead>
 
-        <tbody>
-            <tr th:each="g : ${goodsList}">
+            <tbody>
+            <tr th:each="g : ${result}">
                 <td th:text="${g.goodsId}"></td>
                 <td th:text="${g.goodsName}"></td>
+                <td th:text="${g.categoryName}"></td>
+                <td th:text="${g.genreName}"></td>
                 <td th:text="${g.quantity}"></td>
+                <td th:text="${g.janCode}"></td>
+                <td><img th:src="${g.imageUrl}" alt="" width="60"></td>
 
                 <!-- 在庫更新 -->
                 <td>
-                    <form th:action="@{/admin/update}" method="post" class="d-flex">
-                        <input type="number" name="qty" class="form-control me-2"
-                               style="max-width: 120px;">
+                    <form action="/admin/update" method="post">
                         <input type="hidden" name="id" th:value="${g.goodsId}">
-                        <button class="btn btn-success">更新</button>
+                        <input type="number" name="qty" min="0" required>
+                        <button type="submit">変更</button>
                     </form>
                 </td>
 
-                <!-- 不良品 -->
+                <!-- 不良品 -1 -->
                 <td>
-                    <form th:action="@{/admin/bad}" method="post">
+                    <form action="/admin/bad" method="post">
                         <input type="hidden" name="id" th:value="${g.goodsId}">
-                        <button class="btn btn-danger">-1</button>
+                        <button type="submit">-1</button>
                     </form>
                 </td>
             </tr>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 
 </div>
+
 </body>
 </html>
