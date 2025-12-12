@@ -2,20 +2,14 @@ package jp.ken.jdbc.presentation.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
 
-import jakarta.servlet.http.HttpSession;
-import jp.ken.jdbc.application.service.MemberService;
-import jp.ken.jdbc.domain.entity.MemberEntity;
 import jp.ken.jdbc.presentation.form.LoginForm;
 
 @Controller
 public class LoginController {
-
+/*  必要ないかも
     private final MemberService memberService;
     private final HttpSession session;
 
@@ -24,13 +18,13 @@ public class LoginController {
     public LoginController(MemberService memberService, HttpSession session) {
         this.memberService = memberService;
         this.session = session;
-    }
+    }*/
 
     @GetMapping("/login")
     public String loginPage(@ModelAttribute("loginForm") LoginForm form, Model model) {
         return "login";
     }
-
+/*  必要ないかも
     @PostMapping("/login")
     public String login(
             @Validated @ModelAttribute("loginForm") LoginForm form,
@@ -78,5 +72,5 @@ public class LoginController {
         // その他の数値 → 権限エラー扱い
         model.addAttribute("errorMessage", "不正な権限が設定されています");
         return "login";
-    }
+    }*/
 }

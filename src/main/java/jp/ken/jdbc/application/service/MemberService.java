@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jp.ken.jdbc.domain.entity.MemberEntity;
 import jp.ken.jdbc.domain.repository.MemberRepository;
-import jp.ken.jdbc.presentation.form.LoginForm;
 import jp.ken.jdbc.presentation.form.MemberRegistForm;
 
 @Service
@@ -53,29 +52,14 @@ public class MemberService {
 
         memberRepository.save(member);
     }
-
+    
     /**
-     * ログイン処理
+     * user_name でユーザー取得（← LoginSuccessHandler が使用）
      */
-    public MemberEntity login(LoginForm form) {
-
-        if (form == null) {
-            throw new IllegalArgumentException("フォームがnullです");
-        }
-
-        // メールアドレスでユーザー検索
-        MemberEntity member = memberRepository.findByEmail(form.getEmail());
-        if (member == null) {
-            return null; // ユーザーなし
-        }
-
-        // パスワード照合
-        if (!passwordEncoder.matches(form.getPassword(), member.getPasswordHash())) {
-            return null; // パスワード不一致
-        }
-
-        return member; // ログイン成功
+    public MemberEntity findByUserName(String userName) {
+        return memberRepository.findByUserName(userName);
     }
+
 
     /**
      * メールアドレス重複チェック
