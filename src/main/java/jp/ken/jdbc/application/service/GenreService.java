@@ -16,16 +16,12 @@ public class GenreService {
         this.genreRepository = genreRepository;
     }
 
-    /**
-     * 全ジャンル取得
-     */
+    /** 全ジャンル取得 */
     public List<GenreEntity> getAllGenres() {
         return genreRepository.findAll();
     }
 
-    /**
-     * ジャンルIDから取得（存在しない場合は null を返す）
-     */
+    /** ID から取得 */
     public GenreEntity getGenreById(Long genreId) {
         return genreRepository.findById(genreId);
     }

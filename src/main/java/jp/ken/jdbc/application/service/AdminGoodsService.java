@@ -1,9 +1,7 @@
 package jp.ken.jdbc.application.service;
 
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jp.ken.jdbc.domain.entity.GoodsEntity;
@@ -12,15 +10,22 @@ import jp.ken.jdbc.domain.repository.AdminGoodsRepository;
 @Service
 public class AdminGoodsService {
 
-    @Autowired
-    private AdminGoodsRepository repo;
+    private final AdminGoodsRepository repo;
+
+    public AdminGoodsService(AdminGoodsRepository repo) {
+        this.repo = repo;
+    }
 
     public List<GoodsEntity> findAll() {
         return repo.findAll();
     }
 
-    public void insertGoods(GoodsEntity g) {
-        repo.insertGoods(g);
+    public List<GoodsEntity> search(Integer id, String name, Integer categoryId, Integer genreId) {
+        return repo.search(id, name, categoryId, genreId);
+    }
+
+    public void insertGoods(GoodsEntity e) {
+        repo.insert(e);
     }
 
     public void updateStock(Long id, Integer qty) {
@@ -29,9 +34,5 @@ public class AdminGoodsService {
 
     public void decreaseStock(Long id) {
         repo.decreaseStock(id);
-    }
-
-    public List<Map<String, Object>> findAllCategories() {
-        return repo.findAllCategories();
     }
 }
