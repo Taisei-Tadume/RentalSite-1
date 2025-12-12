@@ -1,5 +1,7 @@
 package jp.ken.jdbc.application.service;
 
+import java.util.List;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,18 +39,18 @@ public class MemberService {
         String encodedPassword = passwordEncoder.encode(form.getPassword());
 
         MemberEntity member = new MemberEntity();
-        
+
         member.setUserName(trim(form.getUserName()));
         member.setEmail(trim(form.getEmail()));
         member.setPhoneNumber(trim(form.getPhoneNumber()));
         member.setAddress(trim(form.getAddress()));
         member.setPostalCode(trim(form.getPostalCode()));
         member.setPasswordHash(encodedPassword);
-        
-        //権限登録(1 = 一般ユーザー)
+
+        // 権限登録(1 = 一般ユーザー)
         member.setAuthorityId(1);
-        
-        //プラン登録(1 = お試しプラン)
+
+        // プラン登録(1 = お試しプラン)
         member.setPlanId(1);
 
         memberRepository.save(member);
@@ -63,18 +65,16 @@ public class MemberService {
             throw new IllegalArgumentException("フォームがnullです");
         }
 
-        // メールアドレスでユーザー検索
         MemberEntity member = memberRepository.findByEmail(form.getEmail());
         if (member == null) {
-            return null; // ユーザーなし
+            return null;
         }
 
-        // パスワード照合
         if (!passwordEncoder.matches(form.getPassword(), member.getPasswordHash())) {
-            return null; // パスワード不一致
+            return null;
         }
 
-        return member; // ログイン成功
+        return member;
     }
 
     /**
@@ -90,4 +90,40 @@ public class MemberService {
     private String trim(String value) {
         return value == null ? null : value.trim();
     }
+
+
+    // ▼▼▼ ここから管理画面用に追加 ▼▼▼
+
+    /**
+     * 会員一覧（全件）
+     */
+    public List<MemberEntity> findAllMembers() {
+        return memberRepository.findAll();
+    }
+
+    /**
+     * 会員検索（ID or 名前）
+     */
+    public List<MemberEntity> search(String keyword) {
+
+        if (keyword == null || keyword.isEmpty()) {
+            return memberRepository.findAll();
+        }
+
+        // 数字なら ID 検索
+        try {
+            Integer id = Integer.parseInt(keyword);
+            return memberRepository.findByUserId(id);
+
+        // 数字でなければ名前検索（部分一致）
+        } catch (NumberFormatException e) {
+            return memberRepository.findByUserNameLike(keyword);
+        }
+    }
+    public void changeAuthority(Integer userId, Integer authorityId) {
+        memberRepository.updateAuthority(userId, authorityId);
+    }
+
+    // ▲▲▲ 追加ここまで ▲▲▲
+
 }
