@@ -96,6 +96,12 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: 0.3s;
+        }
+
+        /* ✅ ホバーで少し拡大 */
+        .item-card:hover img {
+            transform: scale(1.05);
         }
 
         /* ✅ 商品名を小さく */
@@ -104,6 +110,16 @@
             font-size: 14px;
             font-weight: 500;
             color: #333;
+        }
+
+        /* ✅ クリック可能に見せる */
+        .item-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .item-link:hover {
+            opacity: 0.8;
         }
     </style>
 </head>
@@ -139,20 +155,26 @@
                 <div class="auto-scroll-inner">
 
                     <!-- ✅ 商品リスト1回目 -->
-                    <div class="item-card" th:each="item : ${newItems}">
-                        <div class="item-img-box">
-                            <img th:src="${item.image}" th:alt="${item.title}">
+                    <a class="item-link" th:each="item : ${newItems}"
+                       th:href="@{/detail/{id}(id=${item.id})}">
+                        <div class="item-card">
+                            <div class="item-img-box">
+                                <img th:src="${item.image}" th:alt="${item.title}">
+                            </div>
+                            <div class="item-title" th:text="${item.title}"></div>
                         </div>
-                        <div class="item-title" th:text="${item.title}"></div>
-                    </div>
+                    </a>
 
-                    <!-- ✅ 商品リスト2回目（複製） → これで途切れない -->
-                    <div class="item-card" th:each="item : ${newItems}">
-                        <div class="item-img-box">
-                            <img th:src="${item.image}" th:alt="${item.title}">
+                    <!-- ✅ 商品リスト2回目（複製） -->
+                    <a class="item-link" th:each="item : ${newItems}"
+                       th:href="@{/detail/{id}(id=${item.id})}">
+                        <div class="item-card">
+                            <div class="item-img-box">
+                                <img th:src="${item.image}" th:alt="${item.title}">
+                            </div>
+                            <div class="item-title" th:text="${item.title}"></div>
                         </div>
-                        <div class="item-title" th:text="${item.title}"></div>
-                    </div>
+                    </a>
 
                 </div>
             </div>
