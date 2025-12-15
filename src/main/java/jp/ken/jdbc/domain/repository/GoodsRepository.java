@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import jp.ken.jdbc.domain.entity.GenreEntity;
 import jp.ken.jdbc.domain.entity.GoodsEntity;
 import jp.ken.jdbc.domain.mapper.GoodsRowMapper;
 
