@@ -17,13 +17,16 @@ public class MemberRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // ============================
     // 新規会員登録
+    // ============================
     public void save(MemberEntity member) {
         String sql = """
-                INSERT INTO USERS_TABLE
-                (user_name, email, phone_number, address, postal_code, password_hash, authority_id, plan_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                """;
+            INSERT INTO USERS_TABLE
+            (user_name, email, phone_number, address, postal_code,
+             password_hash, authority_id, plan_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """;
 
         jdbcTemplate.update(sql,
                 member.getUserName(),
@@ -35,17 +38,21 @@ public class MemberRepository {
                 member.getAuthorityId(),
                 member.getPlanId());
     }
-    
- // ✅ user_name でユーザー取得（LoginSuccessHandler が使用）
- 	public MemberEntity findByUserName(String userName) {
- 		String sql = "SELECT * FROM USERS_TABLE WHERE user_name = ?";
- 		return jdbcTemplate.query(sql, new MemberRowMapper(), userName)
- 				.stream()
- 				.findFirst()
- 				.orElse(null);
- 	}
 
-    // メールアドレス取得（ログイン用）
+    // ============================
+    // user_name 検索（ログイン後）
+    // ============================
+    public MemberEntity findByUserName(String userName) {
+        String sql = "SELECT * FROM USERS_TABLE WHERE user_name = ?";
+        return jdbcTemplate.query(sql, new MemberRowMapper(), userName)
+                .stream()
+                .findFirst()
+                .orElse(null);
+    }
+
+    // ============================
+    // email 検索（ログイン用）
+    // ============================
     public MemberEntity findByEmail(String email) {
         String sql = "SELECT * FROM USERS_TABLE WHERE email = ?";
         return jdbcTemplate.query(sql, new MemberRowMapper(), email)
@@ -60,7 +67,9 @@ public class MemberRepository {
         return count != null && count > 0;
     }
 
-    // ▼▼▼ 管理画面用（追加）▼▼▼
+    // ============================
+    // 管理画面用
+    // ============================
 
     // 全件取得
     public List<MemberEntity> findAll() {
@@ -77,15 +86,26 @@ public class MemberRepository {
     // 名前検索（部分一致）
     public List<MemberEntity> findByUserNameLike(String keyword) {
         String sql = "SELECT * FROM USERS_TABLE WHERE user_name LIKE ? ORDER BY user_id";
-        String like = "%" + keyword + "%";
-        return jdbcTemplate.query(sql, new MemberRowMapper(), like);
+        return jdbcTemplate.query(sql, new MemberRowMapper(), "%" + keyword + "%");
     }
 
+    // ============================
     // 権限変更
+    // ============================
     public void updateAuthority(Integer userId, Integer authorityId) {
         String sql = "UPDATE USERS_TABLE SET authority_id = ? WHERE user_id = ?";
         jdbcTemplate.update(sql, authorityId, userId);
     }
 
-    // ▲▲▲ 追加ここまで ▲▲▲
+    // ============================
+    // プラン変更（Free / Bronze / Silver / Gold）
+    // ============================
+ // プラン変更
+    public void updatePlan(Integer userId, Integer planId) {
+        String sql = "UPDATE USERS_TABLE SET plan_id = ? WHERE user_id = ?";
+        jdbcTemplate.update(sql, planId, userId);
+    }
+
+    
+    
 }

@@ -52,7 +52,8 @@ public class AdminGoodsController {
             @RequestParam(required = false) Integer genreId,
             Model model) {
 
-        List<GoodsEntity> list = service.search(goodsId, goodsName, categoryId, genreId);
+        List<GoodsEntity> list =
+                service.search(goodsId, goodsName, categoryId, genreId);
 
         model.addAttribute("result", list);
         model.addAttribute("form", new GoodsEntity());
@@ -69,14 +70,13 @@ public class AdminGoodsController {
     }
 
     /** 商品追加 */
-    @PostMapping("/admin/add")
+    @PostMapping("/admin/stock/add")
     public String addGoods(@ModelAttribute GoodsEntity form) {
 
         if (form.getQuantity() == null) form.setQuantity(0);
         if (form.getGenreId() == null) form.setGenreId(0);
         if (form.getCategoryId() == null) form.setCategoryId(0);
 
-        // ★ JANコードが空欄なら null に変換
         if (form.getJanCode() == null || form.getJanCode().isBlank()) {
             form.setJanCode(null);
         }
@@ -85,18 +85,63 @@ public class AdminGoodsController {
         return "redirect:/admin/stock";
     }
 
+    /** 在庫更新（検索結果＋スクロール維持） */
+    @PostMapping("/admin/stock/update")
+    public String updateStock(
+            @RequestParam Long id,
+            @RequestParam Integer qty,
+            @RequestParam(required = false) Integer goodsId,
+            @RequestParam(required = false) String goodsName,
+            @RequestParam(required = false) Integer categoryId,
+            @RequestParam(required = false) Integer genreId,
+            @RequestParam(required = false) String anchor,
+            Model model) {
 
-    /** 在庫更新 */
-    @PostMapping("/admin/update")
-    public String updateStock(@RequestParam Long id, @RequestParam Integer qty) {
         service.updateStock(id, qty);
-        return "redirect:/admin/stock";
+
+        return backToSearch(goodsId, goodsName, categoryId, genreId, anchor, model);
     }
 
-    /** 不良品 -1 */
-    @PostMapping("/admin/bad")
-    public String badItem(@RequestParam Long id) {
+    /** 不良品 -1（検索結果＋スクロール維持） */
+    @PostMapping("/admin/stock/bad")
+    public String badItem(
+            @RequestParam Long id,
+            @RequestParam(required = false) Integer goodsId,
+            @RequestParam(required = false) String goodsName,
+            @RequestParam(required = false) Integer categoryId,
+            @RequestParam(required = false) Integer genreId,
+            @RequestParam(required = false) String anchor,
+            Model model) {
+
         service.decreaseStock(id);
-        return "redirect:/admin/stock";
+
+        return backToSearch(goodsId, goodsName, categoryId, genreId, anchor, model);
+    }
+
+    /** 共通：検索条件＋スクロール位置を維持して戻す */
+    private String backToSearch(
+            Integer goodsId,
+            String goodsName,
+            Integer categoryId,
+            Integer genreId,
+            String anchor,
+            Model model) {
+
+        List<GoodsEntity> list =
+                service.search(goodsId, goodsName, categoryId, genreId);
+
+        model.addAttribute("result", list);
+        model.addAttribute("form", new GoodsEntity());
+        model.addAttribute("scrollAnchor", anchor);
+
+        model.addAttribute("categoryList",
+                service.findAll().stream()
+                        .map(g -> Map.of("id", g.getCategoryId(), "name", g.getCategoryName()))
+                        .distinct()
+                        .toList());
+
+        model.addAttribute("genreList", genreService.getAllGenres());
+
+        return "admin-stock";
     }
 }

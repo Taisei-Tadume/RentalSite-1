@@ -17,12 +17,15 @@ public class AdminMemberController {
         this.memberService = memberService;
     }
 
+    // ============================
+    // 会員管理画面表示
+    // ============================
     @GetMapping("/admin/member")
     public String memberManagePage(
-            @RequestParam(value="keyword", required=false) String keyword,
+            @RequestParam(value = "keyword", required = false) String keyword,
             Model model) {
 
-        var members = (keyword == null)
+        var members = (keyword == null || keyword.isBlank())
                 ? memberService.findAllMembers()
                 : memberService.search(keyword);
 
@@ -32,12 +35,28 @@ public class AdminMemberController {
         return "admin-member";
     }
 
+    // ============================
+    // 権限変更
+    // ============================
     @PostMapping("/admin/member/authority")
     public String updateAuthority(
             @RequestParam Integer userId,
             @RequestParam Integer authorityId) {
 
         memberService.changeAuthority(userId, authorityId);
+
+        return "redirect:/admin/member?keyword=" + userId;
+    }
+
+    // ============================
+    // プラン変更（Free / Bronze / Silver / Gold）
+    // ============================
+    @PostMapping("/admin/member/plan")
+    public String updatePlan(
+            @RequestParam Integer userId,
+            @RequestParam Integer planId) {
+
+        memberService.changePlan(userId, planId);
 
         return "redirect:/admin/member?keyword=" + userId;
     }
