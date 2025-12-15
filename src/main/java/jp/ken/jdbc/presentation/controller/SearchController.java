@@ -29,42 +29,51 @@ public class SearchController {
     @GetMapping("/search")
     public String search(
             @RequestParam(value = "genre", required = false) Integer genreId,
-            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(value = "page", required = false) Integer page,
             SearchForm searchForm,
             HttpSession session,
             Model model) {
 
-        // ページ番号の安全化
-        int currentPage = Math.max(page, 0);
+        // ===== 検索条件の保存 or 復元 =====
+        SearchForm sessionForm = (SearchForm) session.getAttribute("searchForm");
 
-        // キーワード null 対策
-        String keyword = (searchForm.getKeyword() != null) ? searchForm.getKeyword().trim() : "";
+        if (searchForm.getKeyword() != null) {
+            // 新規検索（フォームから来た）
+            searchForm.setKeyword(searchForm.getKeyword().trim());
+            session.setAttribute("searchForm", searchForm);
+        } else if (sessionForm != null) {
+            // detail から戻った場合など
+            searchForm = sessionForm;
+        }
+
+        String keyword = (searchForm.getKeyword() != null)
+                ? searchForm.getKeyword()
+                : "";
+
+        int currentPage = (page != null) ? Math.max(page, 0) : 0;
 
         List<GoodsEntity> resultList;
         long totalCount;
 
         if (!keyword.isEmpty()) {
-            // キーワード検索（部分一致） + ジャンル絞り込み
-            resultList = goodsService.searchByKeyword(keyword, genreId, currentPage, PAGE_SIZE);
+            resultList = goodsService.searchByKeyword(
+                    keyword, genreId, currentPage, PAGE_SIZE);
             totalCount = goodsService.countByKeyword(keyword, genreId);
         } else {
-            // ジャンル別検索
             int genre = (genreId != null) ? genreId : 0;
-            resultList = goodsService.searchGoods(genre, currentPage, PAGE_SIZE);
+            resultList = goodsService.searchGoods(
+                    genre, currentPage, PAGE_SIZE);
             totalCount = goodsService.countGoodsByGenre(genre);
         }
 
-        // 全ジャンルリスト
         List<GenreEntity> genres = goodsService.getAllGenres();
 
-        // モデルにセット
         model.addAttribute("resultList", resultList);
         model.addAttribute("genres", genres);
-        model.addAttribute("totalPages", (int) Math.ceil((double) totalCount / PAGE_SIZE));
+        model.addAttribute("totalPages",
+                (int) Math.ceil((double) totalCount / PAGE_SIZE));
         model.addAttribute("currentPage", currentPage);
         model.addAttribute("searchForm", searchForm);
-
-        // カート情報
         model.addAttribute("cartItems", cartService.getCart(session));
 
         return "searchresult";
