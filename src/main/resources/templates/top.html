@@ -156,7 +156,7 @@
 
                     <!-- ✅ 商品リスト1回目 -->
                     <a class="item-link" th:each="item : ${newItems}"
-                       th:href="@{/item/detail/{id}(id=${item.id})}">
+                       th:href="@{/detail/{id}(id=${item.id})}">
                         <div class="item-card">
                             <div class="item-img-box">
                                 <img th:src="${item.image}" th:alt="${item.title}">
@@ -167,7 +167,7 @@
 
                     <!-- ✅ 商品リスト2回目（複製） -->
                     <a class="item-link" th:each="item : ${newItems}"
-                       th:href="@{/item/detail/{id}(id=${item.id})}">
+                       th:href="@{/detail/{id}(id=${item.id})}">
                         <div class="item-card">
                             <div class="item-img-box">
                                 <img th:src="${item.image}" th:alt="${item.title}">
