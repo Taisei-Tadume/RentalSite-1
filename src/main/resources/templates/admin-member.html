@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <title>会員管理</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <div th:replace="~{header2 :: siteHeader}"></div>
 </head>
 
 <body class="p-4">
 
-<h1 class="mb-4">会員管理</h1>
+<!-- ▼ 正しいヘッダー読込 -->
+<div th:replace="header2 :: header2"></div>
+
+<h1 class="mb-4 mt-3">会員管理</h1>
 
 <!-- ▼ 検索フォーム -->
 <form method="get" action="/admin/member" class="mb-4 w-50">
@@ -52,7 +54,7 @@
             <td>
                 <form method="post" action="/admin/member/authority" class="d-flex gap-2">
                     <input type="hidden" name="userId" th:value="${m.userId}">
-                    
+
                     <select name="authorityId" class="form-select form-select-sm">
                         <option value="1" th:selected="${m.authorityId == 1}">一般</option>
                         <option value="2" th:selected="${m.authorityId == 2}">管理者</option>

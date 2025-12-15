@@ -1,15 +1,46 @@
-<div th:fragment="siteHeader">
-    <header class="bg-light py-3 mb-4 border-bottom">
-        <div class="container d-flex justify-content-end">
+<!-- templates/header2.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* ヘッダー */
+        .header-container {
+            background: #f8f8f8;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: flex-end; /* ★右寄せ */
+            gap: 20px;
+        }
 
-            <!-- TOPリンク -->
-             <a th:href="@{/top}" class="me-3">TOPページ</a>
-            <a th:href="@{/admin}" class="me-3">管理TOP</a>
-            <a th:href="@{/admin/stock}" class="me-3">在庫管理</a>
-            <a th:href="@{/admin/member}" class="me-3">会員管理</a>
-            <a th:href="@{/employee/info}" class="me-3">注文管理</a>
-            <a th:href="@{/admin/stock}" class="me-3">在庫処理</a>
-            
+        .header-link {
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+        }
+        .header-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ヘッダーと本文の隙間 */
+        .content-wrapper {
+            margin-top: 20px; /* ★ヘッダー下の余白 */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ★ fragment はここだけにする -->
+    <header th:fragment="header2">
+        <div class="header-container">
+            <a class="header-link" href="/top">TOPページ</a>
+            <a class="header-link" href="/admin">従業員TOP</a>
+            <a class="header-link" href="/admin/stock">在庫管理</a>
+            <a class="header-link" href="/admin/member">会員管理</a>
+            <a class="header-link" href="/admin/order">注文管理</a>
+            <a class="header-link" href="/admin/processing">在庫処理</a>
         </div>
     </header>
-</div>
+</body>
+</html>
