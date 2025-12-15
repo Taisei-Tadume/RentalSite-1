@@ -12,27 +12,30 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TopController {
 
-    private final ItemService itemService;
+	private final ItemService itemService;
 
-    // "/" にアクセスされたら /top にリダイレクト
-    @GetMapping("/")
-    public String rootRedirect() {
-        return "redirect:/top";
-    }
+	// "/" にアクセスされたら /top にリダイレクト
+	@GetMapping("/")
+	public String rootRedirect() {
+		return "redirect:/top";
+	}
 
-    @GetMapping("/top")
-    public String topPage(Model model, HttpSession session) {
+	@GetMapping("/top")
+	public String topPage(Model model, HttpSession session) {
 
-        // セッションから role を取得
-        String role = (String) session.getAttribute("role");
+		// ✅ トップに来たら検索条件をクリア（重要）
+		session.removeAttribute("searchForm");
 
-        // 管理者かどうか
-        boolean isAdmin = "admin".equals(role);
-        model.addAttribute("isAdmin", isAdmin);
+		// セッションから role を取得
+		String role = (String) session.getAttribute("role");
 
-        // 新作入荷商品を DB から取得
-        model.addAttribute("newItems", itemService.findNewItems());
+		// 管理者かどうか
+		boolean isAdmin = "admin".equals(role);
+		model.addAttribute("isAdmin", isAdmin);
 
-        return "top";
-    }
+		// 新作入荷商品を DB から取得
+		model.addAttribute("newItems", itemService.findNewItems());
+
+		return "top";
+	}
 }
