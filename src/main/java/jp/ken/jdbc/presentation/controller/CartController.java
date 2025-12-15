@@ -23,7 +23,7 @@ public class CartController {
 
     // カートに追加
     @PostMapping("/add")
-    public String add(@RequestParam("goodsId") long goodsId,
+    public String add(@RequestParam("goodsId") int goodsId,
                       HttpSession session) {
 
         cartService.addToCart(goodsId, session);
@@ -35,7 +35,7 @@ public class CartController {
     // 数を増やす
     @PostMapping("/increase")
     @ResponseBody
-    public void increase(@RequestParam long goodsId, HttpSession session) {
+    public void increase(@RequestParam int goodsId, HttpSession session) {
         cartService.increase(goodsId, session);
     }
 
@@ -43,14 +43,14 @@ public class CartController {
     //数を減らす
     @PostMapping("/decrease")
     @ResponseBody
-    public void decrease(@RequestParam long goodsId, HttpSession session) {
+    public void decrease(@RequestParam int goodsId, HttpSession session) {
         cartService.decrease(goodsId, session);
     }
 
 
     // 削除
     @PostMapping("/remove")
-    public String remove(@RequestParam("goodsId") long goodsId, HttpSession session) {
+    public String remove(@RequestParam("goodsId") int goodsId, HttpSession session) {
         cartService.remove(goodsId, session);
         return "redirect:/cart";
     }

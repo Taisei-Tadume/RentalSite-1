@@ -74,7 +74,7 @@ public class GoodsService {
     // ============================
     // 商品ID検索（存在しない場合は null）
     // ============================
-    public GoodsEntity findById(long goodsId) {
+    public GoodsEntity findById(int goodsId) {
         try {
             return goodsRepository.findById(goodsId);
         } catch (EmptyResultDataAccessException e) {

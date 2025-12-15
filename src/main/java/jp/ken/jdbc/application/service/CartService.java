@@ -31,7 +31,7 @@ public class CartService {
     }
 
     // 商品追加（在庫チェック付き）
-    public void addToCart(long goodsId, HttpSession session) {
+    public void addToCart(int goodsId, HttpSession session) {
 
         GoodsEntity goods = goodsRepository.findById(goodsId);
         List<CartItem> cart = getCart(session);
@@ -55,7 +55,7 @@ public class CartService {
     }
 
     // 数量増加（在庫チェック付き）
-    public void increase(long goodsId, HttpSession session) {
+    public void increase(int goodsId, HttpSession session) {
         List<CartItem> cart = getCart(session);
 
         // DB から最新の在庫を取得
@@ -76,7 +76,7 @@ public class CartService {
     }
 
     // 数量減少（0未満にならないように CartItem 側で制御）
-    public void decrease(long goodsId, HttpSession session) {
+    public void decrease(int goodsId, HttpSession session) {
         List<CartItem> cart = getCart(session);
 
         cart.stream()
@@ -86,7 +86,7 @@ public class CartService {
     }
 
     // 削除
-    public void remove(long goodsId, HttpSession session) {
+    public void remove(int goodsId, HttpSession session) {
         List<CartItem> cart = getCart(session);
         cart.removeIf(i -> i.getGoods().getGoodsId() == goodsId);
     }
