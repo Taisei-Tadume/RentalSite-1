@@ -5,5 +5,7 @@ import java.util.List;
 import jp.ken.jdbc.domain.model.Item;
 
 public interface ItemService {
+
 	List<Item> findNewItems();
+
 }

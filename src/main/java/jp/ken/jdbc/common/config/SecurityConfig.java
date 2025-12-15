@@ -38,6 +38,7 @@ public class SecurityConfig {
 				.requestMatchers("/top", "/login", "/regist").permitAll()
 				.requestMatchers("/search/**").permitAll() // ★ 最適化：検索はすべて公開
 				.requestMatchers("/cart/**").permitAll() // ★ 最適化：カート操作をすべて許可
+				.requestMatchers("/detail/**").permitAll() // ★　商品詳細ページを公開
 
 				/* ✅ 静的リソース（必ず公開） */
 				.requestMatchers("/css/**", "/js/**", "/images/**", "/picture/**").permitAll()
