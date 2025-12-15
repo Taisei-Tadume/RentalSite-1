@@ -5,11 +5,16 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import jakarta.servlet.http.HttpSession;
+import jp.ken.jdbc.domain.service.ItemService;
+import lombok.RequiredArgsConstructor;
 
 @Controller
+@RequiredArgsConstructor
 public class TopController {
 
-    // ★ "/" にアクセスされたら /top にリダイレクト
+    private final ItemService itemService;
+
+    // "/" にアクセスされたら /top にリダイレクト
     @GetMapping("/")
     public String rootRedirect() {
         return "redirect:/top";
@@ -18,13 +23,15 @@ public class TopController {
     @GetMapping("/top")
     public String topPage(Model model, HttpSession session) {
 
-        // ★ セッションから role を取得（例："admin" or "user"）
+        // セッションから role を取得
         String role = (String) session.getAttribute("role");
 
-        // 管理者かどうかのフラグ
+        // 管理者かどうか
         boolean isAdmin = "admin".equals(role);
-
         model.addAttribute("isAdmin", isAdmin);
+
+        // 新作入荷商品を DB から取得
+        model.addAttribute("newItems", itemService.findNewItems());
 
         return "top";
     }
