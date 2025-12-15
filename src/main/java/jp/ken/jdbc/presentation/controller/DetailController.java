@@ -22,7 +22,7 @@ public class DetailController {
 
     @GetMapping("/detail/{id}")
     public String detail(
-            @PathVariable("id") long goodsId,
+            @PathVariable("id") int goodsId,
             @RequestParam(name = "added", required = false) String added,
             HttpSession session,
             Model model) {

@@ -1,181 +1,162 @@
 package jp.ken.jdbc.domain.repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import jp.ken.jdbc.domain.entity.GenreEntity;
 import jp.ken.jdbc.domain.entity.GoodsEntity;
+import jp.ken.jdbc.domain.mapper.GoodsRowMapper;
 
 @Repository
 public class GoodsRepository {
 
-    @Autowired
-    private JdbcTemplate jdbc;
+    private final JdbcTemplate jdbcTemplate;
+    private final GoodsRowMapper rowMapper;
 
-    // ============================
-    // 全商品取得
-    // ============================
-    public List<GoodsEntity> findAll(int offset, int limit) {
-        String sql = """
-            SELECT 
-                g.goods_id, g.goods_name, g.category_id, g.genre_id,
-                g.quantity, g.jan_code, g.image_url,
-                c.category_name,
-                t.genre_name
-            FROM GOODS_TABLE g
-            JOIN GOODS_CATEGORY_TABLE c ON g.category_id = c.category_id
-            JOIN GOODS_GENRE_TABLE t ON g.genre_id = t.genre_id
-            ORDER BY g.goods_id
-            LIMIT ? OFFSET ?
-        """;
-        return jdbc.query(sql, this::mapGoods, limit, offset);
+    public GoodsRepository(JdbcTemplate jdbcTemplate, GoodsRowMapper rowMapper) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.rowMapper = rowMapper;
     }
 
     // ============================
-    // ジャンル別取得
+    // 全件取得（ページング）
     // ============================
-    public List<GoodsEntity> findByGenre(int genreId, int offset, int limit) {
+    public List<GoodsEntity> findAll(int offset, int pageSize) {
         String sql = """
-            SELECT 
+            SELECT
                 g.goods_id, g.goods_name, g.category_id, g.genre_id,
                 g.quantity, g.jan_code, g.image_url,
                 c.category_name,
                 t.genre_name
-            FROM GOODS_TABLE g
-            JOIN GOODS_CATEGORY_TABLE c ON g.category_id = c.category_id
-            JOIN GOODS_GENRE_TABLE t ON g.genre_id = t.genre_id
+            FROM goods_table g
+            JOIN goods_category_table c ON g.category_id = c.category_id
+            JOIN goods_genre_table t ON g.genre_id = t.genre_id
+            ORDER BY g.goods_id
+            LIMIT ? OFFSET ?
+        """;
+        return jdbcTemplate.query(sql, rowMapper, pageSize, offset);
+    }
+
+    // ============================
+    // ジャンル別取得（ページング）
+    // ============================
+    public List<GoodsEntity> findByGenre(int genreId, int offset, int pageSize) {
+        String sql = """
+            SELECT
+                g.goods_id, g.goods_name, g.category_id, g.genre_id,
+                g.quantity, g.jan_code, g.image_url,
+                c.category_name,
+                t.genre_name
+            FROM goods_table g
+            JOIN goods_category_table c ON g.category_id = c.category_id
+            JOIN goods_genre_table t ON g.genre_id = t.genre_id
             WHERE g.genre_id = ?
             ORDER BY g.goods_id
             LIMIT ? OFFSET ?
         """;
-        return jdbc.query(sql, this::mapGoods, genreId, limit, offset);
+        return jdbcTemplate.query(sql, rowMapper, genreId, pageSize, offset);
     }
 
     // ============================
-    // 件数
+    // 件数取得
     // ============================
-    public long countAll() {
-        return jdbc.queryForObject(
-            "SELECT COUNT(*) FROM GOODS_TABLE",
-            Long.class
-        );
+    public int countAll() {
+        String sql = "SELECT COUNT(*) FROM goods_table";
+        return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 
-    public long countByGenre(int genreId) {
-        return jdbc.queryForObject(
-            "SELECT COUNT(*) FROM GOODS_TABLE WHERE genre_id = ?",
-            Long.class,
-            genreId
-        );
+    public int countByGenre(int genreId) {
+        String sql = "SELECT COUNT(*) FROM goods_table WHERE genre_id = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, genreId);
     }
 
     // ============================
-    // ジャンル一覧
+    // キーワード検索
+    // ============================
+    public List<GoodsEntity> findByKeyword(String keyword, int offset, int pageSize) {
+        String sql = """
+            SELECT
+                g.goods_id, g.goods_name, g.category_id, g.genre_id,
+                g.quantity, g.jan_code, g.image_url,
+                c.category_name,
+                t.genre_name
+            FROM goods_table g
+            JOIN goods_category_table c ON g.category_id = c.category_id
+            JOIN goods_genre_table t ON g.genre_id = t.genre_id
+            WHERE g.goods_name LIKE ?
+            ORDER BY g.goods_id
+            LIMIT ? OFFSET ?
+        """;
+        return jdbcTemplate.query(sql, rowMapper, "%" + keyword + "%", pageSize, offset);
+    }
+
+    public List<GoodsEntity> findByKeywordAndGenre(String keyword, int genreId, int offset, int pageSize) {
+        String sql = """
+            SELECT
+                g.goods_id, g.goods_name, g.category_id, g.genre_id,
+                g.quantity, g.jan_code, g.image_url,
+                c.category_name,
+                t.genre_name
+            FROM goods_table g
+            JOIN goods_category_table c ON g.category_id = c.category_id
+            JOIN goods_genre_table t ON g.genre_id = t.genre_id
+            WHERE g.goods_name LIKE ?
+              AND g.genre_id = ?
+            ORDER BY g.goods_id
+            LIMIT ? OFFSET ?
+        """;
+        return jdbcTemplate.query(sql, rowMapper, "%" + keyword + "%", genreId, pageSize, offset);
+    }
+
+    public int countByKeyword(String keyword) {
+        String sql = "SELECT COUNT(*) FROM goods_table WHERE goods_name LIKE ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, "%" + keyword + "%");
+    }
+
+    public int countByKeywordAndGenre(String keyword, int genreId) {
+        String sql = """
+            SELECT COUNT(*)
+            FROM goods_table
+            WHERE goods_name LIKE ?
+              AND genre_id = ?
+        """;
+        return jdbcTemplate.queryForObject(sql, Integer.class, "%" + keyword + "%", genreId);
+    }
+
+    // ============================
+    // ジャンル一覧取得
     // ============================
     public List<GenreEntity> findGenres() {
         String sql = """
             SELECT genre_id, genre_name
-            FROM GOODS_GENRE_TABLE
+            FROM goods_genre_table
             ORDER BY genre_id
         """;
-        return jdbc.query(sql, this::mapGenre);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            GenreEntity genre = new GenreEntity();
+            genre.setGenreId(rs.getInt("genre_id"));
+            genre.setGenreName(rs.getString("genre_name"));
+            return genre;
+        });
     }
 
     // ============================
-    // キーワード検索（部分一致）全ジャンル
+    // ID検索
     // ============================
-    public List<GoodsEntity> findByKeyword(String keyword, int offset, int limit) {
+    public GoodsEntity findById(int goodsId) {
         String sql = """
-            SELECT 
+            SELECT
                 g.goods_id, g.goods_name, g.category_id, g.genre_id,
                 g.quantity, g.jan_code, g.image_url,
                 c.category_name,
                 t.genre_name
-            FROM GOODS_TABLE g
-            JOIN GOODS_CATEGORY_TABLE c ON g.category_id = c.category_id
-            JOIN GOODS_GENRE_TABLE t ON g.genre_id = t.genre_id
-            WHERE g.goods_name LIKE ?
-            ORDER BY g.goods_name
-            LIMIT ? OFFSET ?
-        """;
-        return jdbc.query(sql, this::mapGoods, "%" + keyword + "%", limit, offset);
-    }
-
-    // ============================
-    // キーワード ＆ ジャンル検索
-    // ============================
-    public List<GoodsEntity> findByKeywordAndGenre(String keyword, int genreId, int offset, int limit) {
-        String sql = """
-            SELECT 
-                g.goods_id, g.goods_name, g.category_id, g.genre_id,
-                g.quantity, g.jan_code, g.image_url,
-                c.category_name,
-                t.genre_name
-            FROM GOODS_TABLE g
-            JOIN GOODS_CATEGORY_TABLE c ON g.category_id = c.category_id
-            JOIN GOODS_GENRE_TABLE t ON g.genre_id = t.genre_id
-            WHERE g.goods_name LIKE ? AND g.genre_id = ?
-            ORDER BY g.goods_name
-            LIMIT ? OFFSET ?
-        """;
-        return jdbc.query(sql, this::mapGoods, "%" + keyword + "%", genreId, limit, offset);
-    }
-
-    public long countByKeyword(String keyword) {
-        String sql = "SELECT COUNT(*) FROM GOODS_TABLE WHERE goods_name LIKE ?";
-        return jdbc.queryForObject(sql, Long.class, "%" + keyword + "%");
-    }
-
-    public long countByKeywordAndGenre(String keyword, int genreId) {
-        String sql = "SELECT COUNT(*) FROM GOODS_TABLE WHERE goods_name LIKE ? AND genre_id = ?";
-        return jdbc.queryForObject(sql, Long.class, "%" + keyword + "%", genreId);
-    }
-
-    // ============================
-    // 商品ID検索
-    // ============================
-    public GoodsEntity findById(long goodsId) {
-        String sql = """
-            SELECT 
-                g.goods_id, g.goods_name, g.category_id, g.genre_id,
-                g.quantity, g.jan_code, g.image_url,
-                c.category_name,
-                t.genre_name
-            FROM GOODS_TABLE g
-            JOIN GOODS_CATEGORY_TABLE c ON g.category_id = c.category_id
-            JOIN GOODS_GENRE_TABLE t ON g.genre_id = t.genre_id
+            FROM goods_table g
+            JOIN goods_category_table c ON g.category_id = c.category_id
+            JOIN goods_genre_table t ON g.genre_id = t.genre_id
             WHERE g.goods_id = ?
         """;
-        return jdbc.queryForObject(sql, this::mapGoods, goodsId);
-    }
-
-    // ============================
-    // マッピング
-    // ============================
-    private GoodsEntity mapGoods(ResultSet rs, int rowNum) throws SQLException {
-        GoodsEntity goods = new GoodsEntity();
-        goods.setGoodsId(rs.getInt("goods_id"));
-        goods.setGoodsName(rs.getString("goods_name"));
-        goods.setCategoryId(rs.getInt("category_id"));
-        goods.setGenreId(rs.getInt("genre_id"));
-        goods.setQuantity(rs.getInt("quantity"));
-        goods.setJanCode(rs.getString("jan_code"));
-        goods.setImageUrl(rs.getString("image_url"));
-        goods.setCategoryName(rs.getString("category_name"));
-        goods.setGenreName(rs.getString("genre_name"));
-
-        return goods;
-    }
-
-    private GenreEntity mapGenre(ResultSet rs, int rowNum) throws SQLException {
-        GenreEntity genre = new GenreEntity();
-        genre.setGenreId(rs.getInt("genre_id"));
-        genre.setGenreName(rs.getString("genre_name"));
-        return genre;
+        return jdbcTemplate.queryForObject(sql, rowMapper, goodsId);
     }
 }
