@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import jp.ken.jdbc.application.service.MemberService;
+import jp.ken.jdbc.domain.entity.MemberEntity;
 import jp.ken.jdbc.presentation.form.MemberRegistForm;
 
 @Controller
@@ -20,35 +21,43 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    //  TODO  会員情報画面へ遷移するように
     @GetMapping("/member")
     public String showForm(Model model) {
         model.addAttribute("memberForm", new MemberRegistForm());
         return "newmemberregistration";
     }
 
-    // TODO  会員情報を更新したい場合の処理
     @PostMapping("/member")
     public String regist(
             @Validated @ModelAttribute("memberForm") MemberRegistForm form,
             BindingResult bindingResult,
             Model model) {
 
-        // 入力エラー
+        // 入力チェック
         if (bindingResult.hasErrors()) {
             return "newmemberregistration";
         }
 
-        // ★ メールアドレス重複チェック
+        // メール重複チェック
         if (memberService.emailExists(form.getEmail())) {
             model.addAttribute("errorMessage", "このメールアドレスはすでに登録されています");
             return "newmemberregistration";
         }
 
-        // DBへ保存
-        memberService.register(form);
+        // Form → Entity 変換
+        MemberEntity member = new MemberEntity();
+        member.setUserName(form.getUserName());
+        member.setEmail(form.getEmail());
+        member.setPhoneNumber(form.getPhoneNumber());
+        member.setAddress(form.getAddress());
+        member.setPostalCode(form.getPostalCode());
+        member.setPasswordHash(form.getPassword()); // ※ 後でBCryptにする
+        member.setAuthorityId(1); // 一般会員
+        member.setPlanId(1);      // デフォルトプラン
 
-        // 完了後トップへ
+        // DBへ保存
+        memberService.register(member);
+
         return "redirect:/top";
     }
 }
