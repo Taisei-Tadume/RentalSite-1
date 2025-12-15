@@ -1,5 +1,6 @@
 package jp.ken.jdbc.presentation.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
@@ -8,17 +9,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.servlet.http.HttpSession;
+import jp.ken.jdbc.domain.dto.CartItem;
 
 @Controller
 @RequestMapping("/order")
 public class OrderConfirmController {
 
     @GetMapping("/confirm")
-    public String showConfirmPage(Model model, HttpSession session) {
+    public String showConfirmPage(HttpSession session, Model model) {
 
         // --- カート取得 ---
-        Object cart = session.getAttribute("cart");
-        if (cart == null) {
+        List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
+        if (cart == null || cart.isEmpty()) {
             return "redirect:/cart";
         }
 
@@ -28,7 +30,7 @@ public class OrderConfirmController {
                 (Map<String, String>) session.getAttribute("shippingAddress");
 
         if (shippingAddress == null) {
-            return "redirect:/login"; // セッション切れ
+            shippingAddress = Map.of("postalCode", "", "address", "");
         }
 
         // --- model にセット ---

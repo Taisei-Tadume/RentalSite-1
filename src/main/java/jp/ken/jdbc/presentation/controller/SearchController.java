@@ -104,6 +104,9 @@ public class SearchController {
 
 		// カート情報（ヘッダーのカート表示用）
 		model.addAttribute("cartItems", cartService.getCart(session));
+		
+		// ヒットした検索数
+		model.addAttribute("totalCount", totalCount);
 
 		return "searchresult";
 	}

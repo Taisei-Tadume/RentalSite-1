@@ -25,6 +25,17 @@
 					</form>
 				</div>
 			</div>
+			
+			<!-- ✅ 検索キーワード + ヒット件数（h2 表示） -->
+			<div class="row justify-content-center mb-4" th:if="${searchForm.keyword}">
+				<div class="col-md-8 text-center">
+					<h2 class="text-primary">
+						検索キーワード：
+						<span th:text="${searchForm.keyword}"></span>
+						（<span th:text="${totalCount}"></span> 件ヒット）
+					</h2>
+				</div>
+			</div>
 
 			<h2>検索結果</h2>
 

@@ -96,14 +96,16 @@
 
 		</main>
 
-		<!-- トースト -->
-		<div id="toast" th:if="${added}" class="position-fixed top-0 end-0 p-3" style="z-index:9999;">
+		<!-- トースト（画面中央上部に表示） -->
+		<div id="toast" th:if="${added}" class="position-fixed top-0 start-50 translate-middle-x p-3"
+			style="z-index:9999;">
 			<div class="toast text-white bg-success show">
 				<div class="toast-body">
 					✓ カートに追加しました！
 				</div>
 			</div>
 		</div>
+
 
 	</div>
 
