@@ -1,8 +1,10 @@
 package jp.ken.jdbc.presentation.controller;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.servlet.http.HttpSession;
@@ -11,24 +13,29 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/order")
 public class OrderConfirmController {
 
-    // 注文確定（POST）
-    @PostMapping("/confirm")
-    public String confirmOrder(HttpSession session, Model model) {
+    @GetMapping("/confirm")
+    public String showConfirmPage(Model model, HttpSession session) {
 
-        // セッションから注文内容を取得
-        Object cartItem = session.getAttribute("cartItem");
-        Object shippingAddress = session.getAttribute("shippingAddress");
-        Object paymentMethod = session.getAttribute("paymentMethod");
+        // --- カート取得 ---
+        Object cart = session.getAttribute("cart");
+        if (cart == null) {
+            return "redirect:/cart";
+        }
 
-        // ★本来ここで注文をDBに保存する処理を書く
-        // orderService.saveOrder(cartItem, shippingAddress, paymentMethod);
+        // --- 新規登録時に保存した配送先住所を取得（Map）---
+        @SuppressWarnings("unchecked")
+        Map<String, String> shippingAddress =
+                (Map<String, String>) session.getAttribute("shippingAddress");
 
-        // 確認用に画面へ渡すなら model.addAttribute も可能
-        model.addAttribute("cartItem", cartItem);
-        model.addAttribute("shippingAddress", shippingAddress);
-        model.addAttribute("paymentMethod", paymentMethod);
+        if (shippingAddress == null) {
+            return "redirect:/login"; // セッション切れ
+        }
 
-        // 完了画面へ
+        // --- model にセット ---
+        model.addAttribute("cartItem", cart);
+        model.addAttribute("postalCode", shippingAddress.get("postalCode"));
+        model.addAttribute("address", shippingAddress.get("address"));
+
         return "confirmorderdetails";
     }
 }

@@ -1,5 +1,8 @@
 package jp.ken.jdbc.presentation.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -8,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import jakarta.servlet.http.HttpSession;
 import jp.ken.jdbc.application.service.MemberService;
 import jp.ken.jdbc.presentation.form.MemberRegistForm;
 
@@ -32,9 +36,10 @@ public class MemberRegistController {
     public String registSubmit(
             @ModelAttribute("memberForm") @Validated MemberRegistForm memberForm,
             BindingResult bindingResult,
-            Model model) {
+            Model model,
+            HttpSession session) {
 
-        // ▼バリデーションエラーがある時点で画面に戻す
+        // ▼バリデーションエラー
         if (bindingResult.hasErrors()) {
             return "newmemberregistration";
         }
@@ -54,7 +59,14 @@ public class MemberRegistController {
         // ▼登録処理
         memberService.register(memberForm);
 
-        // ▼プラン選択画面に遷移
+        // ▼住所をセッションに保存（confirmorderdetails で使用する）
+        Map<String, String> address = new HashMap<>();
+        address.put("postalCode", memberForm.getPostalCode());
+        address.put("address", memberForm.getAddress()); // まとめた住所文字列
+
+        session.setAttribute("shippingAddress", address);
+
+        // ▼プラン選択画面へ遷移
         return "planselection";
     }
 }
