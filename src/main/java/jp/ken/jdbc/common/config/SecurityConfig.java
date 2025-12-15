@@ -52,6 +52,11 @@ public class SecurityConfig {
 				/* ✅ その他はすべて認証必須 */
 				.anyRequest().authenticated());
 
+		/* ✅ 403（権限不足）発生時の遷移先を設定 */
+		http.exceptionHandling(ex -> ex
+				.accessDeniedPage("/error") // ★ 追加：403 Forbidden → error.html に飛ばす
+		);
+
 		/* ✅ ログイン設定 */
 		http.formLogin(form -> form
 				.loginPage("/login") // ログイン画面
