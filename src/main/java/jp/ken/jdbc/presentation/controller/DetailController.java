@@ -22,22 +22,22 @@ public class DetailController {
 
     @GetMapping("/detail/{id}")
     public String detail(
-            @PathVariable("id") int goodsId,
+            @PathVariable("id") Integer goodsId,
             @RequestParam(name = "added", required = false) String added,
             HttpSession session,
             Model model) {
 
-        // 商品データ取得
         GoodsEntity goods = goodsService.findById(goodsId);
         model.addAttribute("goods", goods);
 
-        // カート判定
-        List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
-        boolean isInCart = cart != null && cart.stream()
-                .anyMatch(i -> i.getGoods().getGoodsId() == goodsId);
-        model.addAttribute("isInCart", isInCart);
+        @SuppressWarnings("unchecked")
+        List<CartItem> cart =
+                (List<CartItem>) session.getAttribute("cart");
 
-        // トースト表示フラグ
+        boolean isInCart = cart != null && cart.stream()
+                .anyMatch(i -> i.getGoodsId().equals(goodsId));
+
+        model.addAttribute("isInCart", isInCart);
         model.addAttribute("added", added != null);
 
         return "detail";
