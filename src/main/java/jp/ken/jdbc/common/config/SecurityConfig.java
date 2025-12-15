@@ -32,7 +32,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authz -> authz
 
                 /* ✅ 公開ページ（ログイン不要） */
-                .requestMatchers("/top", "/login", "/regist").permitAll()
+
                 .requestMatchers("/search/**").permitAll()
                 .requestMatchers("/cart/**").permitAll()
                 .requestMatchers("/detail/**").permitAll()

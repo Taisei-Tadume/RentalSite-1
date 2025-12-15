@@ -1,5 +1,7 @@
 package jp.ken.jdbc.presentation.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.servlet.http.HttpSession;
 import jp.ken.jdbc.application.service.CartService;
+import jp.ken.jdbc.domain.dto.CartItem;
 
 @Controller
 @RequestMapping("/cart")
