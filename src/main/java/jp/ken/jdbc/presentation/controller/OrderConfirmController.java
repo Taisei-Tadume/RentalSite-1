@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import jakarta.servlet.http.HttpSession;
 import jp.ken.jdbc.domain.dto.CartItem;
 
+
 @Controller
 @RequestMapping("/order")
 public class OrderConfirmController {
@@ -24,13 +25,13 @@ public class OrderConfirmController {
             return "redirect:/cart";
         }
 
-        // --- 新規登録時に保存した配送先住所を取得（Map）---
+        // --- 配送先情報取得 ---
         @SuppressWarnings("unchecked")
         Map<String, String> shippingAddress =
                 (Map<String, String>) session.getAttribute("shippingAddress");
 
         if (shippingAddress == null) {
-            shippingAddress = Map.of("postalCode", "", "address", "");
+
         }
 
         // --- model にセット ---
