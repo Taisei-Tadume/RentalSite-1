@@ -18,99 +18,95 @@ import jp.ken.jdbc.common.security.LoginSuccessHandler;
 @Configuration
 public class SecurityConfig {
 
-	private final DataSource dataSource;
+    private final DataSource dataSource;
 
-	public SecurityConfig(DataSource dataSource) {
-		this.dataSource = dataSource;
-	}
+    public SecurityConfig(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
-	@Bean
-	public SecurityFilterChain securityFilterChain(
-			HttpSecurity http,
-			LoginSuccessHandler loginSuccessHandler) throws Exception {
+    @Bean
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            LoginSuccessHandler loginSuccessHandler) throws Exception {
 
-		http.authorizeHttpRequests(authz -> authz
+        http.authorizeHttpRequests(authz -> authz
 
-				/* ✅ 公開ページ（ログイン不要） */
-				/* - トップ、ログイン、会員登録 */
-				/* - 検索はクエリ付きURLも許可するため /search/** */
-				/* - カートはセッション方式なのでログイン不要 → /cart/** */
-				.requestMatchers("/top", "/login", "/regist").permitAll()
-				.requestMatchers("/search/**").permitAll() // ★ 最適化：検索はすべて公開
-				.requestMatchers("/cart/**").permitAll() // ★ 最適化：カート操作をすべて許可
-				.requestMatchers("/detail/**").permitAll() // ★ 商品詳細ページを公開
-				.requestMatchers("/payment/**").permitAll() // ★ 決済選択ページを公開
+                /* ✅ 公開ページ（ログイン不要） */
+                .requestMatchers("/top", "/login", "/regist").permitAll()
+                .requestMatchers("/search/**").permitAll()
+                .requestMatchers("/cart/**").permitAll()
+                .requestMatchers("/detail/**").permitAll()
 
-				/* ✅ 静的リソース（必ず公開） */
-				.requestMatchers("/css/**", "/js/**", "/images/**", "/picture/**").permitAll()
+                /* ✅ 静的リソース */
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/picture/**").permitAll()
 
-				/* ✅ ログイン必須ページ */
-				/* - 注文、会員ページ、ログアウト */
-				.requestMatchers("/order/**", "/logout", "/member/**").authenticated()
+                /* ✅ カート確認は認証必須に変更 */
+                .requestMatchers("/cart/confirm").authenticated()
 
-				/* ✅ 管理者専用ページ */
-				.requestMatchers("/employee/**", "/admin/**").hasRole("ADMIN")
+                /* ✅ ログイン必須ページ */
+                .requestMatchers("/order/**", "/logout", "/member/**").authenticated()
 
-				/* ✅ その他はすべて認証必須 */
-				.anyRequest().authenticated());
+                /* ✅ 管理者専用ページ */
+                .requestMatchers("/employee/**", "/admin/**").hasRole("ADMIN")
 
-		/* ✅ 403（権限不足）発生時の遷移先を設定 */
-		http.exceptionHandling(ex -> ex
-				.accessDeniedPage("/error") // ★ 追加：403 Forbidden → error.html に飛ばす
-		);
+                /* ✅ その他は認証必須 */
+                .anyRequest().authenticated());
 
-		/* ✅ ログイン設定 */
-		http.formLogin(form -> form
-				.loginPage("/login") // ログイン画面
-				.loginProcessingUrl("/login") // 認証処理URL
-				.usernameParameter("email") // フォームの name="email"
-				.passwordParameter("password") // フォームの name="password"
-				.successHandler(loginSuccessHandler) // ★ ログイン成功時の処理
-				.failureUrl("/login?error") // 失敗時
-				.permitAll());
+        /* ✅ 403（権限不足） */
+        http.exceptionHandling(ex -> ex.accessDeniedPage("/error"));
 
-		/* ✅ ログアウト設定 */
-		http.logout(logout -> logout
-				.logoutUrl("/logout")
-				.logoutSuccessUrl("/login?logout")
-				.invalidateHttpSession(true)
-				.deleteCookies("JSESSIONID"));
+        /* ✅ ログイン設定 */
+        http.formLogin(form -> form
+                .loginPage("/login")
+                .loginProcessingUrl("/login")
+                .usernameParameter("email")
+                .passwordParameter("password")
+                .successHandler(loginSuccessHandler)
+                .failureUrl("/login?error")
+                .permitAll());
 
-		/* ✅ セッション管理（同時ログイン1件） */
-		http.sessionManagement(session -> session
-				.maximumSessions(1)
-				.maxSessionsPreventsLogin(true));
+        /* ✅ ログアウト設定 */
+        http.logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID"));
 
-		return http.build();
-	}
+        /* ✅ セッション管理（同時ログイン1件） */
+        http.sessionManagement(session -> session
+                .maximumSessions(1)
+                .maxSessionsPreventsLogin(true));
 
-	/* ✅ JDBC 認証（ユーザ情報を DB から取得） */
-	@Bean
-	public JdbcUserDetailsManager userDetailsManager() {
-		JdbcUserDetailsManager manager = new JdbcUserDetailsManager(this.dataSource);
+        return http.build();
+    }
 
-		manager.setUsersByUsernameQuery(
-				"SELECT user_name AS username, password_hash AS password, true AS enabled " +
-						"FROM users_table WHERE email = ?");
+    /* ✅ JDBC 認証 */
+    @Bean
+    public JdbcUserDetailsManager userDetailsManager() {
+        JdbcUserDetailsManager manager = new JdbcUserDetailsManager(this.dataSource);
 
-		manager.setAuthoritiesByUsernameQuery(
-				"SELECT u.user_name AS username, a.authority_name AS authority " +
-						"FROM users_table u " +
-						"JOIN users_authority_table a ON u.authority_id = a.authority_id " +
-						"WHERE u.user_name = ?");
+        manager.setUsersByUsernameQuery(
+                "SELECT user_name AS username, password_hash AS password, true AS enabled " +
+                        "FROM users_table WHERE email = ?");
 
-		return manager;
-	}
+        manager.setAuthoritiesByUsernameQuery(
+                "SELECT u.user_name AS username, a.authority_name AS authority " +
+                        "FROM users_table u " +
+                        "JOIN users_authority_table a ON u.authority_id = a.authority_id " +
+                        "WHERE u.user_name = ?");
 
-	/* ✅ セッションイベント（同時ログイン制御に必要） */
-	@Bean
-	public HttpSessionEventPublisher httpSessionEventPublisher() {
-		return new HttpSessionEventPublisher();
-	}
+        return manager;
+    }
 
-	/* ✅ パスワードハッシュ（BCrypt） */
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    /* ✅ セッションイベント */
+    @Bean
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
+    }
+
+    /* ✅ パスワードハッシュ */
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }
