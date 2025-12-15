@@ -12,100 +12,84 @@ import jp.ken.jdbc.domain.mapper.MemberRowMapper;
 public class MemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final MemberRowMapper rowMapper = new MemberRowMapper();
 
     public MemberRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // ============================
-    // 新規会員登録
-    // ============================
-    public void save(MemberEntity member) {
+    /** ユーザー名で1件取得（ログイン用） */
+    public MemberEntity findByUserName(String userName) {
         String sql = """
-            INSERT INTO USERS_TABLE
-            (user_name, email, phone_number, address, postal_code,
-             password_hash, authority_id, plan_id)
+            SELECT *
+            FROM users_table
+            WHERE user_name = ?
+            ORDER BY user_id
+            LIMIT 1
+        """;
+
+        return jdbcTemplate.queryForObject(sql, rowMapper, userName);
+    }
+
+    /** メール重複チェック */
+    public int countByEmail(String email) {
+        String sql = """
+            SELECT COUNT(*)
+            FROM users_table
+            WHERE email = ?
+        """;
+
+        return jdbcTemplate.queryForObject(sql, Integer.class, email);
+    }
+
+    /** 会員登録 */
+    public void insert(MemberEntity member) {
+        String sql = """
+            INSERT INTO users_table
+            (user_name, email, phone_number, address, postal_code, password_hash, authority_id, plan_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """;
 
-        jdbcTemplate.update(sql,
-                member.getUserName(),
-                member.getEmail(),
-                member.getPhoneNumber(),
-                member.getAddress(),
-                member.getPostalCode(),
-                member.getPasswordHash(),
-                member.getAuthorityId(),
-                member.getPlanId());
+        jdbcTemplate.update(
+            sql,
+            member.getUserName(),
+            member.getEmail(),
+            member.getPhoneNumber(),
+            member.getAddress(),
+            member.getPostalCode(),
+            member.getPasswordHash(),
+            member.getAuthorityId(),
+            member.getPlanId()
+        );
     }
 
-    // ============================
-    // user_name 検索（ログイン後）
-    // ============================
-    public MemberEntity findByUserName(String userName) {
-        String sql = "SELECT * FROM USERS_TABLE WHERE user_name = ?";
-        return jdbcTemplate.query(sql, new MemberRowMapper(), userName)
-                .stream()
-                .findFirst()
-                .orElse(null);
-    }
-
-    // ============================
-    // email 検索（ログイン用）
-    // ============================
-    public MemberEntity findByEmail(String email) {
-        String sql = "SELECT * FROM USERS_TABLE WHERE email = ?";
-        return jdbcTemplate.query(sql, new MemberRowMapper(), email)
-                .stream()
-                .findFirst()
-                .orElse(null);
-    }
-
-    public boolean existsByEmail(String email) {
-        String sql = "SELECT COUNT(*) FROM USERS_TABLE WHERE email = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, email);
-        return count != null && count > 0;
-    }
-
-    // ============================
-    // 管理画面用
-    // ============================
-
-    // 全件取得
+    /** 全件取得 */
     public List<MemberEntity> findAll() {
-        String sql = "SELECT * FROM USERS_TABLE ORDER BY user_id";
-        return jdbcTemplate.query(sql, new MemberRowMapper());
+        String sql = "SELECT * FROM users_table ORDER BY user_id";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
-    // ID検索（完全一致）
-    public List<MemberEntity> findByUserId(Integer id) {
-        String sql = "SELECT * FROM USERS_TABLE WHERE user_id = ?";
-        return jdbcTemplate.query(sql, new MemberRowMapper(), id);
+    /** ID検索 */
+    public List<MemberEntity> findByUserId(Integer userId) {
+        String sql = "SELECT * FROM users_table WHERE user_id = ?";
+        return jdbcTemplate.query(sql, rowMapper, userId);
     }
 
-    // 名前検索（部分一致）
+    /** 名前LIKE検索 */
     public List<MemberEntity> findByUserNameLike(String keyword) {
-        String sql = "SELECT * FROM USERS_TABLE WHERE user_name LIKE ? ORDER BY user_id";
-        return jdbcTemplate.query(sql, new MemberRowMapper(), "%" + keyword + "%");
+        String sql = "SELECT * FROM users_table WHERE user_name LIKE ?";
+        return jdbcTemplate.query(sql, rowMapper, "%" + keyword + "%");
     }
 
-    // ============================
-    // 権限変更
-    // ============================
+    /** 権限変更 */
     public void updateAuthority(Integer userId, Integer authorityId) {
-        String sql = "UPDATE USERS_TABLE SET authority_id = ? WHERE user_id = ?";
+        String sql = "UPDATE users_table SET authority_id = ? WHERE user_id = ?";
         jdbcTemplate.update(sql, authorityId, userId);
     }
 
-    // ============================
-    // プラン変更（Free / Bronze / Silver / Gold）
-    // ============================
- // プラン変更
+    /** プラン変更するやつ */
     public void updatePlan(Integer userId, Integer planId) {
-        String sql = "UPDATE USERS_TABLE SET plan_id = ? WHERE user_id = ?";
+        String sql = "UPDATE users_table SET plan_id = ? WHERE user_id = ?";
         jdbcTemplate.update(sql, planId, userId);
     }
-
-    
-    
 }
