@@ -23,6 +23,8 @@ public class GoodsRowMapper implements RowMapper<GoodsEntity> {
         g.setQuantity(rs.getInt("quantity"));
         g.setJanCode(rs.getString("jan_code"));
         g.setImageUrl(rs.getString("image_url"));
+        g.setCategoryName(rs.getString("category_name"));
+        g.setGenreName(rs.getString("genre_name"));
 
         return g;
     }

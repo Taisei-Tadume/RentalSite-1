@@ -43,7 +43,6 @@ public class GoodsRepository {
     // ジャンル別取得（ページング）
     // ============================
     public List<GoodsEntity> findByGenre(int genreId, int offset, int pageSize) {
-
         String sql = """
             SELECT
                 g.goods_id, g.goods_name, g.category_id, g.genre_id,
@@ -55,6 +54,7 @@ public class GoodsRepository {
             JOIN goods_genre_table t ON g.genre_id = t.genre_id
             WHERE g.genre_id = ?
             ORDER BY g.goods_id
+            LIMIT ? OFFSET ?
         """;
         return jdbcTemplate.query(sql, rowMapper, genreId, pageSize, offset);
     }
@@ -92,10 +92,11 @@ public class GoodsRepository {
         return jdbcTemplate.query(sql, rowMapper, "%" + keyword + "%", pageSize, offset);
     }
 
-    public List<GoodsEntity> findByKeywordAndGenre(String keyword, int genreId, int offset, int pageSize) {
+    public List<GoodsEntity> findByKeywordAndGenre(
+            String keyword, int genreId, int offset, int pageSize) {
+
         String sql = """
             SELECT
-  
                 g.goods_id, g.goods_name, g.category_id, g.genre_id,
                 g.quantity, g.jan_code, g.image_url,
                 c.category_name,
@@ -108,7 +109,14 @@ public class GoodsRepository {
             ORDER BY g.goods_id
             LIMIT ? OFFSET ?
         """;
-        return jdbcTemplate.query(sql, rowMapper, "%" + keyword + "%", genreId, pageSize, offset);
+        return jdbcTemplate.query(
+                sql,
+                rowMapper,
+                "%" + keyword + "%",
+                genreId,
+                pageSize,
+                offset
+        );
     }
 
     public int countByKeyword(String keyword) {
@@ -123,7 +131,12 @@ public class GoodsRepository {
             WHERE goods_name LIKE ?
               AND genre_id = ?
         """;
-        return jdbcTemplate.queryForObject(sql, Integer.class, "%" + keyword + "%", genreId);
+        return jdbcTemplate.queryForObject(
+                sql,
+                Integer.class,
+                "%" + keyword + "%",
+                genreId
+        );
     }
 
     // ============================
@@ -144,7 +157,7 @@ public class GoodsRepository {
     }
 
     // ============================
-    // ID検索
+    // ID検索（詳細画面用）
     // ============================
     public GoodsEntity findById(int goodsId) {
         String sql = """
