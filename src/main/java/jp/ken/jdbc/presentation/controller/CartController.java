@@ -12,69 +12,65 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import jakarta.servlet.http.HttpSession;
 import jp.ken.jdbc.application.service.CartService;
 
-
-
 @Controller
 @RequestMapping("/cart")
 public class CartController {
 
-    @Autowired
-    private CartService cartService;
+	@Autowired
+	private CartService cartService;
 
-    // カートに追加
-    @PostMapping("/add")
-    public String add(@RequestParam("goodsId") int goodsId,
-                      HttpSession session) {
+	// カートに追加
+	@PostMapping("/add")
+	public String add(@RequestParam("goodsId") int goodsId,
+			HttpSession session) {
 
-        cartService.addToCart(goodsId, session);
+		cartService.addToCart(goodsId, session);
 
-        // ★ 検索画面へ戻す（追加済み表示は Session で判断）
-        return "redirect:/search";
-    }
-    
-    // 数を増やす
-    @PostMapping("/increase")
-    @ResponseBody
-    public void increase(@RequestParam int goodsId, HttpSession session) {
-        cartService.increase(goodsId, session);
-    }
+		// ★ 検索画面へ戻す（追加済み表示は Session で判断）
+		return "redirect:/search";
+	}
 
+	// 数を増やす
+	@PostMapping("/increase")
+	@ResponseBody
+	public void increase(@RequestParam int goodsId, HttpSession session) {
+		cartService.increase(goodsId, session);
+	}
 
-    //数を減らす
-    @PostMapping("/decrease")
-    @ResponseBody
-    public void decrease(@RequestParam int goodsId, HttpSession session) {
-        cartService.decrease(goodsId, session);
-    }
+	//数を減らす
+	@PostMapping("/decrease")
+	@ResponseBody
+	public void decrease(@RequestParam int goodsId, HttpSession session) {
+		cartService.decrease(goodsId, session);
+	}
 
+	// 削除
+	@PostMapping("/remove")
+	@ResponseBody
+	public String remove(@RequestParam("goodsId") int goodsId, HttpSession session) {
+		cartService.remove(goodsId, session);
+		return "redirect:/cart";
+	}
 
-    // 削除
-    @PostMapping("/remove")
-    public String remove(@RequestParam("goodsId") int goodsId, HttpSession session) {
-        cartService.remove(goodsId, session);
-        return "redirect:/cart";
-    }
+	// カートクリア
+	@PostMapping("/clear")
+	public String clear(HttpSession session) {
+		cartService.clearCart(session);
+		return "redirect:/cart";
+	}
 
-    // カートクリア
-    @PostMapping("/clear")
-    public String clear(HttpSession session) {
-        cartService.clearCart(session);
-        return "redirect:/cart";
-    }
-    
- // カート画面表示
+	// カート画面表示
 
-    @GetMapping("")
-    public String showCartPage(HttpSession session, Model model) {
+	@GetMapping("")
+	public String showCartPage(HttpSession session, Model model) {
 
-        // セッションのカート情報を取得
-        var cart = session.getAttribute("cart");
+		// セッションのカート情報を取得
+		var cart = session.getAttribute("cart");
 
-        model.addAttribute("cart", cart);
-        model.addAttribute("errorMessage", "カートに商品が入っていません。");
+		model.addAttribute("cart", cart);
+		model.addAttribute("errorMessage", "カートに商品が入っていません。");
 
-        return "cart";
-    }
-
+		return "cart";
+	}
 
 }

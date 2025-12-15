@@ -14,85 +14,89 @@ import jp.ken.jdbc.domain.repository.GoodsRepository;
 @Service
 public class CartService {
 
-    @Autowired
-    private GoodsRepository goodsRepository;
+	@Autowired
+	private GoodsRepository goodsRepository;
 
-    private static final String CART_SESSION_KEY = "cart";
+	private static final String CART_SESSION_KEY = "cart";
 
-    // カート取得（なければ作る）
-    @SuppressWarnings("unchecked")
-    public List<CartItem> getCart(HttpSession session) {
-        List<CartItem> cart = (List<CartItem>) session.getAttribute(CART_SESSION_KEY);
-        if (cart == null) {
-            cart = new ArrayList<>();
-            session.setAttribute(CART_SESSION_KEY, cart);
-        }
-        return cart;
-    }
+	// カート取得（なければ作る）
+	@SuppressWarnings("unchecked")
+	public List<CartItem> getCart(HttpSession session) {
+		List<CartItem> cart = (List<CartItem>) session.getAttribute(CART_SESSION_KEY);
+		if (cart == null) {
+			cart = new ArrayList<>();
+			session.setAttribute(CART_SESSION_KEY, cart);
+		}
+		return cart;
+	}
 
-    // 商品追加（在庫チェック付き）
-    public void addToCart(int goodsId, HttpSession session) {
+	// 商品追加（在庫チェック付き）
+	public void addToCart(int goodsId, HttpSession session) {
 
-        GoodsEntity goods = goodsRepository.findById(goodsId);
-        List<CartItem> cart = getCart(session);
+		GoodsEntity goods = goodsRepository.findById(goodsId);
+		List<CartItem> cart = getCart(session);
 
-        for (CartItem item : cart) {
-            if (item.getGoods().getGoodsId() == goodsId) {
+		for (CartItem item : cart) {
+			if (item.getGoods().getGoodsId() == goodsId) {
 
-                // ★ 在庫チェック（goods.quantity が在庫数）
-                if (item.getQuantity() >= goods.getQuantity()) {
-                    return; // 在庫以上は増やさない
-                }
+				// ★ 在庫チェック（goods.quantity が在庫数）
+				if (item.getQuantity() >= goods.getQuantity()) {
+					return; // 在庫以上は増やさない
+				}
 
-                item.increase();
-                return;
-            }
-        }
+				item.increase();
+				session.setAttribute(CART_SESSION_KEY, cart);
+				return;
+			}
+		}
 
-        // 新規追加（数量1は必ず在庫以下）
-        cart.add(new CartItem(goods));
-        session.setAttribute(CART_SESSION_KEY, cart);
-    }
+		// 新規追加（数量1は必ず在庫以下）
+		cart.add(new CartItem(goods));
+		session.setAttribute(CART_SESSION_KEY, cart);
+	}
 
-    // 数量増加（在庫チェック付き）
-    public void increase(int goodsId, HttpSession session) {
-        List<CartItem> cart = getCart(session);
+	// 数量増加（在庫チェック付き）
+	public void increase(int goodsId, HttpSession session) {
+		List<CartItem> cart = getCart(session);
 
-        // DB から最新の在庫を取得
-        GoodsEntity goods = goodsRepository.findById(goodsId);
+		// DB から最新の在庫を取得
+		GoodsEntity goods = goodsRepository.findById(goodsId);
 
-        cart.stream()
-            .filter(i -> i.getGoods().getGoodsId() == goodsId)
-            .findFirst()
-            .ifPresent(item -> {
+		cart.stream()
+				.filter(i -> i.getGoods().getGoodsId() == goodsId)
+				.findFirst()
+				.ifPresent(item -> {
 
-                int current = item.getQuantity();
-                int stock = goods.getQuantity(); // ★ 在庫フィールド名は quantity
+					int current = item.getQuantity();
+					int stock = goods.getQuantity(); // ★ 在庫フィールド名は quantity
 
-                if (current < stock) {
-                    item.increase();
-                }
-            });
-    }
+					if (current < stock) {
+						item.increase();
+					}
+				});
+		session.setAttribute(CART_SESSION_KEY, cart);
+	}
 
-    // 数量減少（0未満にならないように CartItem 側で制御）
-    public void decrease(int goodsId, HttpSession session) {
-        List<CartItem> cart = getCart(session);
+	// 数量減少（0未満にならないように CartItem 側で制御）
+	public void decrease(int goodsId, HttpSession session) {
+		List<CartItem> cart = getCart(session);
 
-        cart.stream()
-            .filter(i -> i.getGoods().getGoodsId() == goodsId)
-            .findFirst()
-            .ifPresent(CartItem::decrease);
-    }
+		cart.stream()
+				.filter(i -> i.getGoods().getGoodsId() == goodsId)
+				.findFirst()
+				.ifPresent(CartItem::decrease);
+		session.setAttribute(CART_SESSION_KEY, cart);
+	}
 
-    // 削除
-    public void remove(int goodsId, HttpSession session) {
-        List<CartItem> cart = getCart(session);
-        cart.removeIf(i -> i.getGoods().getGoodsId() == goodsId);
-    }
+	// 削除
+	public void remove(int goodsId, HttpSession session) {
+		List<CartItem> cart = getCart(session);
+		cart.removeIf(i -> i.getGoods().getGoodsId() == goodsId);
+		session.setAttribute(CART_SESSION_KEY, cart);
+	}
 
-    // 全削除
-    public void clearCart(HttpSession session) {
-        session.removeAttribute(CART_SESSION_KEY);
-    }
+	// 全削除
+	public void clearCart(HttpSession session) {
+		session.removeAttribute(CART_SESSION_KEY);
+	}
 }
