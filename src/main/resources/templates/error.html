@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>エラーページ</title>
+
+	<!-- Bootstrap 読み込み（必要なら） -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+
+	<!-- ✅ 共通ヘッダー -->
+	<div th:replace="~{header :: siteHeader}"></div>
+
+	<main class="container text-center mt-5">
+
+		<h1 class="mb-4">エラーが発生しました</h1>
+
+		<!-- ✅ Spring Boot / ControllerAdvice から渡される値を表示 -->
+		<div class="alert alert-danger">
+
+			<!-- ステータスコード -->
+			<p th:if="${status}" th:text="'ステータスコード： ' + ${status}"></p>
+
+			<!-- エラー名 -->
+			<p th:if="${error}" th:text="'エラー種別： ' + ${error}"></p>
+
+			<!-- 詳細メッセージ（ControllerAdvice の message もここに入る） -->
+			<p th:if="${message}" th:text="'詳細： ' + ${message}"></p>
+
+			<!-- 発生した URL -->
+			<p th:if="${path}" th:text="'発生URL： ' + ${path}"></p>
+
+			<!-- 発生時刻 -->
+			<p th:if="${timestamp}" th:text="'発生時刻： ' + ${timestamp}"></p>
+
+		</div>
+
+		<!-- ✅ トップへ戻るボタン -->
+		<a th:href="@{/top}" class="btn btn-primary mt-3">トップへ戻る</a>
+
+	</main>
+
+	<!-- ✅ 共通フッター -->
+	<div th:replace="~{footer :: siteFooter}"></div>
+
+</body>
+
+</html>
