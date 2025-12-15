@@ -18,64 +18,70 @@ import jp.ken.jdbc.presentation.form.SearchForm;
 @Controller
 public class SearchController {
 
-    @Autowired
-    private GoodsService goodsService;
+	@Autowired
+	private GoodsService goodsService;
 
-    @Autowired
-    private CartService cartService;
+	@Autowired
+	private CartService cartService;
 
-    private static final int PAGE_SIZE = 9;
+	private static final int PAGE_SIZE = 9;
 
-    @GetMapping("/search")
-    public String search(
-            @RequestParam(value = "genre", required = false) Integer genreId,
-            @RequestParam(value = "page", required = false) Integer page,
-            SearchForm searchForm,
-            HttpSession session,
-            Model model) {
+	@GetMapping("/search")
+	public String search(
+			@RequestParam(value = "genre", required = false) Integer genreId,
+			@RequestParam(value = "page", required = false) Integer page,
+			@RequestParam(value = "from", required = false) String from,
+			SearchForm searchForm,
+			HttpSession session,
+			Model model) {
 
-        // ===== 検索条件の保存 or 復元 =====
-        SearchForm sessionForm = (SearchForm) session.getAttribute("searchForm");
+		// ✅ トップから戻った場合は検索条件をクリア
+		if ("top".equals(from)) {
+			session.removeAttribute("searchForm");
+		}
 
-        if (searchForm.getKeyword() != null) {
-            // 新規検索（フォームから来た）
-            searchForm.setKeyword(searchForm.getKeyword().trim());
-            session.setAttribute("searchForm", searchForm);
-        } else if (sessionForm != null) {
-            // detail から戻った場合など
-            searchForm = sessionForm;
-        }
+		// ===== 検索条件の保存 or 復元 =====
+		SearchForm sessionForm = (SearchForm) session.getAttribute("searchForm");
 
-        String keyword = (searchForm.getKeyword() != null)
-                ? searchForm.getKeyword()
-                : "";
+		if (searchForm.getKeyword() != null) {
+			// 新規検索（フォームから来た）
+			searchForm.setKeyword(searchForm.getKeyword().trim());
+			session.setAttribute("searchForm", searchForm);
+		} else if (sessionForm != null) {
+			// detail から戻った場合など
+			searchForm = sessionForm;
+		}
 
-        int currentPage = (page != null) ? Math.max(page, 0) : 0;
+		String keyword = (searchForm.getKeyword() != null)
+				? searchForm.getKeyword()
+				: "";
 
-        List<GoodsEntity> resultList;
-        long totalCount;
+		int currentPage = (page != null) ? Math.max(page, 0) : 0;
 
-        if (!keyword.isEmpty()) {
-            resultList = goodsService.searchByKeyword(
-                    keyword, genreId, currentPage, PAGE_SIZE);
-            totalCount = goodsService.countByKeyword(keyword, genreId);
-        } else {
-            int genre = (genreId != null) ? genreId : 0;
-            resultList = goodsService.searchGoods(
-                    genre, currentPage, PAGE_SIZE);
-            totalCount = goodsService.countGoodsByGenre(genre);
-        }
+		List<GoodsEntity> resultList;
+		long totalCount;
 
-        List<GenreEntity> genres = goodsService.getAllGenres();
+		if (!keyword.isEmpty()) {
+			resultList = goodsService.searchByKeyword(
+					keyword, genreId, currentPage, PAGE_SIZE);
+			totalCount = goodsService.countByKeyword(keyword, genreId);
+		} else {
+			int genre = (genreId != null) ? genreId : 0;
+			resultList = goodsService.searchGoods(
+					genre, currentPage, PAGE_SIZE);
+			totalCount = goodsService.countGoodsByGenre(genre);
+		}
 
-        model.addAttribute("resultList", resultList);
-        model.addAttribute("genres", genres);
-        model.addAttribute("totalPages",
-                (int) Math.ceil((double) totalCount / PAGE_SIZE));
-        model.addAttribute("currentPage", currentPage);
-        model.addAttribute("searchForm", searchForm);
-        model.addAttribute("cartItems", cartService.getCart(session));
+		List<GenreEntity> genres = goodsService.getAllGenres();
 
-        return "searchresult";
-    }
+		model.addAttribute("resultList", resultList);
+		model.addAttribute("genres", genres);
+		model.addAttribute("totalPages",
+				(int) Math.ceil((double) totalCount / PAGE_SIZE));
+		model.addAttribute("currentPage", currentPage);
+		model.addAttribute("searchForm", searchForm);
+		model.addAttribute("cartItems", cartService.getCart(session));
+
+		return "searchresult";
+	}
 }

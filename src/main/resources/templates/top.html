@@ -2,191 +2,201 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ja">
 
 <head>
-    <meta charset="UTF-8">
-    <title>レンタルサイト｜トップページ</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+	<meta charset="UTF-8">
+	<title>レンタルサイト｜トップページ</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 
-    <style>
-        /* 背景テキストレイヤー（クリック不可、安全配置） */
-        .bg-flow-wrapper {
-            position: fixed;
-            inset: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            pointer-events: none;
-            z-index: 0;
-        }
+	<style>
+		/* 背景テキストレイヤー（クリック不可、安全配置） */
+		.bg-flow-wrapper {
+			position: fixed;
+			inset: 0;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			pointer-events: none;
+			z-index: 0;
+		}
 
-        .bg-flow-text {
-            font-size: 18vw;
-            font-weight: 800;
-            white-space: nowrap;
-            color: rgba(0, 0, 0, 0.03);
-            animation: bgScrollCenter 40s linear infinite;
-        }
+		.bg-flow-text {
+			font-size: 18vw;
+			font-weight: 800;
+			white-space: nowrap;
+			color: rgba(0, 0, 0, 0.03);
+			animation: bgScrollCenter 40s linear infinite;
+		}
 
-        @keyframes bgScrollCenter {
-            0% { transform: translateX(0%); }
-            100% { transform: translateX(-50%); }
-        }
+		@keyframes bgScrollCenter {
+			0% {
+				transform: translateX(0%);
+			}
 
-        body > * {
-            position: relative;
-            z-index: 10;
-        }
+			100% {
+				transform: translateX(-50%);
+			}
+		}
 
-        body {
-            position: relative;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+		body>* {
+			position: relative;
+			z-index: 10;
+		}
 
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('/picture/kuukan39.png');
-            background-size: cover;
-            background-position: center;
-            filter: blur(3.8px);
-            opacity: 0.6;
-            z-index: -1;
-        }
+		body {
+			position: relative;
+			min-height: 100vh;
+			overflow-x: hidden;
+		}
 
-        /* ✅ 自動横スクロール（途切れない無限ループ） */
-        .auto-scroll-wrapper {
-            width: 100%;
-            overflow: hidden;
-            position: relative;
-            padding: 10px 0;
-        }
+		body::before {
+			content: "";
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-image: url('/picture/kuukan39.png');
+			background-size: cover;
+			background-position: center;
+			filter: blur(3.8px);
+			opacity: 0.6;
+			z-index: -1;
+		}
 
-        .auto-scroll-inner {
-            display: flex;
-            gap: 30px;
-            animation: scroll-left 25s linear infinite;
-        }
+		/* ✅ 自動横スクロール（途切れない無限ループ） */
+		.auto-scroll-wrapper {
+			width: 100%;
+			overflow: hidden;
+			position: relative;
+			padding: 10px 0;
+		}
 
-        @keyframes scroll-left {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
+		.auto-scroll-inner {
+			display: flex;
+			gap: 30px;
+			animation: scroll-left 25s linear infinite;
+		}
 
-        /* ✅ 商品カード */
-        .item-card {
-            width: 220px;
-            text-align: center;
-            flex-shrink: 0;
-        }
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(0);
+			}
 
-        /* ✅ 画像を大きく（200×200） */
-        .item-img-box {
-            width: 200px;
-            height: 200px;
-            margin: auto;
-            overflow: hidden;
-            border-radius: 10px;
-        }
+			100% {
+				transform: translateX(-50%);
+			}
+		}
 
-        .item-img-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: 0.3s;
-        }
+		/* ✅ 商品カード */
+		.item-card {
+			width: 220px;
+			text-align: center;
+			flex-shrink: 0;
+		}
 
-        /* ✅ ホバーで少し拡大 */
-        .item-card:hover img {
-            transform: scale(1.05);
-        }
+		/* ✅ 画像を大きく（200×200） */
+		.item-img-box {
+			width: 200px;
+			height: 200px;
+			margin: auto;
+			overflow: hidden;
+			border-radius: 10px;
+		}
 
-        /* ✅ 商品名を小さく */
-        .item-title {
-            margin-top: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            color: #333;
-        }
+		.item-img-box img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			transition: 0.3s;
+		}
 
-        /* ✅ クリック可能に見せる */
-        .item-link {
-            text-decoration: none;
-            color: inherit;
-        }
+		/* ✅ ホバーで少し拡大 */
+		.item-card:hover img {
+			transform: scale(1.05);
+		}
 
-        .item-link:hover {
-            opacity: 0.8;
-        }
-    </style>
+		/* ✅ 商品名を小さく */
+		.item-title {
+			margin-top: 8px;
+			font-size: 14px;
+			font-weight: 500;
+			color: #333;
+		}
+
+		/* ✅ クリック可能に見せる */
+		.item-link {
+			text-decoration: none;
+			color: inherit;
+		}
+
+		.item-link:hover {
+			opacity: 0.8;
+		}
+	</style>
 </head>
 
 <body>
-    <div id="wrapper" class="container-fluid p-0">
+	<div id="wrapper" class="container-fluid p-0">
 
-        <div class="bg-flow-wrapper">
-            <div class="bg-flow-text">RENTAL SITE RENTAL SITE RENTAL SITE</div>
-        </div>
+		<div class="bg-flow-wrapper">
+			<div class="bg-flow-text">RENTAL SITE RENTAL SITE RENTAL SITE</div>
+		</div>
 
-        <!-- 共通ヘッダー -->
-        <div th:replace="~{header :: siteHeader}"></div>
+		<!-- 共通ヘッダー -->
+		<div th:replace="~{header :: siteHeader}"></div>
 
-        <main class="container">
+		<main class="container">
 
-            <!-- 検索フォーム -->
-            <div class="row justify-content-center mb-5">
-                <div class="col-md-8 text-center">
-                    <form th:action="@{/search}" method="get" class="d-flex align-items-center">
-                        <input type="text" name="keyword" class="form-control me-2" placeholder="商品名を検索"
-                            th:value="${keyword}">
-                        <button type="submit" class="btn btn-primary px-4"
-                            style="white-space: nowrap; display: inline-flex; align-items: center; justify-content: center;">検索</button>
-                    </form>
-                </div>
-            </div>
+			<!-- 検索フォーム -->
+			<div class="row justify-content-center mb-5">
+				<div class="col-md-8 text-center">
+					<form th:action="@{/search}" method="get" class="d-flex align-items-center">
+						<input type="text" name="keyword" class="form-control me-2" placeholder="商品名を検索"
+							th:value="${keyword}">
+						<button type="submit" class="btn btn-primary px-4"
+							style="white-space: nowrap; display: inline-flex; align-items: center; justify-content: center;">検索</button>
+					</form>
+				</div>
+			</div>
 
-            <!-- ✅ 新作入荷商品：横並び＋自動スクロール（途切れない） -->
-            <h3 class="mb-3">新作入荷商品</h3>
+			<!-- ✅ 新作入荷商品：横並び＋自動スクロール（途切れない） -->
+			<h3 class="mb-3">新作入荷商品</h3>
 
-            <div class="auto-scroll-wrapper">
-                <div class="auto-scroll-inner">
+			<div class="auto-scroll-wrapper">
+				<div class="auto-scroll-inner">
 
-                    <!-- ✅ 商品リスト1回目 -->
-                    <a class="item-link" th:each="item : ${newItems}"
-                       th:href="@{/detail/{id}(id=${item.id})}">
-                        <div class="item-card">
-                            <div class="item-img-box">
-                                <img th:src="${item.image}" th:alt="${item.title}">
-                            </div>
-                            <div class="item-title" th:text="${item.title}"></div>
-                        </div>
-                    </a>
+					<!-- ✅ 商品リスト1回目 -->
+					<a class="item-link" th:each="item : ${newItems}"
+						th:href="@{/detail/{id}(id=${item.id}, from='top')}">
+						<div class="item-card">
+							<div class="item-img-box">
+								<img th:src="${item.image}" th:alt="${item.title}">
+							</div>
+							<div class="item-title" th:text="${item.title}"></div>
+						</div>
+					</a>
 
-                    <!-- ✅ 商品リスト2回目（複製） -->
-                    <a class="item-link" th:each="item : ${newItems}"
-                       th:href="@{/detail/{id}(id=${item.id})}">
-                        <div class="item-card">
-                            <div class="item-img-box">
-                                <img th:src="${item.image}" th:alt="${item.title}">
-                            </div>
-                            <div class="item-title" th:text="${item.title}"></div>
-                        </div>
-                    </a>
+					<!-- ✅ 商品リスト2回目（複製） -->
+					<a class="item-link" th:each="item : ${newItems}"
+						th:href="@{/detail/{id}(id=${item.id}, from='top')}">
+						<div class="item-card">
+							<div class="item-img-box">
+								<img th:src="${item.image}" th:alt="${item.title}">
+							</div>
+							<div class="item-title" th:text="${item.title}"></div>
+						</div>
+					</a>
 
-                </div>
-            </div>
+				</div>
+			</div>
 
-        </main>
+		</main>
 
-        <!-- フッター -->
-        <div th:replace="~{footer :: siteFooter}"></div>
+		<!-- フッター -->
+		<div th:replace="~{footer :: siteFooter}"></div>
 
-    </div>
+	</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
