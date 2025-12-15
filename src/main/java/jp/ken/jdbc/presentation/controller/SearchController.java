@@ -67,6 +67,6 @@ public class SearchController {
         // カート情報
         model.addAttribute("cartItems", cartService.getCart(session));
 
-        return "searchResult";
+        return "searchresult";
     }
 }
