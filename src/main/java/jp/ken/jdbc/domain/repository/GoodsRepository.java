@@ -1,6 +1,7 @@
 package jp.ken.jdbc.domain.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -172,5 +173,38 @@ public class GoodsRepository {
             WHERE g.goods_id = ?
         """;
         return jdbcTemplate.queryForObject(sql, rowMapper, goodsId);
+    }
+
+    // ============================
+    // ID検索
+    // ============================
+    public Optional<GoodsEntity> findByIdOptional(int goodsId) {
+        String sql = """
+            SELECT
+                g.goods_id, g.goods_name, g.category_id, g.genre_id,
+                g.quantity, g.jan_code, g.image_url,
+                c.category_name,
+                t.genre_name
+            FROM goods_table g
+            JOIN goods_category_table c ON g.category_id = c.category_id
+            JOIN goods_genre_table t ON g.genre_id = t.genre_id
+            WHERE g.goods_id = ?
+        """;
+
+        List<GoodsEntity> list = jdbcTemplate.query(sql, rowMapper, goodsId);
+        return list.stream().findFirst();
+    }
+
+    // ============================
+    // 在庫減算（注文確定用）
+    // ============================
+    public int decreaseStock(int goodsId, int orderQuantity) {
+        String sql = """
+            UPDATE goods_table
+            SET quantity = quantity - ?
+            WHERE goods_id = ?
+              AND quantity >= ?
+        """;
+        return jdbcTemplate.update(sql, orderQuantity, goodsId, orderQuantity);
     }
 }
