@@ -39,9 +39,15 @@
 
 				</div>
 
-				<div class="text-center mt-4">
-					<button type="submit" class="btn btn-primary btn-lg">決済に進む</button>
-				</div>
+				<!-- ▼ ボタンエリア（左：戻る、右：決済に進む） -->
+            <div class="d-flex justify-content-between mt-4">
+                <a th:href="@{/regist}" class="btn btn-outline-secondary px-4" style="padding-top: 10px;">
+                    戻る
+                </a>
+
+                <button type="submit" class="btn btn-primary btn-lg">決済に進む</button>
+            </div>
+
 
 			</form>
 		</main>
