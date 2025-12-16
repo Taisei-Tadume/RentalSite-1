@@ -3,6 +3,7 @@ package jp.ken.jdbc.presentation.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,6 +33,13 @@ public class MemberRegistController {
     // --- GET: 新規会員登録フォーム ---
     @GetMapping("/regist")
     public String registForm(Model model) {
+    	
+    	// ログイン済みなら新規登録ページにアクセス不可
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+            return "redirect:/top"; // TOPへ飛ばす
+        }
+
         model.addAttribute("memberForm", new MemberRegistForm());
         return "newmemberregistration";
     }
@@ -43,6 +51,13 @@ public class MemberRegistController {
             BindingResult bindingResult,
             Model model,
             HttpSession session) {
+    	
+    	// ログイン済みなら新規登録ページにアクセス不可
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+            return "redirect:/top"; // どこに飛ばすかは自由
+        }
+
 
         // ▼バリデーションエラー
         if (bindingResult.hasErrors()) {

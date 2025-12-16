@@ -1,5 +1,6 @@
 package jp.ken.jdbc.presentation.controller;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +29,13 @@ public class PaymentController {
             Model model,
             HttpSession session
     ) {
+    	
+    	// ログイン済みなら新規登録ページにアクセス不可
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+            return "redirect:/top"; // どこに飛ばすかは自由
+        }
+
 
         // ▼ バリデーション
         if (!cardNumber.matches("\\d{16}")) {
