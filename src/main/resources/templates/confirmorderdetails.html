@@ -9,18 +9,19 @@
 
 <body>
 	<div>
+
 		<!-- 共通ヘッダー -->
 		<div th:replace="~{header :: siteHeader}"></div>
 
 		<main class="container my-5">
+
 			<h2 class="mb-4">注文内容の確認</h2>
 
-			<!-- 商品一覧 -->
+			<!-- ================= 商品内容 ================= -->
 			<div class="card mb-4">
 				<div class="card-header">商品内容</div>
 				<div class="card-body">
 
-					<!-- ★ CartItem = item.goods + item.quantity -->
 					<div th:each="item : ${cartItem}" class="d-flex align-items-center mb-4">
 
 						<!-- 商品画像 -->
@@ -28,38 +29,54 @@
 							style="width:150px; height:auto;">
 
 						<div class="flex-grow-1">
-							<!-- 商品名 -->
 							<h4 th:text="${item.goods.goodsName}">商品名</h4>
-
-							<!-- 数量 -->
 							<p class="mb-1">
 								数量：
 								<span th:text="${item.quantity}"></span>
 							</p>
-
 						</div>
+
 					</div>
 
 				</div>
 			</div>
 
-			<!-- 配送先住所 -->
+			<!-- ================= 配送先情報 ================= -->
 			<div class="card mb-4">
-				<div class="card-header">配送先住所</div>
+				<div class="card-header">配送先情報</div>
 				<div class="card-body">
-					<p>〒[[${postalCode}]]</p>
-					<p>[[${address}]]</p>
+
+					<p>
+						<strong>郵便番号：</strong>
+						〒<span th:text="${loginUser.postalCode}"></span>
+					</p>
+
+					<p>
+						<strong>住所：</strong>
+						<span th:text="${loginUser.address}"></span>
+					</p>
+
+					<p>
+						<strong>氏名：</strong>
+						<span th:text="${loginUser.userName}"></span>
+					</p>
+
 				</div>
 			</div>
 
-
-			<!-- ボタンエリア -->
+			<!-- ================= ボタン ================= -->
 			<div class="d-flex justify-content-between mt-4">
-				<a th:href="@{/cart}" class="btn btn-secondary btn-lg">カートに戻る</a>
+
+				<a th:href="@{/cart}" class="btn btn-secondary btn-lg">
+					カートに戻る
+				</a>
 
 				<form th:action="@{/order/complete}" method="post">
-					<button type="submit" class="btn btn-primary btn-lg">注文確定</button>
+					<button type="submit" class="btn btn-primary btn-lg">
+						注文確定
+					</button>
 				</form>
+
 			</div>
 
 		</main>

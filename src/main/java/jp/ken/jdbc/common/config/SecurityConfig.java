@@ -18,6 +18,7 @@ import jp.ken.jdbc.common.security.LoginSuccessHandler;
 @Configuration
 public class SecurityConfig {
 
+
 	private final DataSource dataSource;
 
 	public SecurityConfig(DataSource dataSource) {
@@ -113,4 +114,84 @@ public class SecurityConfig {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
+=======
+    private final DataSource dataSource;
+
+    public SecurityConfig(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            LoginSuccessHandler loginSuccessHandler) throws Exception {
+
+        http.authorizeHttpRequests(authz -> authz
+
+                /* ==========================
+                 * 公開ページ（ログイン不要）
+                 * ========================== */
+                .requestMatchers(
+                        "/",
+                        "/top",
+                        "/login",
+                        "/regist/**",
+                        "/search/**",
+                        "/detail/**"
+                ).permitAll()
+
+                /* ==========================
+                 * カート関連（★重要）
+                 * 未ログインでも可能
+                 * ========================== */
+                .requestMatchers(
+                        "/cart",
+                        "/cart/**"   // add / remove / update / view
+                ).permitAll()
+
+                /* ==========================
+                 * 静的リソース
+                 * ========================== */
+                .requestMatchers(
+                        "/css/**",
+                        "/js/**",
+                        "/images/**",
+                        "/picture/**"
+                ).permitAll()
+
+                /* ==========================
+                 * 注文関連（ログイン必須）
+                 * ========================== */
+                .requestMatchers("/order/**").authenticated()
+
+                /* ==========================
+                 * 会員ページ
+                 * ========================== */
+                .requestMatchers("/member/**").authenticated()
+
+                /* ==========================
+                 * 管理者専用
+                 * ========================== */
+                .requestMatchers("/employee/**", "/admin/**").hasRole("ADMIN")
+
+                /* ==========================
+                 * その他
+                 * ========================== */
+                .anyRequest().authenticated()
+        );
+
+        /* 403 */
+        http.exceptionHandling(ex -> ex.accessDeniedPage("/error"));
+
+        /* ログイン設定 */
+        http.formLogin(form -> form
+                .loginPage("/login")
+                .loginProcessingUrl("/login")
+                .usernameParameter("email")
+                .passwordParameter("password")
+                .successHandler(loginSuccessHandler)
+                .failureUrl("/login?error")
+                .permitAll()
+        );
+
 }
