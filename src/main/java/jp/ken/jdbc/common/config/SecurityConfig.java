@@ -18,7 +18,6 @@ import jp.ken.jdbc.common.security.LoginSuccessHandler;
 @Configuration
 public class SecurityConfig {
 
-
 	private final DataSource dataSource;
 
 	public SecurityConfig(DataSource dataSource) {
@@ -32,35 +31,53 @@ public class SecurityConfig {
 
 		http.authorizeHttpRequests(authz -> authz
 
-				/* ✅ 公開ページ（ログイン不要） */
-				.requestMatchers("/", "/top", "/login", "/regist").permitAll()
+				/* ==========================
+				 * 公開ページ（ログイン不要）
+				 * ========================== */
+				.requestMatchers("/", "/top", "/login", "/regist/**").permitAll()
 				.requestMatchers("/search/**").permitAll()
-				.requestMatchers("/cart/**").permitAll()
 				.requestMatchers("/detail/**").permitAll()
+
+				/* ==========================
+				 * 決済ページ（ログイン不要）
+				 * ========================== */
 				.requestMatchers("/payment").permitAll()
 				.requestMatchers("/payment/**").permitAll()
+
+				/* ==========================
+				 * プラン選択（ログイン不要）
+				 * ========================== */
 				.requestMatchers("/plan/**").permitAll()
 
+				/* ==========================
+				 * カート（ログイン不要）
+				 * ========================== */
+				.requestMatchers("/cart", "/cart/**").permitAll()
 
-				/* ✅ 静的リソース */
+				/* ==========================
+				 * 静的リソース
+				 * ========================== */
 				.requestMatchers("/css/**", "/js/**", "/images/**", "/picture/**").permitAll()
 
-				/* ✅ カート確認は認証必須に変更 */
-				.requestMatchers("/cart/confirm").authenticated()
+				/* ==========================
+				 * ログイン必須ページ
+				 * ========================== */
+				.requestMatchers("/order/**", "/member/**").authenticated()
 
-				/* ✅ ログイン必須ページ */
-				.requestMatchers("/order/**", "/logout", "/member/**").authenticated()
-
-				/* ✅ 管理者専用ページ */
+				/* ==========================
+				 * 管理者専用
+				 * ========================== */
 				.requestMatchers("/employee/**", "/admin/**").hasRole("ADMIN")
 
-				/* ✅ その他は認証必須 */
+				/* ==========================
+				 * その他は認証必須
+				 * ========================== */
 				.anyRequest().authenticated());
 
-		/* ✅ 403（権限不足） */
+		/* 403 */
 		http.exceptionHandling(ex -> ex.accessDeniedPage("/error"));
 
-		/* ✅ ログイン設定 */
+		/* ログイン設定 */
 		http.formLogin(form -> form
 				.loginPage("/login")
 				.loginProcessingUrl("/login")
@@ -70,14 +87,14 @@ public class SecurityConfig {
 				.failureUrl("/login?error")
 				.permitAll());
 
-		/* ✅ ログアウト設定 */
+		/* ログアウト設定 */
 		http.logout(logout -> logout
 				.logoutUrl("/logout")
 				.logoutSuccessUrl("/login?logout")
 				.invalidateHttpSession(true)
 				.deleteCookies("JSESSIONID"));
 
-		/* ✅ セッション管理（同時ログイン1件） */
+		/* セッション管理（同時ログイン1件） */
 		http.sessionManagement(session -> session
 				.maximumSessions(1)
 				.maxSessionsPreventsLogin(true));
@@ -85,7 +102,7 @@ public class SecurityConfig {
 		return http.build();
 	}
 
-	/* ✅ JDBC 認証 */
+	/* JDBC 認証 */
 	@Bean
 	public JdbcUserDetailsManager userDetailsManager() {
 		JdbcUserDetailsManager manager = new JdbcUserDetailsManager(this.dataSource);
@@ -103,95 +120,15 @@ public class SecurityConfig {
 		return manager;
 	}
 
-	/* ✅ セッションイベント */
+	/* セッションイベント */
 	@Bean
 	public HttpSessionEventPublisher httpSessionEventPublisher() {
 		return new HttpSessionEventPublisher();
 	}
 
-	/* ✅ パスワードハッシュ */
+	/* パスワードハッシュ */
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-=======
-    private final DataSource dataSource;
-
-    public SecurityConfig(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http,
-            LoginSuccessHandler loginSuccessHandler) throws Exception {
-
-        http.authorizeHttpRequests(authz -> authz
-
-                /* ==========================
-                 * 公開ページ（ログイン不要）
-                 * ========================== */
-                .requestMatchers(
-                        "/",
-                        "/top",
-                        "/login",
-                        "/regist/**",
-                        "/search/**",
-                        "/detail/**"
-                ).permitAll()
-
-                /* ==========================
-                 * カート関連（★重要）
-                 * 未ログインでも可能
-                 * ========================== */
-                .requestMatchers(
-                        "/cart",
-                        "/cart/**"   // add / remove / update / view
-                ).permitAll()
-
-                /* ==========================
-                 * 静的リソース
-                 * ========================== */
-                .requestMatchers(
-                        "/css/**",
-                        "/js/**",
-                        "/images/**",
-                        "/picture/**"
-                ).permitAll()
-
-                /* ==========================
-                 * 注文関連（ログイン必須）
-                 * ========================== */
-                .requestMatchers("/order/**").authenticated()
-
-                /* ==========================
-                 * 会員ページ
-                 * ========================== */
-                .requestMatchers("/member/**").authenticated()
-
-                /* ==========================
-                 * 管理者専用
-                 * ========================== */
-                .requestMatchers("/employee/**", "/admin/**").hasRole("ADMIN")
-
-                /* ==========================
-                 * その他
-                 * ========================== */
-                .anyRequest().authenticated()
-        );
-
-        /* 403 */
-        http.exceptionHandling(ex -> ex.accessDeniedPage("/error"));
-
-        /* ログイン設定 */
-        http.formLogin(form -> form
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
-                .usernameParameter("email")
-                .passwordParameter("password")
-                .successHandler(loginSuccessHandler)
-                .failureUrl("/login?error")
-                .permitAll()
-        );
-
 }
