@@ -1,226 +1,240 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
-    <title>在庫管理</title>
+	<meta charset="UTF-8">
+	<title>在庫管理</title>
 
-    <style>
-        body {
-            font-family: sans-serif;
-            margin: 20px;
-        }
+	<style>
+		body {
+			font-family: sans-serif;
+			margin: 20px;
+		}
 
-        .content-wrapper {
-            margin-top: 20px;
-        }
+		.content-wrapper {
+			margin-top: 20px;
+		}
 
-        .flex-wrap {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 30px;
-            margin-bottom: 40px;
-        }
+		.flex-wrap {
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-start;
+			gap: 30px;
+			margin-bottom: 40px;
+		}
 
-        .box {
-            width: 40%;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            background: #fff;
-        }
+		.box {
+			width: 40%;
+			padding: 15px;
+			border: 1px solid #ddd;
+			border-radius: 6px;
+			background: #fff;
+		}
 
-        h2 {
-            margin-top: 0;
-        }
+		h2 {
+			margin-top: 0;
+		}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 25px;
-        }
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 25px;
+		}
 
-        table, th, td {
-            border: 1px solid #999;
-        }
+		table,
+		th,
+		td {
+			border: 1px solid #999;
+		}
 
-        th, td {
-            padding: 8px;
-            vertical-align: middle;
-            text-align: center;
-        }
+		th,
+		td {
+			padding: 8px;
+			vertical-align: middle;
+			text-align: center;
+		}
 
-        /* ===== テーブル崩壊防止 ===== */
-        table { display: table; }
-        thead { display: table-header-group; }
-        tbody { display: table-row-group; }
-        tr { display: table-row; }
-        th, td { display: table-cell; }
-        td img { display: inline-block; }
-    </style>
+		/* ===== テーブル崩壊防止 ===== */
+		table {
+			display: table;
+		}
+
+		thead {
+			display: table-header-group;
+		}
+
+		tbody {
+			display: table-row-group;
+		}
+
+		tr {
+			display: table-row;
+		}
+
+		th,
+		td {
+			display: table-cell;
+		}
+
+		td img {
+			display: inline-block;
+		}
+	</style>
 </head>
 
 <body>
 
-<div th:replace="~{header2 :: header2}"></div>
+	<div th:replace="~{header2 :: header2}"></div>
 
-<div class="content-wrapper">
+	<div class="content-wrapper">
 
-    <!-- ===== 商品追加・検索（常時表示） ===== -->
-    <div class="flex-wrap">
+		<!-- ===== 商品追加・検索（常時表示） ===== -->
+		<div class="flex-wrap">
 
-        <div class="box">
-            <h2>商品追加</h2>
+			<div class="box">
+				<h2>商品追加</h2>
 
-            <form th:action="@{/admin/stock/add}" method="post" th:object="${form}">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+				<form th:action="@{/admin/stock/add}" method="post" th:object="${form}">
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
-                <p>商品名：<input type="text" th:field="*{goodsName}" required></p>
+					<p>商品名：<input type="text" th:field="*{goodsName}" required></p>
 
-                <p>カテゴリ：
-                    <select th:field="*{categoryId}" required>
-                        <option value="">選択してください</option>
-                        <option th:each="c : ${categoryList}"
-                                th:value="${c.id}"
-                                th:text="${c.name}"></option>
-                    </select>
-                </p>
+					<p>カテゴリ：
+						<select th:field="*{categoryId}" required>
+							<option value="">選択してください</option>
+							<option th:each="c : ${categoryList}" th:value="${c.id}" th:text="${c.name}"></option>
+						</select>
+					</p>
 
-                <p>ジャンル：
-                    <select th:field="*{genreId}" required>
-                        <option value="">選択してください</option>
-                        <option th:each="g : ${genreList}"
-                                th:value="${g.genreId}"
-                                th:text="${g.genreName}"></option>
-                    </select>
-                </p>
+					<p>ジャンル：
+						<select th:field="*{genreId}" required>
+							<option value="">選択してください</option>
+							<option th:each="g : ${genreList}" th:value="${g.genreId}" th:text="${g.genreName}">
+							</option>
+						</select>
+					</p>
 
-                <p>在庫数：<input type="number" th:field="*{quantity}" min="0" required></p>
-                <p>JANコード：<input type="text" th:field="*{janCode}"></p>
-                <p>画像URL：<input type="text" th:field="*{imageUrl}"></p>
+					<p>在庫数：<input type="number" th:field="*{quantity}" min="0" required></p>
+					<p>JANコード：
+						<input type="text" th:field="*{janCode}" maxlength="13" pattern="\d{13}"
+							title="JANコードは13桁の数字で入力してください">
+					</p>
 
-                <button type="submit">追加</button>
-            </form>
-        </div>
+					<p>画像URL：<input type="text" th:field="*{imageUrl}"></p>
 
-        <div class="box">
-            <h2>商品検索</h2>
+					<button type="submit">追加</button>
+				</form>
+			</div>
 
-            <form th:action="@{/admin/stock/search}" method="get">
-                <p>商品ID：<input type="number" name="goodsId"></p>
-                <p>商品名：<input type="text" name="goodsName"></p>
+			<div class="box">
+				<h2>商品検索</h2>
 
-                <p>カテゴリ：
-                    <select name="categoryId">
-                        <option value="">指定なし</option>
-                        <option th:each="c : ${categoryList}"
-                                th:value="${c.id}"
-                                th:text="${c.name}"></option>
-                    </select>
-                </p>
+				<form th:action="@{/admin/stock/search}" method="get">
+					<p>商品ID：<input type="number" name="goodsId"></p>
+					<p>商品名：<input type="text" name="goodsName"></p>
 
-                <p>ジャンル：
-                    <select name="genreId">
-                        <option value="">指定なし</option>
-                        <option th:each="g : ${genreList}"
-                                th:value="${g.genreId}"
-                                th:text="${g.genreName}"></option>
-                    </select>
-                </p>
+					<p>カテゴリ：
+						<select name="categoryId">
+							<option value="">指定なし</option>
+							<option th:each="c : ${categoryList}" th:value="${c.id}" th:text="${c.name}"></option>
+						</select>
+					</p>
 
-                <button type="submit">検索</button>
-            </form>
-        </div>
+					<p>ジャンル：
+						<select name="genreId">
+							<option value="">指定なし</option>
+							<option th:each="g : ${genreList}" th:value="${g.genreId}" th:text="${g.genreName}">
+							</option>
+						</select>
+					</p>
 
-    </div>
+					<button type="submit">検索</button>
+				</form>
+			</div>
 
-    <!-- ===== 検索結果 ===== -->
-    <div th:if="${result != null}">
-        <h2>検索結果</h2>
+		</div>
 
-        <table>
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>商品名</th>
-                <th>カテゴリ</th>
-                <th>ジャンル</th>
-                <th>在庫</th>
-                <th>JAN</th>
-                <th>画像</th>
-                <th>更新</th>
-            </tr>
-            </thead>
+		<!-- ===== 検索結果 ===== -->
+		<div th:if="${result != null}">
+			<h2>検索結果</h2>
 
-            <tbody>
-            <tr th:each="g : ${result}"
-                th:id="'row-' + ${g.goodsId}">
+			<table>
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>商品名</th>
+						<th>カテゴリ</th>
+						<th>ジャンル</th>
+						<th>在庫</th>
+						<th>JAN</th>
+						<th>画像</th>
+						<th>更新</th>
+					</tr>
+				</thead>
 
-                <td th:text="${g.goodsId}"></td>
-                <td th:text="${g.goodsName}"></td>
-                <td th:text="${g.categoryName}"></td>
-                <td th:text="${g.genreName}"></td>
-                <td th:text="${g.quantity}"></td>
-                <td th:text="${g.janCode}"></td>
-                <td>
-                    <img th:if="${g.imageUrl != null}"
-                         th:src="${g.imageUrl}"
-                         width="60">
-                </td>
+				<tbody>
+					<tr th:each="g : ${result}" th:id="'row-' + ${g.goodsId}">
 
-                <!-- ★ 在庫変更（± + 任意入力） -->
-                <td>
-                    <form th:action="@{/admin/stock/update}" method="post">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                        <input type="hidden" name="id" th:value="${g.goodsId}">
-                        <input type="hidden" name="anchor" th:value="'row-' + ${g.goodsId}">
+						<td th:text="${g.goodsId}"></td>
+						<td th:text="${g.goodsName}"></td>
+						<td th:text="${g.categoryName}"></td>
+						<td th:text="${g.genreName}"></td>
+						<td th:text="${g.quantity}"></td>
+						<td th:text="${g.janCode}"></td>
+						<td>
+							<img th:if="${g.imageUrl != null}" th:src="${g.imageUrl}" width="60">
+						</td>
 
-                        <div style="display:flex; gap:4px; justify-content:center; align-items:center;">
-                            <button type="button" onclick="changeQty(this, -1)">−</button>
+						<!-- ★ 在庫変更（± + 任意入力） -->
+						<td>
+							<form th:action="@{/admin/stock/update}" method="post">
+								<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+								<input type="hidden" name="id" th:value="${g.goodsId}">
+								<input type="hidden" name="anchor" th:value="'row-' + ${g.goodsId}">
 
-                            <input type="number"
-                                   name="qty"
-                                   th:value="${g.quantity}"
-                                   min="0"
-                                   style="width:60px; text-align:center;"
-                                   required>
+								<div style="display:flex; gap:4px; justify-content:center; align-items:center;">
+									<button type="button" onclick="changeQty(this, -1)">−</button>
 
-                            <button type="button" onclick="changeQty(this, 1)">＋</button>
-                        </div>
+									<input type="number" name="qty" th:value="${g.quantity}" min="0"
+										style="width:60px; text-align:center;" required>
 
-                        <div style="margin-top:6px;">
-                            <button type="submit">変更</button>
-                        </div>
-                    </form>
-                </td>
+									<button type="button" onclick="changeQty(this, 1)">＋</button>
+								</div>
 
-            </tr>
-            </tbody>
-        </table>
-    </div>
+								<div style="margin-top:6px;">
+									<button type="submit">変更</button>
+								</div>
+							</form>
+						</td>
 
-</div>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 
-<!-- ===== 数量制御 + スクロール復帰 ===== -->
-<script>
-    function changeQty(btn, diff) {
-        const input = btn.parentElement.querySelector('input[type="number"]');
-        let val = parseInt(input.value || 0, 10);
-        val += diff;
-        if (val < 0) val = 0;
-        input.value = val;
-    }
-</script>
+	</div>
 
-<script th:if="${scrollAnchor}">
-    window.addEventListener('load', () => {
-        const id = '[[${scrollAnchor}]]';
-        const el = document.getElementById(id);
-        if (el) {
-            el.scrollIntoView({ block: 'center' });
-        }
-    });
-</script>
+	<!-- ===== 数量制御 + スクロール復帰 ===== -->
+	<script>
+		function changeQty(btn, diff) {
+			const input = btn.parentElement.querySelector('input[type="number"]');
+			let val = parseInt(input.value || 0, 10);
+			val += diff;
+			if (val < 0) val = 0;
+			input.value = val;
+		}
+	</script>
+
+	<script th:if="${scrollAnchor}">
+		window.addEventListener('load', () => {
+			const id = '[[${scrollAnchor}]]';
+			const el = document.getElementById(id);
+			if (el) {
+				el.scrollIntoView({block: 'center'});
+			}
+		});
+	</script>
 
 </body>
+
 </html>
