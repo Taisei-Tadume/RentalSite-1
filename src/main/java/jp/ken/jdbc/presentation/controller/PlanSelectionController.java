@@ -41,7 +41,7 @@ public class PlanSelectionController {
 		}
 
 		model.addAttribute("planName", plan.getPlanName());
-		model.addAttribute("amount", plan.getPlanPrice());
+		model.addAttribute("amount", plan.getPlanPrice().intValue());
 		model.addAttribute("limit", plan.getRentalLimit());
 
 		return "payment"; // 決済画面へ
