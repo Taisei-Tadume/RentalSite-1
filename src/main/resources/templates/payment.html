@@ -62,10 +62,16 @@
 						required>
 				</div>
 
-				<!-- 支払いボタン -->
-				<div class="text-center">
+				<!-- ▼ ボタンエリア（左：戻る、右：支払い実行） -->
+				<div class="d-flex justify-content-between mt-4">
+					<a th:href="@{/plan}" class="btn btn-outline-secondary px-4" style="padding-top: 10px;">
+						戻る
+					</a>
+
 					<button type="submit" class="btn btn-primary btn-lg">支払い実行</button>
 				</div>
+
+
 			</form>
 		</div>
 	</div>

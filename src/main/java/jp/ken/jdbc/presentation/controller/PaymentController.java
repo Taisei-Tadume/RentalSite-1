@@ -35,7 +35,11 @@ public class PaymentController {
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
             return "redirect:/top"; // どこに飛ばすかは自由
         }
-
+        
+        // 新規登録フロー中でなければアクセス禁止
+        if (session.getAttribute("tempMember") == null) {
+            return "redirect:/top";
+        }
 
         // ▼ バリデーション
         if (!cardNumber.matches("\\d{16}")) {

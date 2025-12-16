@@ -14,49 +14,65 @@ import jp.ken.jdbc.domain.entity.PlanEntity;
 @Controller
 public class PlanSelectionController {
 
-    private final PlanService planService;
+	private final PlanService planService;
 
-    public PlanSelectionController(PlanService planService) {
-        this.planService = planService;
-    }
+	public PlanSelectionController(PlanService planService) {
+		this.planService = planService;
+	}
 
-    // プラン選択画面
-    @GetMapping("/plan")
-    public String plan(Model model) {
-    	
-    	// ログイン済みなら新規登録ページにアクセス不可
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
-            return "redirect:/top"; // どこに飛ばすかは自由
-        }
+	// プラン選択画面
+	@GetMapping("/plan")
+	public String plan(Model model, HttpSession session) {
 
-        model.addAttribute("plans", planService.getAllPlans());
-        return "planselection";
-    }
+		// ログイン済みなら新規登録ページにアクセス不可
+		var auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+			return "redirect:/top"; // どこに飛ばすかは自由
+		}
+		
+		// 新規登録フロー中でなければアクセス禁止
+		if (session.getAttribute("tempMember") == null) {
+			return "redirect:/top";
+		}
 
-    // 決済画面へ
-    @PostMapping("/payment")
-    public String toPayment(
-            @RequestParam("selectedPlan") int planId,
-            Model model,
-            HttpSession session) {
+		model.addAttribute("plans", planService.getAllPlans());
+		return "planselection";
+	}
 
-        // DB からプラン情報を取得
-        PlanEntity plan = planService.getPlanById(planId);
+	// 決済画面へ
+	@PostMapping("/payment")
+	public String toPayment(
+			@RequestParam("selectedPlan") int planId,
+			Model model,
+			HttpSession session) {
+		
+		// ログイン済みなら新規登録ページにアクセス不可
+		var auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+		    return "redirect:/top";
+		}
+		
+		// 新規登録フロー中でなければアクセス禁止
+	    if (session.getAttribute("tempMember") == null) {
+	        return "redirect:/top";
+	    }
 
-        if (plan == null) {
-            model.addAttribute("error", "プランが存在しません");
-            return "planselection";
-        }
+		// DB からプラン情報を取得
+		PlanEntity plan = planService.getPlanById(planId);
 
-        // 🔥 選択したプランIDをセッションに保存（重要）
-        session.setAttribute("selectedPlanId", planId);
+		if (plan == null) {
+			model.addAttribute("error", "プランが存在しません");
+			return "planselection";
+		}
 
-        // 決済画面に表示する情報
-        model.addAttribute("planName", plan.getPlanName());
-        model.addAttribute("amount", plan.getPlanPrice().intValue());
-        model.addAttribute("limit", plan.getRentalLimit());
+		// 🔥 選択したプランIDをセッションに保存（重要）
+		session.setAttribute("selectedPlanId", planId);
 
-        return "payment";
-    }
+		// 決済画面に表示する情報
+		model.addAttribute("planName", plan.getPlanName());
+		model.addAttribute("amount", plan.getPlanPrice().intValue());
+		model.addAttribute("limit", plan.getRentalLimit());
+
+		return "payment";
+	}
 }
