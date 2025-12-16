@@ -27,6 +27,13 @@
 
 			<form th:action="@{/payment/execute}" method="post" class="p-4 bg-white border rounded">
 
+				<!-- ★ CSRF トークン -->
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+				<!-- hidden: プラン名 / 金額 -->
+				<input type="hidden" name="planName" th:value="${planName}">
+				<input type="hidden" name="amount" th:value="${amount}">
+
 				<!-- カード番号 -->
 				<div class="mb-3">
 					<label for="cardNumber" class="form-label">クレジットカード番号</label>
@@ -54,10 +61,6 @@
 					<input id="cvv" name="cvv" type="password" class="form-control" maxlength="3" placeholder="3桁"
 						required>
 				</div>
-
-				<!-- hidden: プランID / 金額 -->
-				<input type="hidden" name="planName" th:value="${planName}">
-				<input type="hidden" name="amount" th:value="${amount}">
 
 				<!-- 支払いボタン -->
 				<div class="text-center">

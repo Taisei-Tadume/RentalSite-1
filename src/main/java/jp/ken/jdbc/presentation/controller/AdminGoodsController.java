@@ -1,6 +1,5 @@
 package jp.ken.jdbc.presentation.controller;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
@@ -31,15 +30,9 @@ public class AdminGoodsController {
 
         model.addAttribute("form", new GoodsEntity());
         model.addAttribute("result", null);
+        model.addAttribute("scrollAnchor", null);
 
-        model.addAttribute("categoryList",
-                service.findAll().stream()
-                        .map(g -> Map.of("id", g.getCategoryId(), "name", g.getCategoryName()))
-                        .distinct()
-                        .toList());
-
-        model.addAttribute("genreList", genreService.getAllGenres());
-
+        setCommon(model);
         return "admin-stock";
     }
 
@@ -52,20 +45,12 @@ public class AdminGoodsController {
             @RequestParam(required = false) Integer genreId,
             Model model) {
 
-        List<GoodsEntity> list =
-                service.search(goodsId, goodsName, categoryId, genreId);
-
-        model.addAttribute("result", list);
+        model.addAttribute("result",
+                service.search(goodsId, goodsName, categoryId, genreId));
         model.addAttribute("form", new GoodsEntity());
+        model.addAttribute("scrollAnchor", null);
 
-        model.addAttribute("categoryList",
-                service.findAll().stream()
-                        .map(g -> Map.of("id", g.getCategoryId(), "name", g.getCategoryName()))
-                        .distinct()
-                        .toList());
-
-        model.addAttribute("genreList", genreService.getAllGenres());
-
+        setCommon(model);
         return "admin-stock";
     }
 
@@ -76,8 +61,7 @@ public class AdminGoodsController {
         if (form.getQuantity() == null) form.setQuantity(0);
         if (form.getGenreId() == null) form.setGenreId(0);
         if (form.getCategoryId() == null) form.setCategoryId(0);
-
-        if (form.getJanCode() == null || form.getJanCode().isBlank()) {
+        if (form.getJanCode() != null && form.getJanCode().isBlank()) {
             form.setJanCode(null);
         }
 
@@ -85,7 +69,7 @@ public class AdminGoodsController {
         return "redirect:/admin/stock";
     }
 
-    /** 在庫更新（検索結果＋スクロール維持） */
+    /** 在庫更新（±・任意入力対応） */
     @PostMapping("/admin/stock/update")
     public String updateStock(
             @RequestParam Long id,
@@ -98,27 +82,10 @@ public class AdminGoodsController {
             Model model) {
 
         service.updateStock(id, qty);
-
         return backToSearch(goodsId, goodsName, categoryId, genreId, anchor, model);
     }
 
-    /** 不良品 -1（検索結果＋スクロール維持） */
-    @PostMapping("/admin/stock/bad")
-    public String badItem(
-            @RequestParam Long id,
-            @RequestParam(required = false) Integer goodsId,
-            @RequestParam(required = false) String goodsName,
-            @RequestParam(required = false) Integer categoryId,
-            @RequestParam(required = false) Integer genreId,
-            @RequestParam(required = false) String anchor,
-            Model model) {
-
-        service.decreaseStock(id);
-
-        return backToSearch(goodsId, goodsName, categoryId, genreId, anchor, model);
-    }
-
-    /** 共通：検索条件＋スクロール位置を維持して戻す */
+    /** 共通：検索条件＋スクロール位置を維持 */
     private String backToSearch(
             Integer goodsId,
             String goodsName,
@@ -127,21 +94,25 @@ public class AdminGoodsController {
             String anchor,
             Model model) {
 
-        List<GoodsEntity> list =
-                service.search(goodsId, goodsName, categoryId, genreId);
-
-        model.addAttribute("result", list);
+        model.addAttribute("result",
+                service.search(goodsId, goodsName, categoryId, genreId));
         model.addAttribute("form", new GoodsEntity());
         model.addAttribute("scrollAnchor", anchor);
 
+        setCommon(model);
+        return "admin-stock";
+    }
+
+    /** 共通Model */
+    private void setCommon(Model model) {
         model.addAttribute("categoryList",
                 service.findAll().stream()
-                        .map(g -> Map.of("id", g.getCategoryId(), "name", g.getCategoryName()))
+                        .map(g -> Map.of(
+                                "id", g.getCategoryId(),
+                                "name", g.getCategoryName()))
                         .distinct()
                         .toList());
 
         model.addAttribute("genreList", genreService.getAllGenres());
-
-        return "admin-stock";
     }
 }
