@@ -31,31 +31,62 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(authz -> authz
 
-                /* ✅ 公開ページ（ログイン不要） */
+                /* ==========================
+                 * 公開ページ（ログイン不要）
+                 * ========================== */
+                .requestMatchers(
+                        "/",
+                        "/top",
+                        "/login",
+                        "/regist/**",
+                        "/search/**",
+                        "/detail/**"
+                ).permitAll()
 
-                .requestMatchers("/search/**").permitAll()
-                .requestMatchers("/cart/**").permitAll()
-                .requestMatchers("/detail/**").permitAll()
+                /* ==========================
+                 * カート関連（★重要）
+                 * 未ログインでも可能
+                 * ========================== */
+                .requestMatchers(
+                        "/cart",
+                        "/cart/**"   // add / remove / update / view
+                ).permitAll()
 
-                /* ✅ 静的リソース */
-                .requestMatchers("/css/**", "/js/**", "/images/**", "/picture/**").permitAll()
+                /* ==========================
+                 * 静的リソース
+                 * ========================== */
+                .requestMatchers(
+                        "/css/**",
+                        "/js/**",
+                        "/images/**",
+                        "/picture/**"
+                ).permitAll()
 
-                /* ✅ カート確認は認証必須に変更 */
-                .requestMatchers("/cart/confirm").authenticated()
+                /* ==========================
+                 * 注文関連（ログイン必須）
+                 * ========================== */
+                .requestMatchers("/order/**").authenticated()
 
-                /* ✅ ログイン必須ページ */
-                .requestMatchers("/order/**", "/logout", "/member/**").authenticated()
+                /* ==========================
+                 * 会員ページ
+                 * ========================== */
+                .requestMatchers("/member/**").authenticated()
 
-                /* ✅ 管理者専用ページ */
+                /* ==========================
+                 * 管理者専用
+                 * ========================== */
                 .requestMatchers("/employee/**", "/admin/**").hasRole("ADMIN")
 
-                /* ✅ その他は認証必須 */
-                .anyRequest().authenticated());
+                /* ==========================
+                 * その他
+                 * ========================== */
+                .anyRequest().authenticated()
+        );
 
-        /* ✅ 403（権限不足） */
+        /* 403 */
         http.exceptionHandling(ex -> ex.accessDeniedPage("/error"));
 
-        /* ✅ ログイン設定 */
+        /* ログイン設定 */
         http.formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
@@ -63,48 +94,57 @@ public class SecurityConfig {
                 .passwordParameter("password")
                 .successHandler(loginSuccessHandler)
                 .failureUrl("/login?error")
-                .permitAll());
+                .permitAll()
+        );
 
-        /* ✅ ログアウト設定 */
+        /* ログアウト設定 */
         http.logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout")
                 .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID"));
+                .deleteCookies("JSESSIONID")
+        );
 
-        /* ✅ セッション管理（同時ログイン1件） */
+        /* セッション管理（同時ログイン1件） */
         http.sessionManagement(session -> session
                 .maximumSessions(1)
-                .maxSessionsPreventsLogin(true));
+                .maxSessionsPreventsLogin(true)
+        );
 
         return http.build();
     }
 
-    /* ✅ JDBC 認証 */
+    /* ==========================
+     * JDBC 認証
+     * ========================== */
     @Bean
     public JdbcUserDetailsManager userDetailsManager() {
-        JdbcUserDetailsManager manager = new JdbcUserDetailsManager(this.dataSource);
+
+        JdbcUserDetailsManager manager =
+                new JdbcUserDetailsManager(this.dataSource);
 
         manager.setUsersByUsernameQuery(
                 "SELECT user_name AS username, password_hash AS password, true AS enabled " +
-                        "FROM users_table WHERE email = ?");
+                "FROM users_table WHERE email = ?"
+        );
 
         manager.setAuthoritiesByUsernameQuery(
                 "SELECT u.user_name AS username, a.authority_name AS authority " +
-                        "FROM users_table u " +
-                        "JOIN users_authority_table a ON u.authority_id = a.authority_id " +
-                        "WHERE u.user_name = ?");
+                "FROM users_table u " +
+                "JOIN users_authority_table a ON u.authority_id = a.authority_id " +
+                "WHERE u.user_name = ?"
+        );
 
         return manager;
     }
 
-    /* ✅ セッションイベント */
+    /* セッションイベント */
     @Bean
     public HttpSessionEventPublisher httpSessionEventPublisher() {
         return new HttpSessionEventPublisher();
     }
 
-    /* ✅ パスワードハッシュ */
+    /* パスワードエンコーダ */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
