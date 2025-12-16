@@ -36,7 +36,7 @@ public class MemberRegistController {
         return "newmemberregistration";
     }
 
-    // --- POST: 会員登録 ---
+    // --- POST: 会員登録（DBには保存しない） ---
     @PostMapping("/regist")
     public String registSubmit(
             @ModelAttribute("memberForm") @Validated MemberRegistForm memberForm,
@@ -56,13 +56,13 @@ public class MemberRegistController {
             return "newmemberregistration";
         }
 
-        // ▼メール重複チェック
+        // ▼メール重複チェック（既存会員との重複のみチェック）
         if (memberService.emailExists(memberForm.getEmail())) {
             bindingResult.rejectValue("email", "error.email", "このメールアドレスは既に登録されています");
             return "newmemberregistration";
         }
 
-        // ▼Form → Entity 変換
+        // ▼Form → Entity 変換（まだ DB に保存しない）
         MemberEntity member = new MemberEntity();
         member.setUserName(memberForm.getUserName());
         member.setEmail(memberForm.getEmail());
@@ -70,25 +70,23 @@ public class MemberRegistController {
         member.setAddress(memberForm.getAddress());
         member.setPostalCode(memberForm.getPostalCode());
 
-        // ✅ パスワードをハッシュ化してセット　※絶対に消さないで
+        // ▼パスワードをハッシュ化してセット
         String hashedPassword = passwordEncoder.encode(memberForm.getPassword());
         member.setPasswordHash(hashedPassword);
 
-        // 初期値
+        // ▼初期値（プランは後で選択）
         member.setAuthorityId(1); // 一般会員
-        member.setPlanId(1);      // デフォルトプラン
 
-        // ▼登録処理
-        memberService.register(member);
+        // ▼セッションに保存（DBには保存しない）
+        session.setAttribute("tempMember", member);
 
-        // ▼住所をセッションに保存
+        // ▼住所もセッションに保存（配送先として使用）
         Map<String, String> address = new HashMap<>();
         address.put("postalCode", memberForm.getPostalCode());
         address.put("address", memberForm.getAddress());
-
         session.setAttribute("shippingAddress", address);
 
-        // ▼プラン選択画面へ遷移
+        // ▼プラン選択画面へ遷移（Controller を通す）
         return "redirect:/plan";
     }
 }

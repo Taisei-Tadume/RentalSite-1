@@ -1,26 +1,37 @@
 <!DOCTYPE html>
-<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
 
 <head>
 	<meta charset="UTF-8">
-	<title>決済完了</title>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<title>登録完了</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 
-<body class="bg-light">
-	<div class="container mt-5">
-		<div class="col-md-6 mx-auto">
+<body>
+	<div id="wrapper">
 
-			<div class="alert alert-success text-center p-4">
-				<h3>決済が完了しました！</h3>
-				<p>ご利用ありがとうございます。</p>
+		<main>
+			<div class="d-flex justify-content-center">
+				<div class="success-container w-50 p-4 mt-5 border rounded shadow bg-white text-center">
+
+					<!-- 完了メッセージ -->
+					<h2 class="text-success mb-4">会員登録とお支払いが完了しました！</h2>
+
+					<p class="mb-3">
+						ご登録ありがとうございます。<br>
+						ご選択いただいたプランでサービスをご利用いただけます。
+					</p>
+
+					<!-- 次のアクションボタン -->
+					<div class="mt-4">
+						<a th:href="@{/top}" class="btn btn-primary px-4">トップへ戻る</a>
+						<a th:href="@{/login}" class="btn btn-outline-secondary px-4 ms-2">ログインへ進む</a>
+					</div>
+
+				</div>
 			</div>
+		</main>
 
-			<div class="text-center mt-3">
-				<a href="/top" class="btn btn-primary">トップへ戻る</a>
-			</div>
-
-		</div>
 	</div>
 </body>
 
