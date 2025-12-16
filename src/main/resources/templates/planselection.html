@@ -19,13 +19,22 @@
 				<!-- ▼ プランのプルダウン -->
 				<div class="mb-4">
 					<label class="form-label fw-bold">プランを選択してください</label>
+
 					<select name="selectedPlan" class="form-select" required>
 						<option value="" disabled selected>プランを選択</option>
 
-						<option value="1">お試し（324 円）</option>
-						<option value="2">Bronze（1,080 円）</option>
-						<option value="3">Silver（2,160 円）</option>
-						<option value="4">Gold（5,400 円）</option>
+						<!-- DB のプラン一覧をループ表示 -->
+						<option th:each="p : ${plans}" th:value="${p.planId}" th:text="${p.planName 
+                 		+ '（' 
+                		 + p.planPrice.intValue()
+                		 + ' 円'
+                		 + (p.rentalLimit == null || p.rentalLimit == 0
+                    	? ' / 無制限'
+                   		 : ' / 上限 ' + p.rentalLimit + ' 枚')
+                 		+ '）'}">
+						</option>
+
+
 					</select>
 
 				</div>

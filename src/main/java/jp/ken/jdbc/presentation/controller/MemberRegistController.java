@@ -89,6 +89,6 @@ public class MemberRegistController {
         session.setAttribute("shippingAddress", address);
 
         // ▼プラン選択画面へ遷移
-        return "planselection";
+        return "redirect:/plan";
     }
 }

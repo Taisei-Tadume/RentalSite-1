@@ -6,31 +6,44 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import jp.ken.jdbc.application.service.PlanService;
+import jp.ken.jdbc.domain.entity.PlanEntity;
+
 @Controller
 public class PlanSelectionController {
 
-    @GetMapping("/plan")
-    public String plan() {
-        return "planselection";
-    }
-    
-    @PostMapping("/payment")
-    public String toPayment(@RequestParam("selectedPlan") int planId, Model model) {
+	private final PlanService planService;
 
-        int price = 0;
-        String name = "";
+	public PlanSelectionController(PlanService planService) {
+		this.planService = planService;
+	}
 
-        switch (planId) {
-            case 1 -> { price = 324;  name = "お試し"; }
-            case 2 -> { price = 1080; name = "Bronze"; }
-            case 3 -> { price = 2160; name = "Silver"; }
-            case 4 -> { price = 5400; name = "Gold"; }
-        }
+	// ✅ プラン選択画面（プラン一覧を表示）
+	@GetMapping("/plan")
+	public String plan(Model model) {
 
-        model.addAttribute("planName", name);
-        model.addAttribute("amount", price);
+		model.addAttribute("plans", planService.getAllPlans());
 
-        return "payment"; // 決済画面へ
-    }
+		return "planselection";
+	}
 
+	// ✅ 決済画面へ（選択されたプランIDから DB で情報取得）
+	@PostMapping("/payment")
+	public String toPayment(@RequestParam("selectedPlan") int planId, Model model) {
+
+		// ✅ DB からプラン情報を取得
+		PlanEntity plan = planService.getPlanById(planId);
+
+		if (plan == null) {
+			// 万が一プランが存在しない場合
+			model.addAttribute("error", "プランが存在しません");
+			return "planselection";
+		}
+
+		model.addAttribute("planName", plan.getPlanName());
+		model.addAttribute("amount", plan.getPlanPrice());
+		model.addAttribute("limit", plan.getRentalLimit());
+
+		return "payment"; // 決済画面へ
+	}
 }
