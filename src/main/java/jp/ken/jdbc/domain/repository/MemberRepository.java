@@ -41,6 +41,17 @@ public class MemberRepository {
 
         return jdbcTemplate.queryForObject(sql, Integer.class, email);
     }
+    
+    /** 電話番号重複チェック */
+    public int countByPhoneNumber(String phoneNumber) {
+        String sql = """
+            SELECT COUNT(*)
+            FROM users_table
+            WHERE phone_number = ?
+        """;
+
+        return jdbcTemplate.queryForObject(sql, Integer.class, phoneNumber);
+    }
 
     /** 会員登録 */
     public void insert(MemberEntity member) {

@@ -23,6 +23,12 @@ public class MemberService {
     public boolean emailExists(String email) {
         return memberRepository.countByEmail(email) > 0;
     }
+    
+    /** 電話番号一致チェック */
+    public boolean phoneExists(String phoneNumber) {
+        String normalized = phoneNumber.replaceAll("-", "");
+        return memberRepository.countByPhoneNumber(normalized) > 0;
+    }
 
     /** 会員登録 */
     @Transactional
