@@ -76,6 +76,12 @@ public class MemberRegistController {
             bindingResult.rejectValue("email", "error.email", "このメールアドレスは既に登録されています");
             return "newmemberregistration";
         }
+        
+     // ▼電話番号重複チェック
+        if (memberService.phoneExists(memberForm.getPhoneNumber())) {
+            bindingResult.rejectValue("phoneNumber", "error.phoneNumber", "この電話番号は既に登録されています");
+            return "newmemberregistration";
+        }
 
         // ▼Form → Entity 変換（まだ DB に保存しない）
         MemberEntity member = new MemberEntity();
