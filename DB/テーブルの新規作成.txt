@@ -1,168 +1,308 @@
 テーブルの新規作成
 
-0.使用するデータベース名の定義
+1.使用するデータベース名の定義
 
 CREATE DATABASE rental;
 
-1.USERS_TABLEの作成
+2.USERS_TABLEの作成
 
-CREATE TABLE USERS_TABLE (
-  user_id BIGINT NOT NULL AUTO_INCREMENT,
-  user_name VARCHAR(255) NOT NULL,
-  email VARCHAR(255) NOT NULL,
-  phone_number VARCHAR(20) NOT NULL,
-  address VARCHAR(255) NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
-  authority_id BIGINT NOT NULL,
-  postal_code VARCHAR(10) NOT NULL,
-  plan_id BIGINT NOT NULL,
-  plan_start_date DATE NOT NULL DEFAULT (CURRENT_DATE),
-  plan_end_date DATE NOT NULL DEFAULT (LAST_DAY(CURRENT_DATE)),
-  PRIMARY KEY (user_id),
-  UNIQUE KEY uq_email (email),
-  CONSTRAINT fk_plan_id FOREIGN KEY (plan_id)
-    REFERENCES PLANS_TABLE (plan_id)
-    ON UPDATE CASCADE
+CREATE TABLE `users_table` (
+  `user_id`         BIGINT NOT NULL AUTO_INCREMENT,
+  `user_name`       VARCHAR(255) NOT NULL,
+  `email`           VARCHAR(255) NOT NULL,
+  `phone_number`    VARCHAR(20)  NOT NULL,
+  `address`         VARCHAR(255) NOT NULL,
+  `password_hash`   VARCHAR(255) NOT NULL,
+  `authority_id`    BIGINT NOT NULL,
+  `postal_code`     VARCHAR(10)  NOT NULL,
+  `plan_id`         BIGINT NOT NULL,
+  `plan_start_date` DATE NOT NULL DEFAULT (CURDATE()),
+  `plan_end_date`   DATE NOT NULL DEFAULT (LAST_DAY(CURDATE())),
+
+  PRIMARY KEY (`user_id`),
+
+  UNIQUE KEY `uq_email` (`email`),
+  UNIQUE KEY `uk_users_phone` (`phone_number`),
+
+  KEY `fk_users_authority` (`authority_id`),
+  KEY `fk_plan_id` (`plan_id`),
+
+  CONSTRAINT `fk_plan_id`
+    FOREIGN KEY (`plan_id`)
+    REFERENCES `plans_table` (`plan_id`)
     ON DELETE RESTRICT
-);
+    ON UPDATE CASCADE,
 
-2.USERS_AUTHORITY_TABLEの作成
+  CONSTRAINT `fk_users_authority`
+    FOREIGN KEY (`authority_id`)
+    REFERENCES `users_authority_table` (`authority_id`)
+)
+ENGINE = INNODB
+DEFAULT CHARSET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+ALTER TABLE users_table
+ADD CONSTRAINT uk_users_phone UNIQUE (phone_number);
 
-CREATE TABLE USERS_AUTHORITY_TABLE (
-  authority_id BIGINT NOT NULL,
-  authority_name VARCHAR(100) NOT NULL,
-  PRIMARY KEY (authority_id),
-  UNIQUE KEY uq_authority_name (authority_name)
-);
+3.USERS_AUTHORITY_TABLEの作成
 
-3.GOODS_TABLEの作成
+CREATE TABLE `users_authority_table` (
+  `authority_id`   BIGINT NOT NULL,
+  `authority_name` VARCHAR(100) NOT NULL,
 
-CREATE TABLE GOODS_TABLE (
-    goods_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    goods_name VARCHAR(255) NOT NULL,
-    category_id BIGINT NOT NULL,
-    genre_id BIGINT　NOT NULL,
-    quantity INT NOT NULL DEFAULT 0,
-    jan_code VARCHAR(13) NOT NULL UNIQUE,
-　 image_url VARCHAR(255) NOT NULL
-);
+  PRIMARY KEY (`authority_id`),
+  UNIQUE KEY `uq_authority_name` (`authority_name`)
+)
+ENGINE = INNODB
+DEFAULT CHARSET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
-4.GOODS_CATEGORY_TABLEの作成
+4.GOODS_TABLEの作成
 
-CREATE TABLE GOODS_CATEGORY_TABLE (
-  category_id BIGINT NOT NULL,
-  category_name VARCHAR(255) NOT NULL,
-  PRIMARY KEY (category_id),
-  UNIQUE KEY uq_category_id (category_id),
-  UNIQUE KEY uq_category_name (category_name)
-);
+CREATE TABLE `goods_table` (
+  `goods_id`     BIGINT NOT NULL AUTO_INCREMENT,
+  `goods_name`   VARCHAR(255) NOT NULL,
+  `category_id`  BIGINT NOT NULL,
+  `genre_id`     BIGINT NOT NULL,
+  `quantity`     INT UNSIGNED NOT NULL DEFAULT 0,
+  `jan_code`     VARCHAR(13) NOT NULL,
+  `image_url`    VARCHAR(255) NOT NULL,
 
-5.PLANS_TABLEの作成
+  PRIMARY KEY (`goods_id`),
 
-CREATE TABLE PLANS_TABLE (
-  plan_id BIGINT NOT NULL AUTO_INCREMENT,
-  plan_name VARCHAR(100) NOT NULL,
-  plan_price DECIMAL(10,2) NULL,
-  rental_limit INT,
-  PRIMARY KEY (plan_id),
-  UNIQUE KEY uq_plan_name (plan_name),
-  CHECK (rental_limit > 0)
-);
+  UNIQUE KEY `uq_goods_id` (`goods_id`),
+  UNIQUE KEY `jan_code` (`jan_code`),
 
-6.外部キーの設定(authority_id)
+  KEY `fk_goods_category` (`category_id`),
+  KEY `fk_goods_genre` (`genre_id`),
 
-ALTER TABLE USERS_TABLE
-ADD CONSTRAINT fk_users_authority
-FOREIGN KEY (authority_id)
-REFERENCES USERS_AUTHORITY_TABLE(authority_id);
+  CONSTRAINT `fk_goods_category`
+    FOREIGN KEY (`category_id`)
+    REFERENCES `goods_category_table` (`category_id`),
 
-7.外部キーの設定(category_id)
+  CONSTRAINT `fk_goods_genre`
+    FOREIGN KEY (`genre_id`)
+    REFERENCES `goods_genre_table` (`genre_id`),
 
-ALTER TABLE GOODS_TABLE
-ADD CONSTRAINT fk_goods_category
-FOREIGN KEY (category_id)
-REFERENCES GOODS_CATEGORY_TABLE(category_id);
+  CONSTRAINT `chk_goods_quantity`
+    CHECK (`quantity` >= 0)
+)
+ENGINE = INNODB
+DEFAULT CHARSET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
-8.GOODS_GENRE_TABLEの作成
+5.GOODS_CATEGORY_TABLEの作成
 
-CREATE TABLE GOODS_GENRE_TABLE (
-    genre_id   BIGINT NOT NULL AUTO_INCREMENT,
-    genre_name VARCHAR(100) NOT NULL UNIQUE,
-    PRIMARY KEY (genre_id)
-);
+CREATE TABLE `goods_category_table` (
+  `category_id`   BIGINT NOT NULL,
+  `category_name` VARCHAR(255) NOT NULL,
 
-9.外部キー設定(genre_id)
+  PRIMARY KEY (`category_id`),
 
-ALTER TABLE GOODS_TABLE
-ADD CONSTRAINT fk_goods_genre
-FOREIGN KEY (genre_id) REFERENCES goods_genre_table(genre_id);
+  UNIQUE KEY `uq_category_id` (`category_id`),
+  UNIQUE KEY `uq_category_name` (`category_name`)
+)
+ENGINE = INNODB
+DEFAULT CHARSET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
-10.初期設定(ジャンルの設定)
+6.PLANS_TABLEの作成
 
-INSERT INTO GOODS_GENRE_TABLE (genre_name) VALUES ('DVD');
-INSERT INTO GOODS_GENRE_TABLE (genre_name) VALUES ('CD');
-INSERT INTO GOODS_GENRE_TABLE (genre_name)VALUES ('Blu-ray');
+CREATE TABLE `plans_table` (
+  `plan_id`       BIGINT NOT NULL AUTO_INCREMENT,
+  `plan_name`     VARCHAR(100) NOT NULL,
+  `plan_price`    DECIMAL(10,2) DEFAULT NULL,
+  `rental_limit`  INT DEFAULT NULL,
 
-11.初期設定(カテゴリーの設定)
+  PRIMARY KEY (`plan_id`),
 
-INSERT INTO GOODS_CATEGORY_TABLE (category_id, category_name) VALUES
-(1, 'アクション'),
-(2, 'SF'),
-(3, 'サスペンス・ミステリー'),
-(4, 'コメディ'),
-(5, 'ラブロマンス'),
-(6, 'ホラー'),
-(7, 'ファンタジー'),
-(8, 'アニメ'),
-(9, 'J-POP'),
+  UNIQUE KEY `uq_plan_name` (`plan_name`),
+
+  CONSTRAINT `chk_rental_limit`
+    CHECK (`rental_limit` > 0)
+)
+ENGINE = INNODB
+DEFAULT CHARSET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+7.GOODS_GENRE_TABLEの作成
+
+CREATE TABLE `goods_genre_table` (
+  `genre_id`    BIGINT NOT NULL AUTO_INCREMENT,
+  `genre_name`  VARCHAR(100) NOT NULL,
+
+  PRIMARY KEY (`genre_id`),
+  UNIQUE KEY `genre_name` (`genre_name`)
+)
+ENGINE = INNODB
+DEFAULT CHARSET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+8.初期設定(ジャンルの設定)
+
+INSERT INTO goods_genre_table (genre_name) VALUES
+('DVD'),
+('CD'),
+('Blu-ray');
+
+9.初期設定(カテゴリーの設定)
+
+INSERT INTO goods_category_table (category_id, category_name) VALUES
+(1,  'アクション'),
+(2,  'SF'),
+(3,  'サスペンス・ミステリー'),
+(4,  'コメディ'),
+(5,  'ラブロマンス'),
+(6,  'ホラー'),
+(7,  'ファンタジー'),
+(8,  'アニメ'),
+(9,  'J-POP'),
 (10, 'K-POP'),
 (11, 'クラシック'),
 (12, 'ジャズ'),
 (13, 'ロック'),
 (14, 'アニメソング');
 
-12.初期設定(商品登録)　　※最後にやってね
+10.初期設定(権限登録)
 
-INSERT INTO goods_table 
-(goods_id, goods_name, category_id, genre_id, quantity, jan_code, image_url) VALUES
-(1, 'アバター', 1, 1, 5, '4901234567890', '/picture/DVD/DVD.png'),
-(2, 'インセプション', 3, 1, 5, '4902234567891', '/picture/DVD/DVD.png'),
-(3, '君の名は。', 8, 1, 5, '4903234567892', '/picture/DVD/DVD.png'),
-(4, 'タイタニック', 5, 1, 5, '4904234567893', '/picture/DVD/DVD.png'),
-(5, 'アベンジャーズ／エンドゲーム', 1, 3, 5, '4905234567894', '/picture/Bluray/Bluray.png'),
-(6, 'スター・ウォーズ／最後のジェダイ', 2, 3, 5, '4906234567895', '/picture/Bluray/Bluray.png'),
-(7, 'スパイダーマン：スパイダーバース', 7, 3, 5, '4907234567896', '/picture/Bluray/Bluray.png'),
-(8, 'となりのトトロ', 8, 3, 5, '4908234567897', '/picture/Bluray/Bluray.png'),
-(9,  'YOASOBI - 夜に駆ける', 9, 2, 5, '4909234567898', '/picture/CD/CD.png'),
-(10, 'BTS - Dynamite', 10, 2, 5, '4910234567899', '/picture/CD/CD.png'),
-(11, '久石譲 - Works I', 11, 2, 5, '4911234567800', '/picture/CD/CD.png'),
-(12, 'Bill Evans - Waltz for Debby', 12, 2, 5, '4912234567801', '/picture/CD/CD.png'),
-(13, 'Queen - Greatest Hits', 13, 2, 5, '4913234567802', '/picture/CD/CD.png'),
-(14, 'LiSA - 紅蓮華', 14, 2, 5, '4914234567803', '/picture/CD/CD.png'),
-(15, 'ハリーポッターと賢者の石', 7, 1, 5, '4915234567804', '/picture/DVD/DVD.png');
+INSERT INTO users_authority_table (authority_id, authority_name) VALUES
+(1, 'ROLE_USER'),
+(2, 'ROLE_ADMIN');
 
-13.初期設定(権限登録)
+11.初期設定(プラン情報登録)
 
-INSERT INTO USERS_AUTHORITY_TABLE (authority_id, authority_name)
-VALUES
-  (1, 'ROLE_USER'),
-  (2, 'ROLE_ADMIN');
+INSERT INTO plans_table (
+  plan_name,
+  plan_price,
+  rental_limit
+) VALUES
+('お試しプラン', 324.00, 2),
+('Bronzeプラン', 1080.00, 6),
+('Silverプラン', 2160.00, 12),
+('Goldプラン', 5400.00, NULL);
 
-※データベースに入れる値を日本語->英語に変えました
+12.初期設定(商品登録)
 
-UPDATE USERS_AUTHORITY_TABLE
-SET authority_name = 'USER'
-WHERE authority_name = '一般ユーザー';
+INSERT INTO goods_table (
+    goods_name,
+    category_id,
+    genre_id,
+    quantity,
+    jan_code,
+    image_url
+) VALUES
+('アバター', 1, 1, 5, '4901234567890', '/picture/DVD/DVD.png'),
+('インセプション', 3, 1, 5, '4902234567891', '/picture/DVD/DVD.png'),
+('君の名は。', 8, 1, 5, '4903234567892', '/picture/DVD/DVD.png'),
+('タイタニック', 5, 1, 5, '4904234567893', '/picture/DVD/DVD.png'),
+('アベンジャーズ／エンドゲーム', 1, 3, 5, '4905234567894', '/picture/Bluray/Bluray.png'),
+('スター・ウォーズ／最後のジェダイ', 2, 3, 5, '4906234567895', '/picture/Bluray/Bluray.png'),
+('スパイダーマン：スパイダーバース', 7, 3, 5, '4907234567896', '/picture/Bluray/Bluray.png'),
+('となりのトトロ', 8, 3, 5, '4908234567897', '/picture/Bluray/Bluray.png'),
+('YOASOBI - 夜に駆ける', 9, 2, 5, '4909234567898', '/picture/CD/CD.png'),
+('BTS - Dynamite', 10, 2, 5, '4910234567899', '/picture/CD/CD.png'),
+('久石譲 - Works I', 11, 2, 5, '4911234567800', '/picture/CD/CD.png'),
+('Bill Evans - Waltz for Debby', 12, 2, 5, '4912234567801', '/picture/CD/CD.png'),
+('Queen - Greatest Hits', 13, 2, 5, '4913234567802', '/picture/CD/CD.png'),
+('LiSA - 紅蓮華', 14, 2, 5, '4914234567803', '/picture/CD/CD.png'),
+('ハリーポッターと賢者の石', 7, 1, 5, '4915234567804', '/picture/DVD/DVD.png'),
+('マトリックス', 2, 1, 5, '4920234567800', '/picture/DVD/DVD.png'),
+('ダークナイト', 1, 1, 5, '4921234567801', '/picture/DVD/DVD.png'),
+('ショーシャンクの空に', 3, 1, 5, '4922234567802', '/picture/DVD/DVD.png'),
+('グラディエーター', 1, 1, 5, '4923234567803', '/picture/DVD/DVD.png'),
+('ラ・ラ・ランド', 5, 1, 5, '4924234567804', '/picture/DVD/DVD.png'),
+('ジョーカー', 3, 1, 5, '4925234567805', '/picture/DVD/DVD.png'),
+('パラサイト 半地下の家族', 3, 1, 5, '4926234567806', '/picture/DVD/DVD.png'),
+('トップガン マーヴェリック', 1, 1, 5, '4927234567807', '/picture/DVD/DVD.png'),
+('インターステラー', 2, 1, 5, '4928234567808', '/picture/DVD/DVD.png'),
+('グレイテスト・ショーマン', 5, 1, 5, '4929234567809', '/picture/DVD/DVD.png'),
+('もののけ姫', 8, 3, 5, '4930234567810', '/picture/Bluray/Bluray.png'),
+('千と千尋の神隠し', 8, 3, 5, '4931234567811', '/picture/Bluray/Bluray.png'),
+('崖の上のポニョ', 8, 3, 5, '4932234567812', '/picture/Bluray/Bluray.png'),
+('魔女の宅急便', 8, 3, 5, '4933234567813', '/picture/Bluray/Bluray.png'),
+('風立ちぬ', 8, 3, 5, '4934234567814', '/picture/Bluray/Bluray.png'),
+('進撃の巨人 Season1', 8, 3, 5, '4935234567815', '/picture/Bluray/Bluray.png'),
+('鬼滅の刃 無限列車編', 8, 3, 5, '4936234567816', '/picture/Bluray/Bluray.png'),
+('呪術廻戦 0', 8, 3, 5, '4937234567817', '/picture/Bluray/Bluray.png'),
+('ワンピース FILM RED', 8, 3, 5, '4938234567818', '/picture/Bluray/Bluray.png'),
+('名探偵コナン ゼロの執行人', 3, 3, 5, '4939234567819', '/picture/Bluray/Bluray.png'),
+('YOASOBI - 群青', 9, 2, 5, '4940234567820', '/picture/CD/CD.png'),
+('YOASOBI - アイドル', 9, 2, 5, '4941234567821', '/picture/CD/CD.png'),
+('米津玄師 - Lemon', 9, 2, 5, '4942234567822', '/picture/CD/CD.png'),
+('米津玄師 - 馬と鹿', 9, 2, 5, '4943234567823', '/picture/CD/CD.png'),
+('Official髭男dism - Pretender', 9, 2, 5, '4944234567824', '/picture/CD/CD.png'),
+('King Gnu - 白日', 9, 2, 5, '4945234567825', '/picture/CD/CD.png'),
+('Ado - うっせぇわ', 9, 2, 5, '4946234567826', '/picture/CD/CD.png'),
+('Ado - 新時代', 9, 2, 5, '4947234567827', '/picture/CD/CD.png'),
+('Mrs. GREEN APPLE - ダンスホール', 9, 2, 5, '4948234567828', '/picture/CD/CD.png'),
+('SEKAI NO OWARI - Habit', 9, 2, 5, '4949234567829', '/picture/CD/CD.png'),
+('BTS - Butter', 10, 2, 5, '4950234567830', '/picture/CD/CD.png'),
+('BTS - Permission to Dance', 10, 2, 5, '4951234567831', '/picture/CD/CD.png'),
+('BLACKPINK - Pink Venom', 10, 2, 5, '4952234567832', '/picture/CD/CD.png'),
+('BLACKPINK - Shut Down', 10, 2, 5, '4953234567833', '/picture/CD/CD.png'),
+('TWICE - Feel Special', 10, 2, 5, '4954234567834', '/picture/CD/CD.png'),
+('TWICE - I CAN''T STOP ME', 10, 2, 5, '4955234567835', '/picture/CD/CD.png'),
+('SEVENTEEN - HOT', 10, 2, 5, '4956234567836', '/picture/CD/CD.png'),
+('SEVENTEEN - Super', 10, 2, 5, '4957234567837', '/picture/CD/CD.png'),
+('Stray Kids - MANIAC', 10, 2, 5, '4958234567838', '/picture/CD/CD.png'),
+('Stray Kids - CASE 143', 10, 2, 5, '4959234567839', '/picture/CD/CD.png'),
+('ベートーヴェン - 交響曲第5番', 11, 2, 5, '4960234567840', '/picture/CD/CD.png'),
+('ベートーヴェン - 交響曲第9番', 11, 2, 5, '4961234567841', '/picture/CD/CD.png'),
+('モーツァルト - アイネ・クライネ・ナハトムジーク', 11, 2, 5, '4962234567842', '/picture/CD/CD.png'),
+('バッハ - G線上のアリア', 11, 2, 5, '4963234567843', '/picture/CD/CD.png'),
+('ショパン - ノクターン', 11, 2, 5, '4964234567844', '/picture/CD/CD.png'),
+('マイルス・デイビス - Kind of Blue', 12, 2, 5, '4965234567845', '/picture/CD/CD.png'),
+('ジョン・コルトレーン - Blue Train', 12, 2, 5, '4966234567846', '/picture/CD/CD.png'),
+('チャーリー・パーカー - Now''s the Time', 12, 2, 5, '4967234567847', '/picture/CD/CD.png'),
+('セロニアス・モンク - Round Midnight', 12, 2, 5, '4968234567848', '/picture/CD/CD.png'),
+('ビル・エヴァンス - Portrait in Jazz', 12, 2, 5, '4969234567849', '/picture/CD/CD.png'),
+('Queen - Bohemian Rhapsody', 13, 2, 5, '4970234567850', '/picture/CD/CD.png'),
+('Queen - Don''t Stop Me Now', 13, 2, 5, '4971234567851', '/picture/CD/CD.png'),
+('The Beatles - Let It Be', 13, 2, 5, '4972234567852', '/picture/CD/CD.png'),
+('The Beatles - Hey Jude', 13, 2, 5, '4973234567853', '/picture/CD/CD.png'),
+('Nirvana - Smells Like Teen Spirit', 13, 2, 5, '4974234567854', '/picture/CD/CD.png'),
+('LiSA - 炎', 14, 2, 5, '4975234567855', '/picture/CD/CD.png'),
+('LiSA - crossing field', 14, 2, 5, '4976234567856', '/picture/CD/CD.png'),
+('Aimer - 残響散歌', 14, 2, 5, '4977234567857', '/picture/CD/CD.png'),
+('Aimer - Brave Shine', 14, 2, 5, '4978234567858', '/picture/CD/CD.png'),
+('EGOIST - 名前のない怪物', 14, 2, 5, '4979234567859', '/picture/CD/CD.png'),
+('アバター：ウェイ・オブ・ウォーター', 2, 3, 5, '4980234567860', '/picture/Bluray/Bluray.png'),
+('DUNE / デューン', 2, 3, 5, '4981234567861', '/picture/Bluray/Bluray.png'),
+('TENET テネット', 2, 3, 5, '4982234567862', '/picture/Bluray/Bluray.png'),
+('オデッセイ', 2, 3, 5, '4983234567863', '/picture/Bluray/Bluray.png'),
+('レディ・プレイヤー1', 2, 3, 5, '4984234567864', '/picture/Bluray/Bluray.png'),
+('ハリーポッターと秘密の部屋', 7, 3, 5, '4985234567865', '/picture/Bluray/Bluray.png'),
+('ハリーポッターとアズカバンの囚人', 7, 3, 5, '4986234567866', '/picture/Bluray/Bluray.png'),
+('ハリーポッターと炎のゴブレット', 7, 3, 5, '4987234567867', '/picture/Bluray/Bluray.png'),
+('ハリーポッターと不死鳥の騎士団', 7, 3, 5, '4988234567868', '/picture/Bluray/Bluray.png'),
+('ハリーポッターと謎のプリンス', 7, 3, 5, '4989234567869', '/picture/Bluray/Bluray.png'),
+('スター・ウォーズ／フォースの覚醒', 2, 1, 5, '4990234567870', '/picture/DVD/DVD.png'),
+('スター・ウォーズ／帝国の逆襲', 2, 1, 5, '4991234567871', '/picture/DVD/DVD.png'),
+('スター・ウォーズ／新たなる希望', 2, 1, 5, '4992234567872', '/picture/DVD/DVD.png'),
+('スター・ウォーズ／シスの復讐', 2, 1, 5, '4993234567873', '/picture/DVD/DVD.png'),
+('スター・ウォーズ／スカイウォーカーの夜明け', 2, 1, 5, '4994234567874', '/picture/DVD/DVD.png'),
+('IT／イット', 6, 1, 5, '4995234567875', '/picture/DVD/DVD.png'),
+('死霊館', 6, 1, 5, '4996234567876', '/picture/DVD/DVD.png'),
+('アナベル 死霊館の人形', 6, 1, 5, '4997234567877', '/picture/DVD/DVD.png'),
+('シャイニング', 6, 1, 5, '4998234567878', '/picture/DVD/DVD.png'),
+('ミッドサマー', 6, 1, 5, '4999234567879', '/picture/DVD/DVD.png'),
+('ホーム・アローン', 4, 1, 5, '5000234567880', '/picture/DVD/DVD.png'),
+('ナイトミュージアム', 4, 1, 5, '5001234567881', '/picture/DVD/DVD.png'),
+('テッド', 4, 1, 5, '5002234567882', '/picture/DVD/DVD.png'),
+('ズートピア', 4, 1, 5, '5003234567883', '/picture/DVD/DVD.png'),
+('ピッチ・パーフェクト', 4, 1, 5, '5004234567884', '/picture/DVD/DVD.png'),
+('アナと雪の女王', 7, 3, 5, '5005234567885', '/picture/Bluray/Bluray.png'),
+('アナと雪の女王2', 7, 3, 5, '5006234567886', '/picture/Bluray/Bluray.png'),
+('塔の上のラプンツェル', 7, 3, 5, '5007234567887', '/picture/Bluray/Bluray.png'),
+('モアナと伝説の海', 7, 3, 5, '5008234567888', '/picture/Bluray/Bluray.png'),
+('リメンバー・ミー', 7, 3, 5, '5009234567889', '/picture/Bluray/Bluray.png'),
+('ドラゴンボール超 ブロリー', 8, 3, 5, '5010234567890', '/picture/Bluray/Bluray.png'),
+('ONE PIECE STAMPEDE', 8, 3, 5, '5011234567891', '/picture/Bluray/Bluray.png'),
+('名探偵コナン 紺青の拳', 3, 3, 5, '5012234567892', '/picture/Bluray/Bluray.png'),
+('名探偵コナン 黒鉄の魚影', 3, 3, 5, '5013234567893', '/picture/Bluray/Bluray.png'),
+('スパイダーマン：ノー・ウェイ・ホーム', 1, 3, 5, '5014234567894', '/picture/Bluray/Bluray.png'),
+('アイアンマン', 1, 3, 5, '5015234567895', '/picture/Bluray/Bluray.png'),
+('キャプテン・アメリカ／ウィンター・ソルジャー', 1, 3, 5, '5016234567896', '/picture/Bluray/Bluray.png'),
+('ブラックパンサー', 1, 3, 5, '5017234567897', '/picture/Bluray/Bluray.png'),
+('ドクター・ストレンジ', 1, 3, 5, '5018234567898', '/picture/Bluray/Bluray.png'),
+('ガーディアンズ・オブ・ギャラクシー', 1, 3, 5, '5019234567899', '/picture/Bluray/Bluray.png');
 
-UPDATE USERS_AUTHORITY_TABLE
-SET authority_name = 'ADMIN'
-WHERE authority_name = '管理者';
-
-14.初期設定(プラン情報登録)
-
-INSERT INTO plans_table (plan_name, plan_price, rental_limit)
-VALUES
-  ('お試しプラン', 324, 2),
-  ('Bronzeプラン', 1080, 6),
-  ('Silverプラン', 2160, 12),
-  ('Goldプラン', 5400, NULL);
